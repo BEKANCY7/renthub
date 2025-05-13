@@ -1,0 +1,177 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id             String    @id @default(cuid())
+  name           String?
+  email          String?   @unique
+  emailVerified  DateTime?
+  image          String?
+  hashedPassword String?
+  role           Role      @default(RENTER)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  accounts         Account[]
+  sessions         Session[]
+  listings         Listing[] @relation("OwnerListings")
+  bookings         Booking[] @relation("RenterBookings")
+  receivedBookings Booking[] @relation("OwnerBookings")
+  sentMessages     Message[] @relation("MessageSender")
+  receivedMessages Message[] @relation("MessageReceiver")
+  payments         Payment[] @relation("UserPayments")
+  receivedPayments Payment[] @relation("ReceivedPayments")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Listing {
+  id          String        @id @default(cuid())
+  title       String
+  description String
+  category    Category
+  price       Float
+  imageUrls   String
+  address     String?
+  city        String?
+  state       String?
+  country     String?
+  features    String?
+  status      ListingStatus @default(ACTIVE)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  ownerId     String
+
+  owner    User      @relation("OwnerListings", fields: [ownerId], references: [id], onDelete: Cascade)
+  bookings Booking[]
+}
+
+model Booking {
+  id         String        @id @default(cuid())
+  startDate  DateTime
+  endDate    DateTime
+  totalPrice Float
+  status     BookingStatus @default(PENDING)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  listingId  String
+  renterId   String
+  ownerId    String
+
+  listing  Listing   @relation(fields: [listingId], references: [id])
+  renter   User      @relation("RenterBookings", fields: [renterId], references: [id])
+  owner    User      @relation("OwnerBookings", fields: [ownerId], references: [id])
+  payments Payment[]
+  messages Message[]
+}
+
+model Payment {
+  id          String        @id @default(cuid())
+  amount      Float
+  status      PaymentStatus @default(PENDING)
+  paymentDate DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  bookingId   String
+  payerId     String
+  receiverId  String
+
+  booking  Booking @relation(fields: [bookingId], references: [id])
+  payer    User    @relation("UserPayments", fields: [payerId], references: [id])
+  receiver User    @relation("ReceivedPayments", fields: [receiverId], references: [id])
+}
+
+model Message {
+  id         String   @id @default(cuid())
+  content    String
+  createdAt  DateTime @default(now())
+  senderId   String
+  receiverId String
+  bookingId  String?
+
+  sender   User     @relation("MessageSender", fields: [senderId], references: [id])
+  receiver User     @relation("MessageReceiver", fields: [receiverId], references: [id])
+  booking  Booking? @relation(fields: [bookingId], references: [id])
+}
+
+enum Role {
+  RENTER
+  OWNER
+  ADMIN
+}
+
+enum Category {
+  HOUSE
+  APARTMENT
+  CABIN
+  VILLA
+  CAR
+  BOAT
+  OTHER
+}
+
+enum ListingStatus {
+  ACTIVE
+  INACTIVE
+  PENDING
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
