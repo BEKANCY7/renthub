@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Search, MapPin } from "lucide-react";
 import usePlacesAutocomplete, {
     getGeocode,
@@ -16,6 +16,50 @@ import {
 import "@reach/combobox/styles.css";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+
+// Script load status tracking
+const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '';
+let isScriptLoaded = false;
+let isScriptLoading = false;
+let scriptLoadingPromise: Promise<void> | null = null;
+
+// Load Google Maps script
+const loadScript = () => {
+    if (isScriptLoaded) return Promise.resolve();
+    if (isScriptLoading && scriptLoadingPromise) return scriptLoadingPromise;
+
+    isScriptLoading = true;
+    scriptLoadingPromise = new Promise<void>((resolve, reject) => {
+        const script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places&callback=initMap`;
+        script.async = true;
+        script.defer = true;
+
+        // Ensure the callback is defined
+        window.initMap = () => {
+            isScriptLoaded = true;
+            isScriptLoading = false;
+            resolve();
+        };
+
+        script.onerror = (error) => {
+            isScriptLoading = false;
+            reject(error);
+        };
+
+        document.head.appendChild(script);
+    });
+
+    return scriptLoadingPromise;
+};
+
+// Make sure the window object is defined
+declare global {
+    interface Window {
+        initMap: () => void;
+    }
+}
 
 interface LocationSearchProps {
     value: string;
@@ -34,29 +78,15 @@ export function LocationSearch({
     onSelectLocation,
     className,
 }: LocationSearchProps) {
-    const mapLoaded = useRef(false);
-    const [mapScript, setMapScript] = useState<HTMLScriptElement | null>(null);
+    const [scriptReady, setScriptReady] = useState(isScriptLoaded);
 
-    // Load Google Maps script on component mount
     useEffect(() => {
-        if (!mapLoaded.current) {
-            const script = document.createElement("script");
-            script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`;
-            script.async = true;
-            script.defer = true;
-            script.onload = () => {
-                mapLoaded.current = true;
-            };
-            document.body.appendChild(script);
-            setMapScript(script);
+        if (!isScriptLoaded) {
+            loadScript()
+                .then(() => setScriptReady(true))
+                .catch((error) => console.error("Error loading Google Maps script:", error));
         }
-
-        return () => {
-            if (mapScript) {
-                document.body.removeChild(mapScript);
-            }
-        };
-    }, [mapScript]);
+    }, []);
 
     const {
         ready,
@@ -66,11 +96,12 @@ export function LocationSearch({
         clearSuggestions,
     } = usePlacesAutocomplete({
         requestOptions: {
-            /* Define search scope here */
             componentRestrictions: { country: "us" },
         },
         debounce: 300,
         defaultValue: value,
+        callbackName: "initMap",
+        initOnMount: false, // We're handling script loading ourselves
     });
 
     // Sync external value with internal state
@@ -112,9 +143,9 @@ export function LocationSearch({
                             setSearchValue(e.target.value);
                             onChange(e.target.value);
                         }}
-                        disabled={!ready}
+                        disabled={!ready || !scriptReady}
                         className="w-full pl-8"
-                        placeholder="Enter a location..."
+                        placeholder={scriptReady ? "Enter a location..." : "Loading Google Maps..."}
                         aria-label="Search locations"
                     />
                     {searchValue && (
@@ -131,21 +162,23 @@ export function LocationSearch({
                         </button>
                     )}
                 </div>
-                <ComboboxPopover className="z-50 mt-1 max-h-72 overflow-auto rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                    <ComboboxList>
-                        {status === "OK" &&
-                            data.map(({ place_id, description }) => (
-                                <ComboboxOption
-                                    key={place_id}
-                                    value={description}
-                                    className="relative cursor-default select-none py-2 px-3 text-gray-900 hover:bg-blue-50"
-                                />
-                            ))}
-                    </ComboboxList>
-                    {status === "ZERO_RESULTS" && (
-                        <div className="py-2 px-3 text-sm text-gray-500">No results found</div>
-                    )}
-                </ComboboxPopover>
+                {scriptReady && (
+                    <ComboboxPopover className="z-50 mt-1 max-h-72 overflow-auto rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                        <ComboboxList>
+                            {status === "OK" &&
+                                data.map(({ place_id, description }) => (
+                                    <ComboboxOption
+                                        key={place_id}
+                                        value={description}
+                                        className="relative cursor-default select-none py-2 px-3 text-gray-900 hover:bg-blue-50"
+                                    />
+                                ))}
+                        </ComboboxList>
+                        {status === "ZERO_RESULTS" && (
+                            <div className="py-2 px-3 text-sm text-gray-500">No results found</div>
+                        )}
+                    </ComboboxPopover>
+                )}
             </Combobox>
         </div>
     );

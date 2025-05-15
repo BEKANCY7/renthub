@@ -93,17 +93,17 @@ export function SearchFilters({ initialFilters = {}, className }: SearchFiltersP
         (initialFilters.location as string) || ""
     );
     const [propertyType, setPropertyType] = useState<string>(
-        (initialFilters.propertyType as string) || ""
+        (initialFilters.propertyType as string) || "any"
     );
     const [priceRange, setPriceRange] = useState<[number, number]>([
         parseInt(initialFilters.minPrice as string) || 0,
         parseInt(initialFilters.maxPrice as string) || 10000,
     ]);
     const [bedrooms, setBedrooms] = useState<string>(
-        (initialFilters.bedrooms as string) || ""
+        (initialFilters.bedrooms as string) || "any"
     );
     const [bathrooms, setBathrooms] = useState<string>(
-        (initialFilters.bathrooms as string) || ""
+        (initialFilters.bathrooms as string) || "any"
     );
     const [minArea, setMinArea] = useState<string>(
         (initialFilters.minArea as string) || ""
@@ -121,11 +121,11 @@ export function SearchFilters({ initialFilters = {}, className }: SearchFiltersP
         const params = new URLSearchParams();
 
         if (location) params.set("location", location);
-        if (propertyType) params.set("propertyType", propertyType);
+        if (propertyType && propertyType !== "any") params.set("propertyType", propertyType);
         if (priceRange[0] > 0) params.set("minPrice", priceRange[0].toString());
         if (priceRange[1] < 10000) params.set("maxPrice", priceRange[1].toString());
-        if (bedrooms) params.set("bedrooms", bedrooms);
-        if (bathrooms) params.set("bathrooms", bathrooms);
+        if (bedrooms && bedrooms !== "any") params.set("bedrooms", bedrooms);
+        if (bathrooms && bathrooms !== "any") params.set("bathrooms", bathrooms);
         if (minArea) params.set("minArea", minArea);
 
         selectedAmenities.forEach(amenity => {
@@ -148,10 +148,10 @@ export function SearchFilters({ initialFilters = {}, className }: SearchFiltersP
     useEffect(() => {
         let count = 0;
         if (location) count++;
-        if (propertyType) count++;
+        if (propertyType && propertyType !== "any") count++;
         if (priceRange[0] > 0 || priceRange[1] < 10000) count++;
-        if (bedrooms) count++;
-        if (bathrooms) count++;
+        if (bedrooms && bedrooms !== "any") count++;
+        if (bathrooms && bathrooms !== "any") count++;
         if (minArea) count++;
         count += selectedAmenities.length;
 
@@ -169,10 +169,10 @@ export function SearchFilters({ initialFilters = {}, className }: SearchFiltersP
     // Reset all filters
     const resetFilters = () => {
         setLocation("");
-        setPropertyType("");
+        setPropertyType("any");
         setPriceRange([0, 10000]);
-        setBedrooms("");
-        setBathrooms("");
+        setBedrooms("any");
+        setBathrooms("any");
         setMinArea("");
         setSelectedAmenities([]);
         router.push("/search");
@@ -270,7 +270,7 @@ export function SearchFilters({ initialFilters = {}, className }: SearchFiltersP
                             </div>
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="">Any</SelectItem>
+                            <SelectItem value="any">Any</SelectItem>
                             <SelectItem value="1">1+</SelectItem>
                             <SelectItem value="2">2+</SelectItem>
                             <SelectItem value="3">3+</SelectItem>
@@ -290,7 +290,7 @@ export function SearchFilters({ initialFilters = {}, className }: SearchFiltersP
                             </div>
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="">Any</SelectItem>
+                            <SelectItem value="any">Any</SelectItem>
                             <SelectItem value="1">1+</SelectItem>
                             <SelectItem value="2">2+</SelectItem>
                             <SelectItem value="3">3+</SelectItem>
@@ -338,7 +338,7 @@ export function SearchFilters({ initialFilters = {}, className }: SearchFiltersP
                                     </div>
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="">Any Property Type</SelectItem>
+                                    <SelectItem value="any">Any Property Type</SelectItem>
                                     {propertyTypes.map((type) => (
                                         <SelectItem key={type.value} value={type.value}>
                                             {type.label}
@@ -522,7 +522,7 @@ export function SearchFilters({ initialFilters = {}, className }: SearchFiltersP
                                                     </div>
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    <SelectItem value="">Any</SelectItem>
+                                                    <SelectItem value="any">Any</SelectItem>
                                                     <SelectItem value="1">1+</SelectItem>
                                                     <SelectItem value="2">2+</SelectItem>
                                                     <SelectItem value="3">3+</SelectItem>
@@ -545,7 +545,7 @@ export function SearchFilters({ initialFilters = {}, className }: SearchFiltersP
                                                     </div>
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    <SelectItem value="">Any</SelectItem>
+                                                    <SelectItem value="any">Any</SelectItem>
                                                     <SelectItem value="1">1+</SelectItem>
                                                     <SelectItem value="2">2+</SelectItem>
                                                     <SelectItem value="3">3+</SelectItem>
@@ -573,7 +573,7 @@ export function SearchFilters({ initialFilters = {}, className }: SearchFiltersP
                                             <SelectValue placeholder="Any Property Type" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="">Any Property Type</SelectItem>
+                                            <SelectItem value="any">Any Property Type</SelectItem>
                                             {propertyTypes.map((type) => (
                                                 <SelectItem key={type.value} value={type.value}>
                                                     {type.label}
@@ -673,7 +673,7 @@ export function SearchFilters({ initialFilters = {}, className }: SearchFiltersP
                             {propertyTypes.find(t => t.value === propertyType)?.label || propertyType}
                             <X
                                 className="h-3 w-3 cursor-pointer"
-                                onClick={() => setPropertyType("")}
+                                onClick={() => setPropertyType("any")}
                             />
                         </Badge>
                     )}
@@ -693,7 +693,7 @@ export function SearchFilters({ initialFilters = {}, className }: SearchFiltersP
                             {bedrooms}+ Beds
                             <X
                                 className="h-3 w-3 cursor-pointer"
-                                onClick={() => setBedrooms("")}
+                                onClick={() => setBedrooms("any")}
                             />
                         </Badge>
                     )}
@@ -703,7 +703,7 @@ export function SearchFilters({ initialFilters = {}, className }: SearchFiltersP
                             {bathrooms}+ Baths
                             <X
                                 className="h-3 w-3 cursor-pointer"
-                                onClick={() => setBathrooms("")}
+                                onClick={() => setBathrooms("any")}
                             />
                         </Badge>
                     )}
