@@ -36,7 +36,7 @@ export default async function ListingsPage() {
     });
 
     // Helper function for status badge color
-    const getStatusColor = (status) => {
+    const getStatusColor = (status: string): string => {
         switch (status) {
             case "ACTIVE":
                 return "bg-green-100 text-green-800";

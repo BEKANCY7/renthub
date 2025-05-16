@@ -1,75 +1,26 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Search, MapPin } from "lucide-react";
-import usePlacesAutocomplete, {
-    getGeocode,
-    getLatLng,
-} from "use-places-autocomplete";
-import {
-    Combobox,
-    ComboboxInput,
-    ComboboxPopover,
-    ComboboxList,
-    ComboboxOption,
-} from "@reach/combobox";
-import "@reach/combobox/styles.css";
+import { useState, useRef, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-
-// Script load status tracking
-const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '';
-let isScriptLoaded = false;
-let isScriptLoading = false;
-let scriptLoadingPromise: Promise<void> | null = null;
-
-// Load Google Maps script
-const loadScript = () => {
-    if (isScriptLoaded) return Promise.resolve();
-    if (isScriptLoading && scriptLoadingPromise) return scriptLoadingPromise;
-
-    isScriptLoading = true;
-    scriptLoadingPromise = new Promise<void>((resolve, reject) => {
-        const script = document.createElement('script');
-        script.type = 'text/javascript';
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places&callback=initMap`;
-        script.async = true;
-        script.defer = true;
-
-        // Ensure the callback is defined
-        window.initMap = () => {
-            isScriptLoaded = true;
-            isScriptLoading = false;
-            resolve();
-        };
-
-        script.onerror = (error) => {
-            isScriptLoading = false;
-            reject(error);
-        };
-
-        document.head.appendChild(script);
-    });
-
-    return scriptLoadingPromise;
-};
-
-// Make sure the window object is defined
-declare global {
-    interface Window {
-        initMap: () => void;
-    }
-}
 
 interface LocationSearchProps {
     value: string;
     onChange: (value: string) => void;
-    onSelectLocation?: (details: {
-        address: string;
+    onSelectLocation?: (details: LocationDetails) => void;
+    className?: string;
+    placeholder?: string;
+}
+
+interface LocationDetails {
+    address: string;
+    city?: string;
+    state?: string;
+    country?: string;
+    coords?: {
         lat: number;
         lng: number;
-    }) => void;
-    className?: string;
+    };
 }
 
 export function LocationSearch({
@@ -77,109 +28,109 @@ export function LocationSearch({
     onChange,
     onSelectLocation,
     className,
+    placeholder = "Enter a location..."
 }: LocationSearchProps) {
-    const [scriptReady, setScriptReady] = useState(isScriptLoaded);
+    const [suggestions, setSuggestions] = useState<LocationDetails[]>([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
+    const inputRef = useRef<HTMLInputElement>(null);
 
-    useEffect(() => {
-        if (!isScriptLoaded) {
-            loadScript()
-                .then(() => setScriptReady(true))
-                .catch((error) => console.error("Error loading Google Maps script:", error));
-        }
-    }, []);
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newValue = e.target.value;
+        onChange(newValue);
 
-    const {
-        ready,
-        value: searchValue,
-        setValue: setSearchValue,
-        suggestions: { status, data },
-        clearSuggestions,
-    } = usePlacesAutocomplete({
-        requestOptions: {
-            componentRestrictions: { country: "us" },
-        },
-        debounce: 300,
-        defaultValue: value,
-        callbackName: "initMap",
-        initOnMount: false, // We're handling script loading ourselves
-    });
+        if (newValue.length > 2) {
+            // Simple mock suggestions for Ethiopia locations
+            const mockSuggestions: LocationDetails[] = [
+                {
+                    address: `${newValue}, Addis Ababa, Ethiopia`,
+                    city: "Addis Ababa",
+                    country: "Ethiopia",
+                    coords: { lat: 9.0222, lng: 38.7468 }
+                },
+                {
+                    address: `${newValue}, Dire Dawa, Ethiopia`,
+                    city: "Dire Dawa",
+                    country: "Ethiopia",
+                    coords: { lat: 9.5907, lng: 41.8699 }
+                },
+                {
+                    address: `${newValue}, Bahir Dar, Ethiopia`,
+                    city: "Bahir Dar",
+                    state: "Amhara",
+                    country: "Ethiopia",
+                    coords: { lat: 11.5742, lng: 37.3614 }
+                },
+                {
+                    address: `${newValue}, Hawassa, Ethiopia`,
+                    city: "Hawassa",
+                    state: "SNNPR",
+                    country: "Ethiopia",
+                    coords: { lat: 7.0504, lng: 38.4955 }
+                },
+                {
+                    address: `${newValue}, Mekelle, Ethiopia`,
+                    city: "Mekelle",
+                    state: "Tigray",
+                    country: "Ethiopia",
+                    coords: { lat: 13.4967, lng: 39.4697 }
+                }
+            ];
 
-    // Sync external value with internal state
-    useEffect(() => {
-        if (value !== searchValue) {
-            setSearchValue(value);
-        }
-    }, [value, searchValue, setSearchValue]);
-
-    const handleSelect = async (address: string) => {
-        setSearchValue(address, false);
-        onChange(address);
-        clearSuggestions();
-
-        if (onSelectLocation) {
-            try {
-                const results = await getGeocode({ address });
-                const { lat, lng } = await getLatLng(results[0]);
-                onSelectLocation({
-                    address,
-                    lat,
-                    lng,
-                });
-            } catch (error) {
-                console.error("Error getting geocode: ", error);
-            }
+            setSuggestions(mockSuggestions);
+            setShowSuggestions(true);
+        } else {
+            setSuggestions([]);
+            setShowSuggestions(false);
         }
     };
 
+    const handleSelectLocation = (location: LocationDetails) => {
+        onChange(location.address);
+        if (onSelectLocation) {
+            onSelectLocation(location);
+        }
+        setShowSuggestions(false);
+    };
+
+    // Close suggestions when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (inputRef.current && !inputRef.current.contains(e.target as Node)) {
+                setShowSuggestions(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
     return (
-        <div className={cn("relative w-full", className)}>
-            <Combobox onSelect={handleSelect}>
-                <div className="relative">
-                    <MapPin className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-                    <ComboboxInput
-                        as={Input}
-                        value={searchValue}
-                        onChange={(e) => {
-                            setSearchValue(e.target.value);
-                            onChange(e.target.value);
-                        }}
-                        disabled={!ready || !scriptReady}
-                        className="w-full pl-8"
-                        placeholder={scriptReady ? "Enter a location..." : "Loading Google Maps..."}
-                        aria-label="Search locations"
-                    />
-                    {searchValue && (
-                        <button
-                            className="absolute right-2.5 top-2.5 text-gray-500 hover:text-gray-700"
-                            onClick={() => {
-                                setSearchValue("");
-                                onChange("");
-                                clearSuggestions();
-                            }}
-                        >
-                            <span className="sr-only">Clear</span>
-                            <Search className="h-4 w-4" />
-                        </button>
-                    )}
+        <div className="relative" ref={inputRef}>
+            <Input
+                type="text"
+                value={value}
+                onChange={handleChange}
+                placeholder={placeholder}
+                className={cn(className)}
+            />
+
+            {showSuggestions && suggestions.length > 0 && (
+                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg">
+                    <ul className="py-1">
+                        {suggestions.map((suggestion, index) => (
+                            <li
+                                key={index}
+                                className="px-4 py-2 text-sm cursor-pointer hover:bg-gray-100"
+                                onClick={() => handleSelectLocation(suggestion)}
+                            >
+                                {suggestion.address}
+                            </li>
+                        ))}
+                    </ul>
                 </div>
-                {scriptReady && (
-                    <ComboboxPopover className="z-50 mt-1 max-h-72 overflow-auto rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                        <ComboboxList>
-                            {status === "OK" &&
-                                data.map(({ place_id, description }) => (
-                                    <ComboboxOption
-                                        key={place_id}
-                                        value={description}
-                                        className="relative cursor-default select-none py-2 px-3 text-gray-900 hover:bg-blue-50"
-                                    />
-                                ))}
-                        </ComboboxList>
-                        {status === "ZERO_RESULTS" && (
-                            <div className="py-2 px-3 text-sm text-gray-500">No results found</div>
-                        )}
-                    </ComboboxPopover>
-                )}
-            </Combobox>
+            )}
         </div>
     );
 } 

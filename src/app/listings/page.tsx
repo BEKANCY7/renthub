@@ -6,6 +6,17 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Eye, MapPin } from "lucide-react";
 import ListingsMap from "@/components/map/ListingsMap";
+// Ethiopia's center coordinates and major cities
+const ETHIOPIA_CENTER = { lat: 9.145, lng: 40.4897 };
+const ETHIOPIAN_CITIES = [
+    { name: "Addis Ababa", lat: 9.0222, lng: 38.7468 },
+    { name: "Dire Dawa", lat: 9.5907, lng: 41.8699 },
+    { name: "Mekelle", lat: 13.4967, lng: 39.4697 },
+    { name: "Gondar", lat: 12.6030, lng: 37.4521 },
+    { name: "Adama", lat: 8.5363, lng: 39.2705 },
+    { name: "Hawassa", lat: 7.0504, lng: 38.4955 },
+    { name: "Bahir Dar", lat: 11.5742, lng: 37.3614 }
+];
 
 export default async function ListingsPage() {
     // Fetch all active listings
@@ -15,18 +26,21 @@ export default async function ListingsPage() {
     });
 
     // Format listings for map display
-    const mapLocations = listings.map(listing => {
-        // Generate random coordinates near Ethiopia's center if not provided
-        // In a real app, you would have actual coordinates stored
-        const randomLat = 9.145 + (Math.random() - 0.5) * 2;
-        const randomLng = 40.4897 + (Math.random() - 0.5) * 2;
+    const mapLocations = listings.map((listing, index) => {
+        // Assign each listing to a major Ethiopian city or generate a position near one
+        const cityIndex = index % ETHIOPIAN_CITIES.length;
+        const baseCity = ETHIOPIAN_CITIES[cityIndex];
+
+        // Add small randomness to avoid perfect overlap
+        const latVariance = (Math.random() - 0.5) * 0.05;
+        const lngVariance = (Math.random() - 0.5) * 0.05;
 
         return {
             id: listing.id,
             title: listing.title,
             price: listing.price,
-            lat: randomLat,
-            lng: randomLng,
+            lat: baseCity.lat + latVariance,
+            lng: baseCity.lng + lngVariance,
             imageUrl: listing.imageUrls?.split(',')?.[0] || "https://source.unsplash.com/random/?property,ethiopia",
         };
     });
