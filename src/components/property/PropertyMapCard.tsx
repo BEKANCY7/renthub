@@ -55,7 +55,7 @@ export default function PropertyMapCard({ property }: PropertyMapCardProps) {
             </div>
 
             <div className="flex justify-between items-center">
-                <p className="font-bold text-sm">${property.price.toLocaleString()}<span className="font-normal text-xs text-gray-500">/mo</span></p>
+                <p className="font-bold text-sm">ETB {property.price.toLocaleString()}<span className="font-normal text-xs text-gray-500">/mo</span></p>
                 <Link href={`/properties/${property.id}`}>
                     <Button variant="default" size="sm" className="text-xs py-1 h-7">
                         Details

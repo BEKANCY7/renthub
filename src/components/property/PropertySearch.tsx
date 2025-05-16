@@ -19,11 +19,11 @@ import useProperties from "@/hooks/useProperties";
 
 // Mock crime data for heatmap (in a real app, this would come from an API)
 const crimeData = [
-    { lat: 40.712776, lng: -74.005974, weight: 0.2 }, // NYC
-    { lat: 40.713776, lng: -74.006974, weight: 0.3 },
-    { lat: 40.714776, lng: -74.007974, weight: 0.5 },
-    { lat: 40.715776, lng: -74.008974, weight: 0.1 },
-    { lat: 40.716776, lng: -74.009974, weight: 0.4 },
+    { lat: 9.0084, lng: 38.7648, weight: 0.2 }, // Bole
+    { lat: 9.0094, lng: 38.7658, weight: 0.3 },
+    { lat: 9.0104, lng: 38.7668, weight: 0.5 },
+    { lat: 9.0114, lng: 38.7678, weight: 0.1 },
+    { lat: 9.0124, lng: 38.7688, weight: 0.4 },
 ];
 
 // Map styles
@@ -58,11 +58,11 @@ export default function PropertySearch({
     const [viewType, setViewType] = useState<"grid" | "map">("grid");
     const [selectedProperty, setSelectedProperty] = useState<string | null>(null);
     const [showHeatmap, setShowHeatmap] = useState(false);
-    const [mapCenter, setMapCenter] = useState({ lat: 40.712776, lng: -74.005974 }); // Default: NYC
+    const [mapCenter, setMapCenter] = useState({ lat: 9.0084, lng: 38.7648 }); // Default: Addis Ababa
     const [zoom, setZoom] = useState(12);
 
     const { isLoaded: mapsLoaded, loadError } = useLoadScript({
-        googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
+        googleMapsApiKey: "AIzaSyD2I6LbGbD1xoDPQHUHsbn0Fb9kptFc4O8",
         libraries: ["places", "visualization"],
     });
 
@@ -145,7 +145,7 @@ export default function PropertySearch({
                             <p className="text-gray-500 mb-4">
                                 Try adjusting your search filters to find more properties
                             </p>
-                            <Button onClick={() => router.push("/search")}>
+                            <Button onClick={() => router.push("/find-home")}>
                                 Reset Filters
                             </Button>
                         </div>
@@ -178,7 +178,7 @@ export default function PropertySearch({
                                             position={marker.position}
                                             onClick={() => setSelectedProperty(marker.id)}
                                             label={{
-                                                text: `$${marker.price}`,
+                                                text: `ETB ${marker.price}`,
                                                 color: "white",
                                                 fontWeight: "bold",
                                                 fontSize: "14px",
@@ -258,7 +258,7 @@ export default function PropertySearch({
                                     <p className="text-gray-500 mb-4">
                                         Try adjusting your search filters
                                     </p>
-                                    <Button onClick={() => router.push("/search")}>
+                                    <Button onClick={() => router.push("/find-home")}>
                                         Reset Filters
                                     </Button>
                                 </div>

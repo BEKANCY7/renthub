@@ -19,36 +19,36 @@ const mockBookings = [
         id: "1",
         listing: {
             id: "1",
-            title: "Modern Apartment in Downtown",
+            title: "Modern Apartment in Bole",
             imageUrls: "/images/apartments/1.jpg",
         },
         startDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 10), // 10 days ago
         endDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7), // 7 days ago
-        totalPrice: 360,
+        totalPrice: 15000,
         status: "COMPLETED",
     },
     {
         id: "2",
         listing: {
             id: "2",
-            title: "Beach House with Ocean View",
+            title: "Family House in Sarbet",
             imageUrls: "/images/houses/1.jpg",
         },
         startDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 20), // 20 days ago
         endDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 17), // 17 days ago
-        totalPrice: 750,
+        totalPrice: 32000,
         status: "COMPLETED",
     },
     {
         id: "3",
         listing: {
             id: "3",
-            title: "Cozy Cabin in the Mountains",
+            title: "Studio Near Addis Ababa University",
             imageUrls: "/images/cabins/1.jpg",
         },
         startDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 25), // 25 days ago
         endDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 23), // 23 days ago
-        totalPrice: 180,
+        totalPrice: 12000,
         status: "CANCELLED",
     },
 ];
@@ -66,7 +66,7 @@ export function RecentBookings({ userId }: RecentBookingsProps) {
             <div className="text-center p-6">
                 <p className="text-muted-foreground mb-4">No recent bookings found</p>
                 <Button asChild>
-                    <Link href="/search">Find a place to stay</Link>
+                    <Link href="/find-home">Find a place to stay</Link>
                 </Button>
             </div>
         );
@@ -106,7 +106,7 @@ export function RecentBookings({ userId }: RecentBookingsProps) {
                                     {format(booking.startDate, "MMM d")} - {format(booking.endDate, "MMM d, yyyy")}
                                 </div>
                             </TableCell>
-                            <TableCell>${booking.totalPrice.toFixed(2)}</TableCell>
+                            <TableCell>ETB {booking.totalPrice.toLocaleString()}</TableCell>
                             <TableCell>
                                 <div
                                     className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getStatusStyle(booking.status)}`}

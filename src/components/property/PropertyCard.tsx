@@ -84,7 +84,7 @@ export default function PropertyCard({ property, compact = false }: PropertyCard
                     </div>
                     <div className="text-right">
                         <span className={`font-bold ${compact ? 'text-lg' : 'text-xl'}`}>
-                            ${property.price.toLocaleString()}
+                            ETB {property.price.toLocaleString()}
                         </span>
                         <span className="text-sm text-gray-500 block">/month</span>
                     </div>

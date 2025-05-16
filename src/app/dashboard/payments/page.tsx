@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
     CreditCard,
-    DollarSign,
+    Banknote,
     Calendar,
     CheckCircle2,
     AlertCircle,
@@ -28,17 +28,17 @@ import { cn } from "@/lib/utils";
 const upcomingPayments = [
     {
         id: "pmt-001",
-        amount: 1250,
+        amount: 25000,
         dueDate: "2023-11-01",
-        property: "Oak Apartment 2B",
+        property: "Modern Apartment in Bole",
         status: "pending",
         type: "rent",
     },
     {
         id: "pmt-002",
-        amount: 75,
+        amount: 1500,
         dueDate: "2023-11-01",
-        property: "Oak Apartment 2B",
+        property: "Modern Apartment in Bole",
         status: "pending",
         type: "utilities",
     },
@@ -47,39 +47,43 @@ const upcomingPayments = [
 const paymentHistory = [
     {
         id: "pmt-101",
-        amount: 1250,
+        amount: 25000,
         date: "2023-10-01",
-        property: "Oak Apartment 2B",
+        property: "Modern Apartment in Bole",
         status: "completed",
         type: "rent",
         confirmationCode: "TXN12345678",
+        method: "TeleBirr"
     },
     {
         id: "pmt-102",
-        amount: 75,
+        amount: 1500,
         date: "2023-10-01",
-        property: "Oak Apartment 2B",
+        property: "Modern Apartment in Bole",
         status: "completed",
         type: "utilities",
         confirmationCode: "TXN12345679",
+        method: "CBE"
     },
     {
         id: "pmt-103",
-        amount: 1250,
+        amount: 25000,
         date: "2023-09-01",
-        property: "Oak Apartment 2B",
+        property: "Modern Apartment in Bole",
         status: "completed",
         type: "rent",
         confirmationCode: "TXN12345680",
+        method: "TeleBirr"
     },
     {
         id: "pmt-104",
-        amount: 75,
+        amount: 1500,
         date: "2023-09-01",
-        property: "Oak Apartment 2B",
+        property: "Modern Apartment in Bole",
         status: "completed",
         type: "utilities",
         confirmationCode: "TXN12345681",
+        method: "Cash"
     },
 ];
 
@@ -132,10 +136,10 @@ export default function PaymentsPage() {
                         <CardTitle className="text-sm font-medium">
                             Next Payment Due
                         </CardTitle>
-                        <DollarSign className="h-4 w-4 text-muted-foreground" />
+                        <Banknote className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">$1,325.00</div>
+                        <div className="text-2xl font-bold">ETB 26,500</div>
                         <p className="text-xs text-muted-foreground">
                             Due on {new Date("2023-11-01").toLocaleDateString()}
                         </p>
@@ -154,10 +158,10 @@ export default function PaymentsPage() {
                         <CardTitle className="text-sm font-medium">
                             Payment Balance
                         </CardTitle>
-                        <DollarSign className="h-4 w-4 text-muted-foreground" />
+                        <Banknote className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">$0.00</div>
+                        <div className="text-2xl font-bold">ETB 0.00</div>
                         <p className="text-xs text-muted-foreground">
                             No overdue payments
                         </p>
@@ -184,7 +188,7 @@ export default function PaymentsPage() {
                             <span>Disabled</span>
                         </div>
                         <p className="text-xs text-muted-foreground">
-                            Enable autopay to never miss a payment
+                            Enable autopay with TeleBirr to never miss a payment
                         </p>
                     </CardContent>
                     <CardFooter>
@@ -226,7 +230,7 @@ export default function PaymentsPage() {
                                                 <div className="text-sm text-muted-foreground">{payment.property}</div>
                                             </div>
                                             <div className="flex-1 text-center">
-                                                <div className="font-semibold">${payment.amount.toFixed(2)}</div>
+                                                <div className="font-semibold">ETB {payment.amount.toLocaleString()}</div>
                                                 <div className="text-sm text-muted-foreground">
                                                     Due {new Date(payment.dueDate).toLocaleDateString()}
                                                 </div>
@@ -267,7 +271,7 @@ export default function PaymentsPage() {
                         <CardHeader>
                             <CardTitle>Payment History</CardTitle>
                             <CardDescription>
-                                View your recent payment history and receipts
+                                View your past rent and utility payments
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -282,21 +286,27 @@ export default function PaymentsPage() {
                                                 <div className="font-medium">
                                                     {payment.type === "rent" ? "Monthly Rent" : "Utilities"}
                                                 </div>
-                                                <div className="text-sm text-muted-foreground">{payment.property}</div>
+                                                <div className="text-sm text-muted-foreground">
+                                                    {payment.property}
+                                                </div>
+                                                <div className="text-xs text-muted-foreground">
+                                                    Paid with: {payment.method}
+                                                </div>
                                             </div>
                                             <div className="flex-1 text-center">
-                                                <div className="font-semibold">${payment.amount.toFixed(2)}</div>
+                                                <div className="font-semibold">ETB {payment.amount.toLocaleString()}</div>
                                                 <div className="text-sm text-muted-foreground">
                                                     Paid {new Date(payment.date).toLocaleDateString()}
+                                                </div>
+                                                <div className="text-xs text-muted-foreground">
+                                                    Ref: {payment.confirmationCode}
                                                 </div>
                                             </div>
                                             <div className="flex-1 flex items-center justify-end gap-2">
                                                 {getStatusBadge(payment.status)}
-                                                <Button variant="outline" size="sm" asChild>
-                                                    <Link href={`/dashboard/payments/receipt/${payment.id}`}>
-                                                        <Download className="h-3 w-3 mr-1" />
-                                                        Receipt
-                                                    </Link>
+                                                <Button variant="outline" size="sm">
+                                                    <Download className="h-4 w-4 mr-1" />
+                                                    Receipt
                                                 </Button>
                                             </div>
                                         </div>
@@ -304,7 +314,7 @@ export default function PaymentsPage() {
                                 </div>
                             ) : (
                                 <div className="flex flex-col items-center justify-center py-10 text-center">
-                                    <AlertCircle className="h-10 w-10 text-muted-foreground mb-4" />
+                                    <AlertCircle className="h-10 w-10 text-gray-400 mb-4" />
                                     <h3 className="text-lg font-medium">No Payment History</h3>
                                     <p className="text-sm text-muted-foreground mt-1">
                                         You haven't made any payments yet.
@@ -312,14 +322,6 @@ export default function PaymentsPage() {
                                 </div>
                             )}
                         </CardContent>
-                        <CardFooter>
-                            <Button variant="outline" className="w-full" asChild>
-                                <Link href="/dashboard/payments/statements">
-                                    <Download className="mr-2 h-4 w-4" />
-                                    Download Annual Statement
-                                </Link>
-                            </Button>
-                        </CardFooter>
                     </Card>
                 </TabsContent>
             </Tabs>

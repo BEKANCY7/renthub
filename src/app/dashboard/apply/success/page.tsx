@@ -111,16 +111,12 @@ export default function ApplicationSuccessPage() {
                 </CardContent>
             </Card>
 
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
-                <Button asChild variant="outline">
-                    <Link href="/dashboard">
-                        Go to Dashboard
-                    </Link>
-                </Button>
+            <div className="flex flex-col space-y-2 md:flex-row md:space-x-2 md:space-y-0">
                 <Button asChild>
-                    <Link href="/search">
-                        Continue Browsing
-                    </Link>
+                    <Link href="/dashboard">Go to Dashboard</Link>
+                </Button>
+                <Button variant="outline" asChild>
+                    <Link href="/find-home">Browse More Properties</Link>
                 </Button>
             </div>
         </div>

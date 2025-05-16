@@ -13,7 +13,8 @@ import {
     Settings,
     User,
     Plus,
-    LogOut
+    LogOut,
+    Search
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 
@@ -57,6 +58,14 @@ export default function Sidebar({ user }: SidebarProps) {
         },
     ];
 
+    const renterLinks = [
+        {
+            name: "Find Home",
+            href: "/find-home",
+            icon: Search,
+        },
+    ];
+
     const ownerLinks = [
         {
             name: "My Listings",
@@ -80,7 +89,7 @@ export default function Sidebar({ user }: SidebarProps) {
 
     const navLinks = [
         ...commonLinks,
-        ...(isOwner ? ownerLinks : []),
+        ...(isOwner ? ownerLinks : renterLinks),
         ...(isAdmin ? adminLinks : []),
     ];
 

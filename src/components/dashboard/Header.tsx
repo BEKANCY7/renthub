@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Session } from "next-auth";
 import { Bell, Search, Menu } from "lucide-react";
 
@@ -22,7 +23,16 @@ interface HeaderProps {
 }
 
 export default function Header({ user }: HeaderProps) {
+    const router = useRouter();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (searchQuery.trim()) {
+            router.push(`/find-home?location=${encodeURIComponent(searchQuery)}`);
+        }
+    };
 
     return (
         <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-white px-4 sm:px-6">
@@ -36,12 +46,17 @@ export default function Header({ user }: HeaderProps) {
                 <span className="sr-only">Toggle sidebar</span>
             </Button>
             <div className="relative hidden md:flex md:grow">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-                <Input
-                    type="search"
-                    placeholder="Search..."
-                    className="w-full max-w-sm pl-8"
-                />
+                <form onSubmit={handleSearch} className="w-full max-w-sm">
+                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+                    <Input
+                        type="search"
+                        placeholder="Search properties in Addis Ababa..."
+                        className="w-full pl-8"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                    <Button type="submit" className="hidden">Search</Button>
+                </form>
             </div>
             <div className="flex items-center gap-4 md:ml-auto">
                 <Button variant="ghost" size="icon" className="relative">

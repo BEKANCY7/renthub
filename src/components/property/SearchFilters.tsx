@@ -132,7 +132,7 @@ export function SearchFilters({ initialFilters = {}, className }: SearchFiltersP
             params.append("amenities", amenity);
         });
 
-        router.push(`/search?${params.toString()}`);
+        router.push(`/find-home?${params.toString()}`);
     }, [
         location,
         propertyType,
@@ -175,7 +175,7 @@ export function SearchFilters({ initialFilters = {}, className }: SearchFiltersP
         setBathrooms("any");
         setMinArea("");
         setSelectedAmenities([]);
-        router.push("/search");
+        router.push("/find-home");
     };
 
     // Toggle amenity selection

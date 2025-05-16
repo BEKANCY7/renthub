@@ -410,7 +410,7 @@ export default function RentalApplicationPage() {
                                     </CardContent>
                                     <CardFooter className="flex justify-between">
                                         <Button variant="outline" asChild>
-                                            <Link href="/search">Cancel</Link>
+                                            <Link href="/find-home">Cancel</Link>
                                         </Button>
                                         <Button type="button" onClick={goToNextTab}>Next: Employment</Button>
                                     </CardFooter>
