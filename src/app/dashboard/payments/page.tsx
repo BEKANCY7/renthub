@@ -1,205 +1,327 @@
-import { getServerSession } from "next-auth/next";
-import { redirect } from "next/navigation";
-import { authOptions } from "@/lib/auth";
-import { db } from "@/lib/db";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
+import {
+    CreditCard,
+    DollarSign,
+    Calendar,
+    CheckCircle2,
+    AlertCircle,
+    Clock,
+    Download,
+    Plus
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
-export default async function PaymentsPage() {
-    const session = await getServerSession(authOptions);
+// Mock data
+const upcomingPayments = [
+    {
+        id: "pmt-001",
+        amount: 1250,
+        dueDate: "2023-11-01",
+        property: "Oak Apartment 2B",
+        status: "pending",
+        type: "rent",
+    },
+    {
+        id: "pmt-002",
+        amount: 75,
+        dueDate: "2023-11-01",
+        property: "Oak Apartment 2B",
+        status: "pending",
+        type: "utilities",
+    },
+];
 
-    if (!session?.user) {
-        redirect("/login");
-    }
+const paymentHistory = [
+    {
+        id: "pmt-101",
+        amount: 1250,
+        date: "2023-10-01",
+        property: "Oak Apartment 2B",
+        status: "completed",
+        type: "rent",
+        confirmationCode: "TXN12345678",
+    },
+    {
+        id: "pmt-102",
+        amount: 75,
+        date: "2023-10-01",
+        property: "Oak Apartment 2B",
+        status: "completed",
+        type: "utilities",
+        confirmationCode: "TXN12345679",
+    },
+    {
+        id: "pmt-103",
+        amount: 1250,
+        date: "2023-09-01",
+        property: "Oak Apartment 2B",
+        status: "completed",
+        type: "rent",
+        confirmationCode: "TXN12345680",
+    },
+    {
+        id: "pmt-104",
+        amount: 75,
+        date: "2023-09-01",
+        property: "Oak Apartment 2B",
+        status: "completed",
+        type: "utilities",
+        confirmationCode: "TXN12345681",
+    },
+];
 
-    const isOwner = session.user.role === "OWNER" || session.user.role === "ADMIN";
+export default function PaymentsPage() {
+    const [currentTab, setCurrentTab] = useState("upcoming");
 
-    // Fetch outgoing payments where user is the payer
-    const outgoingPayments = await db.payment.findMany({
-        where: { payerId: session.user.id },
-        include: {
-            booking: {
-                include: {
-                    listing: true,
-                },
-            },
-            receiver: {
-                select: {
-                    name: true,
-                    email: true,
-                },
-            },
-        },
-        orderBy: { createdAt: "desc" },
-    });
-
-    // For owners, fetch incoming payments where user is the receiver
-    const incomingPayments = isOwner
-        ? await db.payment.findMany({
-            where: { receiverId: session.user.id },
-            include: {
-                booking: {
-                    include: {
-                        listing: true,
-                    },
-                },
-                payer: {
-                    select: {
-                        name: true,
-                        email: true,
-                    },
-                },
-            },
-            orderBy: { createdAt: "desc" },
-        })
-        : [];
-
-    // Calculate totals
-    const totalOutgoing = outgoingPayments.reduce((sum, payment) => sum + payment.amount, 0);
-    const totalIncoming = incomingPayments.reduce((sum, payment) => sum + payment.amount, 0);
-
-    // Helper function to get status badge color
-    const getStatusColor = (status) => {
+    const getStatusBadge = (status) => {
         switch (status) {
-            case "COMPLETED":
-                return "bg-green-100 text-green-800";
-            case "PENDING":
-                return "bg-yellow-100 text-yellow-800";
-            case "FAILED":
-                return "bg-red-100 text-red-800";
-            case "REFUNDED":
-                return "bg-blue-100 text-blue-800";
+            case "completed":
+                return (
+                    <div className="flex items-center text-green-600">
+                        <CheckCircle2 className="mr-1 h-4 w-4" />
+                        <span>Paid</span>
+                    </div>
+                );
+            case "pending":
+                return (
+                    <div className="flex items-center text-yellow-600">
+                        <Clock className="mr-1 h-4 w-4" />
+                        <span>Due</span>
+                    </div>
+                );
+            case "late":
+                return (
+                    <div className="flex items-center text-red-600">
+                        <AlertCircle className="mr-1 h-4 w-4" />
+                        <span>Late</span>
+                    </div>
+                );
             default:
-                return "bg-gray-100 text-gray-800";
+                return null;
         }
     };
 
     return (
-        <div className="flex flex-col gap-5">
+        <div className="space-y-6">
             <div className="flex items-center justify-between">
-                <h1 className="text-3xl font-bold tracking-tight">Payments</h1>
+                <h1 className="text-3xl font-bold tracking-tight">Rent Payments</h1>
+                <Button asChild>
+                    <Link href="/dashboard/payments/methods">
+                        <CreditCard className="mr-2 h-4 w-4" />
+                        Payment Methods
+                    </Link>
+                </Button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 <Card>
-                    <CardHeader>
-                        <CardTitle>Total Payments Made</CardTitle>
-                        <CardDescription>
-                            All your outgoing payments
-                        </CardDescription>
+                    <CardHeader className="flex flex-row items-center justify-between pb-2">
+                        <CardTitle className="text-sm font-medium">
+                            Next Payment Due
+                        </CardTitle>
+                        <DollarSign className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <p className="text-3xl font-bold">${totalOutgoing.toFixed(2)}</p>
+                        <div className="text-2xl font-bold">$1,325.00</div>
+                        <p className="text-xs text-muted-foreground">
+                            Due on {new Date("2023-11-01").toLocaleDateString()}
+                        </p>
                     </CardContent>
+                    <CardFooter>
+                        <Button className="w-full" asChild>
+                            <Link href="/dashboard/payments/pay">
+                                Pay Now
+                            </Link>
+                        </Button>
+                    </CardFooter>
                 </Card>
 
-                {isOwner && (
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between pb-2">
+                        <CardTitle className="text-sm font-medium">
+                            Payment Balance
+                        </CardTitle>
+                        <DollarSign className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">$0.00</div>
+                        <p className="text-xs text-muted-foreground">
+                            No overdue payments
+                        </p>
+                    </CardContent>
+                    <CardFooter>
+                        <Button variant="outline" className="w-full" asChild>
+                            <Link href="/dashboard/payments/history">
+                                View History
+                            </Link>
+                        </Button>
+                    </CardFooter>
+                </Card>
+
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between pb-2">
+                        <CardTitle className="text-sm font-medium">
+                            Autopay Status
+                        </CardTitle>
+                        <Calendar className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="flex items-center text-2xl font-bold text-yellow-600">
+                            <Clock className="mr-2 h-5 w-5" />
+                            <span>Disabled</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                            Enable autopay to never miss a payment
+                        </p>
+                    </CardContent>
+                    <CardFooter>
+                        <Button variant="outline" className="w-full" asChild>
+                            <Link href="/dashboard/payments/autopay">
+                                Setup Autopay
+                            </Link>
+                        </Button>
+                    </CardFooter>
+                </Card>
+            </div>
+
+            <Tabs value={currentTab} onValueChange={setCurrentTab}>
+                <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="upcoming">Upcoming Payments</TabsTrigger>
+                    <TabsTrigger value="history">Payment History</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="upcoming" className="space-y-4">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Total Payments Received</CardTitle>
+                            <CardTitle>Upcoming Payments</CardTitle>
                             <CardDescription>
-                                All your incoming payments
+                                Manage your upcoming rent and utility payments
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <p className="text-3xl font-bold">${totalIncoming.toFixed(2)}</p>
+                            {upcomingPayments.length > 0 ? (
+                                <div className="space-y-4">
+                                    {upcomingPayments.map((payment) => (
+                                        <div
+                                            key={payment.id}
+                                            className="flex items-center justify-between p-4 border rounded-lg"
+                                        >
+                                            <div className="flex-1">
+                                                <div className="font-medium">
+                                                    {payment.type === "rent" ? "Monthly Rent" : "Utilities"}
+                                                </div>
+                                                <div className="text-sm text-muted-foreground">{payment.property}</div>
+                                            </div>
+                                            <div className="flex-1 text-center">
+                                                <div className="font-semibold">${payment.amount.toFixed(2)}</div>
+                                                <div className="text-sm text-muted-foreground">
+                                                    Due {new Date(payment.dueDate).toLocaleDateString()}
+                                                </div>
+                                            </div>
+                                            <div className="flex-1 flex items-center justify-end gap-2">
+                                                {getStatusBadge(payment.status)}
+                                                <Button size="sm">Pay</Button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="flex flex-col items-center justify-center py-10 text-center">
+                                    <CheckCircle2 className="h-10 w-10 text-green-500 mb-4" />
+                                    <h3 className="text-lg font-medium">All Caught Up!</h3>
+                                    <p className="text-sm text-muted-foreground mt-1">
+                                        You don't have any upcoming payments due.
+                                    </p>
+                                </div>
+                            )}
                         </CardContent>
+                        <CardFooter className="flex justify-between">
+                            <Button variant="outline" asChild>
+                                <Link href="/dashboard/payments/schedule">
+                                    <Plus className="mr-2 h-4 w-4" />
+                                    Schedule Payment
+                                </Link>
+                            </Button>
+                            <Button asChild>
+                                <Link href="/dashboard/payments/pay">Pay All</Link>
+                            </Button>
+                        </CardFooter>
                     </Card>
-                )}
-            </div>
-
-            <Tabs defaultValue={isOwner ? "incoming" : "outgoing"} className="space-y-4">
-                <TabsList>
-                    <TabsTrigger value="outgoing">Payments Made</TabsTrigger>
-                    {isOwner && <TabsTrigger value="incoming">Payments Received</TabsTrigger>}
-                </TabsList>
-
-                <TabsContent value="outgoing" className="space-y-4">
-                    {outgoingPayments.length === 0 ? (
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>No Payments Found</CardTitle>
-                                <CardDescription>
-                                    You haven't made any payments yet.
-                                </CardDescription>
-                            </CardHeader>
-                        </Card>
-                    ) : (
-                        outgoingPayments.map((payment) => (
-                            <Card key={payment.id}>
-                                <CardHeader>
-                                    <div className="flex justify-between items-center">
-                                        <CardTitle>{payment.booking.listing.title}</CardTitle>
-                                        <Badge className={getStatusColor(payment.status)}>
-                                            {payment.status}
-                                        </Badge>
-                                    </div>
-                                    <CardDescription>
-                                        Payment date: {payment.paymentDate ? new Date(payment.paymentDate).toLocaleDateString() : "Not processed yet"}
-                                    </CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <p className="text-sm font-medium">Amount</p>
-                                            <p className="text-xl font-bold">${payment.amount.toFixed(2)}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-sm font-medium">Recipient</p>
-                                            <p className="text-sm">{payment.receiver.name}</p>
-                                            <p className="text-xs text-gray-500">{payment.receiver.email}</p>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        ))
-                    )}
                 </TabsContent>
 
-                {isOwner && (
-                    <TabsContent value="incoming" className="space-y-4">
-                        {incomingPayments.length === 0 ? (
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>No Payments Received</CardTitle>
-                                    <CardDescription>
-                                        You haven't received any payments yet.
-                                    </CardDescription>
-                                </CardHeader>
-                            </Card>
-                        ) : (
-                            incomingPayments.map((payment) => (
-                                <Card key={payment.id}>
-                                    <CardHeader>
-                                        <div className="flex justify-between items-center">
-                                            <CardTitle>{payment.booking.listing.title}</CardTitle>
-                                            <Badge className={getStatusColor(payment.status)}>
-                                                {payment.status}
-                                            </Badge>
-                                        </div>
-                                        <CardDescription>
-                                            Payment date: {payment.paymentDate ? new Date(payment.paymentDate).toLocaleDateString() : "Not processed yet"}
-                                        </CardDescription>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div>
-                                                <p className="text-sm font-medium">Amount</p>
-                                                <p className="text-xl font-bold">${payment.amount.toFixed(2)}</p>
+                <TabsContent value="history" className="space-y-4">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Payment History</CardTitle>
+                            <CardDescription>
+                                View your recent payment history and receipts
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            {paymentHistory.length > 0 ? (
+                                <div className="space-y-4">
+                                    {paymentHistory.map((payment) => (
+                                        <div
+                                            key={payment.id}
+                                            className="flex items-center justify-between p-4 border rounded-lg"
+                                        >
+                                            <div className="flex-1">
+                                                <div className="font-medium">
+                                                    {payment.type === "rent" ? "Monthly Rent" : "Utilities"}
+                                                </div>
+                                                <div className="text-sm text-muted-foreground">{payment.property}</div>
                                             </div>
-                                            <div>
-                                                <p className="text-sm font-medium">From</p>
-                                                <p className="text-sm">{payment.payer.name}</p>
-                                                <p className="text-xs text-gray-500">{payment.payer.email}</p>
+                                            <div className="flex-1 text-center">
+                                                <div className="font-semibold">${payment.amount.toFixed(2)}</div>
+                                                <div className="text-sm text-muted-foreground">
+                                                    Paid {new Date(payment.date).toLocaleDateString()}
+                                                </div>
+                                            </div>
+                                            <div className="flex-1 flex items-center justify-end gap-2">
+                                                {getStatusBadge(payment.status)}
+                                                <Button variant="outline" size="sm" asChild>
+                                                    <Link href={`/dashboard/payments/receipt/${payment.id}`}>
+                                                        <Download className="h-3 w-3 mr-1" />
+                                                        Receipt
+                                                    </Link>
+                                                </Button>
                                             </div>
                                         </div>
-                                    </CardContent>
-                                </Card>
-                            ))
-                        )}
-                    </TabsContent>
-                )}
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="flex flex-col items-center justify-center py-10 text-center">
+                                    <AlertCircle className="h-10 w-10 text-muted-foreground mb-4" />
+                                    <h3 className="text-lg font-medium">No Payment History</h3>
+                                    <p className="text-sm text-muted-foreground mt-1">
+                                        You haven't made any payments yet.
+                                    </p>
+                                </div>
+                            )}
+                        </CardContent>
+                        <CardFooter>
+                            <Button variant="outline" className="w-full" asChild>
+                                <Link href="/dashboard/payments/statements">
+                                    <Download className="mr-2 h-4 w-4" />
+                                    Download Annual Statement
+                                </Link>
+                            </Button>
+                        </CardFooter>
+                    </Card>
+                </TabsContent>
             </Tabs>
         </div>
     );

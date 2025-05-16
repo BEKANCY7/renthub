@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Eye, Edit, Trash, Plus } from "lucide-react";
+import DeleteListingButton from "@/components/listing/DeleteListingButton";
 
 export default async function ListingsPage() {
     const session = await getServerSession(authOptions);
@@ -81,7 +82,7 @@ export default async function ListingsPage() {
                         <Card key={listing.id} className="overflow-hidden">
                             <div className="relative h-48 bg-gray-100">
                                 <img
-                                    src={listing.imageUrls || "https://source.unsplash.com/random/?property"}
+                                    src={listing.imageUrls || "https://source.unsplash.com/random/?property,ethiopia"}
                                     alt={listing.title}
                                     className="w-full h-full object-cover"
                                 />
@@ -101,7 +102,7 @@ export default async function ListingsPage() {
                                 <div className="flex justify-between items-center">
                                     <div>
                                         <p className="text-sm font-medium">Price</p>
-                                        <p className="text-xl font-bold">${listing.price}/night</p>
+                                        <p className="text-xl font-bold">ETB {listing.price.toLocaleString()}/day</p>
                                     </div>
                                     <div>
                                         <p className="text-sm font-medium">Pending Requests</p>
@@ -110,23 +111,21 @@ export default async function ListingsPage() {
                                 </div>
                                 <div className="mt-2">
                                     <p className="text-sm font-medium">Location</p>
-                                    <p className="text-sm">{listing.city}, {listing.state || listing.country}</p>
+                                    <p className="text-sm">{listing.city}, {listing.state || listing.country || "Ethiopia"}</p>
                                 </div>
                             </CardContent>
                             <CardFooter className="flex justify-between gap-2">
                                 <Button variant="outline" size="sm" asChild>
-                                    <Link href={`/dashboard/listings/${listing.id}`}>
+                                    <Link href={`/listings/${listing.id}`}>
                                         <Eye className="mr-2 h-4 w-4" /> View
                                     </Link>
                                 </Button>
                                 <Button variant="outline" size="sm" asChild>
-                                    <Link href={`/dashboard/listings/${listing.id}/edit`}>
+                                    <Link href={`/dashboard/listings/edit/${listing.id}`}>
                                         <Edit className="mr-2 h-4 w-4" /> Edit
                                     </Link>
                                 </Button>
-                                <Button variant="destructive" size="sm">
-                                    <Trash className="mr-2 h-4 w-4" /> Delete
-                                </Button>
+                                <DeleteListingButton id={listing.id} />
                             </CardFooter>
                         </Card>
                     ))}
