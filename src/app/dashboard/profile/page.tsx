@@ -3,11 +3,11 @@ import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User, Mail, Phone, MapPin, Calendar, Shield } from "lucide-react";
+import { Calendar, Shield } from "lucide-react";
+import { ProfileForm } from "@/components/profile/ProfileForm";
+import { PasswordChangeForm } from "@/components/profile/PasswordChangeForm";
 
 export default async function ProfilePage() {
     const session = await getServerSession(authOptions);
@@ -81,63 +81,8 @@ export default async function ProfilePage() {
                             </div>
                         </div>
 
-                        <div className="space-y-4">
-                            <div className="grid gap-2">
-                                <Label htmlFor="name">Full Name</Label>
-                                <div className="relative">
-                                    <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                                    <Input
-                                        id="name"
-                                        placeholder="Enter your full name"
-                                        className="pl-10"
-                                        defaultValue={user.name || ""}
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="grid gap-2">
-                                <Label htmlFor="email">Email Address</Label>
-                                <div className="relative">
-                                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                                    <Input
-                                        id="email"
-                                        type="email"
-                                        placeholder="Enter your email"
-                                        className="pl-10"
-                                        defaultValue={user.email || ""}
-                                        disabled
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="grid gap-2">
-                                <Label htmlFor="phone">Phone Number</Label>
-                                <div className="relative">
-                                    <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                                    <Input
-                                        id="phone"
-                                        placeholder="Enter your phone number"
-                                        className="pl-10"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="grid gap-2">
-                                <Label htmlFor="address">Address</Label>
-                                <div className="relative">
-                                    <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                                    <Input
-                                        id="address"
-                                        placeholder="Enter your address"
-                                        className="pl-10"
-                                    />
-                                </div>
-                            </div>
-                        </div>
+                        <ProfileForm user={user} />
                     </CardContent>
-                    <CardFooter className="flex justify-end">
-                        <Button>Save Changes</Button>
-                    </CardFooter>
                 </Card>
 
                 {/* Stats and Info */}
@@ -177,7 +122,7 @@ export default async function ProfilePage() {
                             <CardTitle>Account Actions</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <Button variant="outline" className="w-full">Change Password</Button>
+                            <PasswordChangeForm />
                             {user.role === "RENTER" && (
                                 <Button variant="outline" className="w-full">Become a Host</Button>
                             )}

@@ -59,7 +59,15 @@ export function LoginForm() {
             }
 
             if (response?.ok) {
-                router.push("/dashboard");
+                // Check user role after successful login
+                const userResponse = await fetch("/api/users/me");
+                const userData = await userResponse.json();
+
+                if (userData?.role === "RENTER") {
+                    router.push("/find-home");
+                } else {
+                    router.push("/dashboard");
+                }
                 router.refresh();
             }
         } catch (error) {
