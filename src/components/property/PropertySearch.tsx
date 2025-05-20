@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
     GoogleMap,
     useLoadScript,
@@ -62,7 +62,7 @@ export default function PropertySearch({
     const [zoom, setZoom] = useState(12);
 
     const { isLoaded: mapsLoaded, loadError } = useLoadScript({
-        googleMapsApiKey: "AIzaSyD2I6LbGbD1xoDPQHUHsbn0Fb9kptFc4O8",
+        googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
         libraries: ["places", "visualization"],
     });
 

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Session } from "next-auth";
+import { signOut } from "next-auth/react";
 import { Bell, Search, Menu } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -101,9 +102,7 @@ export default function Header({ user }: HeaderProps) {
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
-                            onClick={() => {
-                                // Implement signout
-                            }}
+                            onClick={() => signOut({ callbackUrl: "/login" })}
                         >
                             Log out
                         </DropdownMenuItem>

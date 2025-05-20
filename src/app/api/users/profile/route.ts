@@ -15,14 +15,13 @@ export async function PUT(req: Request) {
         }
 
         const body = await req.json();
-        const { name, phone, address } = body;
+        const { name } = body;
 
+        // Only update the name field, which exists in the User model
         const updatedUser = await db.user.update({
             where: { id: session.user.id },
             data: {
                 name,
-                phone,
-                address,
             },
         });
 
@@ -30,14 +29,12 @@ export async function PUT(req: Request) {
             id: updatedUser.id,
             name: updatedUser.name,
             email: updatedUser.email,
-            phone: updatedUser.phone,
-            address: updatedUser.address,
         });
     } catch (error) {
         console.error("[USER_PROFILE_UPDATE]", error);
         return NextResponse.json(
-            { error: "Internal Server Error" },
+            { error: "Failed to update profile" },
             { status: 500 }
         );
     }
-} 
+}

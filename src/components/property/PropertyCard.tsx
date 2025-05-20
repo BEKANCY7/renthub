@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import {
     Card,
@@ -47,10 +48,12 @@ export default function PropertyCard({ property, compact = false }: PropertyCard
         <Card className={`overflow-hidden h-full ${compact ? 'shadow-none border-0' : 'shadow-sm'}`}>
             <div className="relative">
                 <div className={`relative ${compact ? 'h-32' : 'h-48'} bg-gray-100`}>
-                    <img
+                    <Image
                         src={property.imageUrl || "https://source.unsplash.com/random/?property"}
                         alt={property.title}
-                        className="h-full w-full object-cover"
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="object-cover"
                     />
                     {property.isFeatured && (
                         <Badge className="absolute top-2 left-2 bg-primary" variant="secondary">
@@ -116,7 +119,7 @@ export default function PropertyCard({ property, compact = false }: PropertyCard
 
             {!compact && (
                 <CardFooter>
-                    <Link href={`/properties/${property.id}`} className="w-full">
+                    <Link href={`/listings/${property.id}`} className="w-full">
                         <Button variant="default" className="w-full">
                             View Details
                         </Button>
