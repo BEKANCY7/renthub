@@ -4,6 +4,18 @@ import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Image from "next/image";
+
+// Define types for our SQL query results
+type MonthlyBookingData = {
+  month: number;
+  count: number;
+};
+
+type MonthlyEarningData = {
+  month: number;
+  total: number;
+};
 
 export default async function AnalyticsPage() {
     const session = await getServerSession(authOptions);
@@ -72,32 +84,71 @@ export default async function AnalyticsPage() {
     sixMonthsAgo.setDate(1);
     sixMonthsAgo.setHours(0, 0, 0, 0);
 
-    const monthlyBookings = await db.booking.groupBy({
-        by: ['month'],
-        _count: {
-            id: true
-        },
+    // Get monthly bookings data using Prisma's groupBy instead of raw SQL
+    const monthlyBookings: MonthlyBookingData[] = [];
+    
+    // Fetch bookings for the last 6 months
+    const bookings = await db.booking.findMany({
         where: {
             ownerId: session.user.id,
             createdAt: {
                 gte: sixMonthsAgo
             }
+        },
+        select: {
+            createdAt: true
         }
     });
+    
+    // Process the bookings to get monthly counts
+    const monthCounts = new Map<number, number>();
+    
+    bookings.forEach(booking => {
+        const month = booking.createdAt.getMonth() + 1; // JavaScript months are 0-indexed
+        monthCounts.set(month, (monthCounts.get(month) || 0) + 1);
+    });
+    
+    // Convert to our expected format
+    for (const [month, count] of monthCounts.entries()) {
+        monthlyBookings.push({ month, count });
+    }
+    
+    // Sort by month
+    monthlyBookings.sort((a, b) => a.month - b.month);
 
-    const monthlyEarnings = await db.payment.groupBy({
-        by: ['month'],
-        _sum: {
-            amount: true
-        },
+    // Get monthly earnings data using Prisma's findMany and process in JavaScript
+    const monthlyEarnings: MonthlyEarningData[] = [];
+    
+    // Fetch payments for the last 6 months
+    const payments = await db.payment.findMany({
         where: {
             receiverId: session.user.id,
             status: "COMPLETED",
             createdAt: {
                 gte: sixMonthsAgo
             }
+        },
+        select: {
+            createdAt: true,
+            amount: true
         }
     });
+    
+    // Process the payments to get monthly totals
+    const monthTotals = new Map<number, number>();
+    
+    payments.forEach(payment => {
+        const month = payment.createdAt.getMonth() + 1; // JavaScript months are 0-indexed
+        monthTotals.set(month, (monthTotals.get(month) || 0) + payment.amount);
+    });
+    
+    // Convert to our expected format
+    for (const [month, total] of monthTotals.entries()) {
+        monthlyEarnings.push({ month, total });
+    }
+    
+    // Sort by month
+    monthlyEarnings.sort((a, b) => a.month - b.month);
 
     // Top performing listings
     const topListings = await db.listing.findMany({
@@ -222,16 +273,27 @@ export default async function AnalyticsPage() {
                                 <p className="text-sm font-medium mb-2">Monthly Booking Trend</p>
                                 <div className="h-[200px] w-full bg-gray-100 rounded-md flex items-center justify-center">
                                     <div className="w-full h-full p-4 flex items-end justify-between">
-                                        {/* Placeholder for chart - in real app, use chart library */}
-                                        {Array.from({ length: 6 }).map((_, i) => (
-                                            <div key={i} className="flex flex-col items-center">
-                                                <div
-                                                    className="bg-primary w-10 rounded-t-md"
-                                                    style={{ height: `${Math.floor(Math.random() * 150) + 20}px` }}
-                                                ></div>
-                                                <p className="text-xs mt-1">Month {i + 1}</p>
-                                            </div>
-                                        ))}
+                                        {/* Display actual booking data from our query */}
+                                        {Array.from({ length: 6 }).map((_, i) => {
+                                            // Find data for this month (i+1)
+                                            const monthData = monthlyBookings.find(
+                                                (data) => data.month === i + 1
+                                            );
+                                            const count = monthData ? monthData.count : 0;
+                                            // Calculate height based on count (max 150px)
+                                            const maxCount = Math.max(...monthlyBookings.map(d => d.count || 0), 1);
+                                            const height = count ? Math.max((count / maxCount) * 150, 20) : 20;
+                                            
+                                            return (
+                                                <div key={i} className="flex flex-col items-center">
+                                                    <div
+                                                        className="bg-primary w-10 rounded-t-md"
+                                                        style={{ height: `${height}px` }}
+                                                    ></div>
+                                                    <p className="text-xs mt-1">Month {i + 1}</p>
+                                                </div>
+                                            );
+                                        })}
                                     </div>
                                 </div>
                             </div>
@@ -251,16 +313,27 @@ export default async function AnalyticsPage() {
                                 <p className="text-sm font-medium mb-2">Monthly Revenue (ETB)</p>
                                 <div className="h-[200px] w-full bg-gray-100 rounded-md flex items-center justify-center">
                                     <div className="w-full h-full p-4 flex items-end justify-between">
-                                        {/* Placeholder for chart - in real app, use chart library */}
-                                        {Array.from({ length: 6 }).map((_, i) => (
-                                            <div key={i} className="flex flex-col items-center">
-                                                <div
-                                                    className="bg-green-500 w-10 rounded-t-md"
-                                                    style={{ height: `${Math.floor(Math.random() * 150) + 20}px` }}
-                                                ></div>
-                                                <p className="text-xs mt-1">Month {i + 1}</p>
-                                            </div>
-                                        ))}
+                                        {/* Display actual earnings data from our query */}
+                                        {Array.from({ length: 6 }).map((_, i) => {
+                                            // Find data for this month (i+1)
+                                            const monthData = monthlyEarnings.find(
+                                                (data) => data.month === i + 1
+                                            );
+                                            const total = monthData ? monthData.total : 0;
+                                            // Calculate height based on total (max 150px)
+                                            const maxTotal = Math.max(...monthlyEarnings.map(d => d.total || 0), 1);
+                                            const height = total ? Math.max((total / maxTotal) * 150, 20) : 20;
+                                            
+                                            return (
+                                                <div key={i} className="flex flex-col items-center">
+                                                    <div
+                                                        className="bg-green-500 w-10 rounded-t-md"
+                                                        style={{ height: `${height}px` }}
+                                                    ></div>
+                                                    <p className="text-xs mt-1">Month {i + 1}</p>
+                                                </div>
+                                            );
+                                        })}
                                     </div>
                                 </div>
                             </div>
@@ -316,9 +389,11 @@ export default async function AnalyticsPage() {
                                     topListings.map((listing) => (
                                         <div key={listing.id} className="flex items-center space-x-4 border-b pb-4">
                                             <div className="w-16 h-16 bg-gray-100 rounded-md overflow-hidden">
-                                                <img
-                                                    src={listing.imageUrls?.split(',')[0] || "https://source.unsplash.com/random/?property,ethiopia"}
+                                                <Image
+                                                    src={listing.imageUrls?.split(',')[0] || "/placeholder.jpg"}
                                                     alt={listing.title}
+                                                    width={64}
+                                                    height={64}
                                                     className="w-full h-full object-cover"
                                                 />
                                             </div>
@@ -333,6 +408,7 @@ export default async function AnalyticsPage() {
                                                 <p className="text-sm text-muted-foreground">
                                                     {listing._count.bookings} bookings
                                                 </p>
+
                                             </div>
                                         </div>
                                     ))
