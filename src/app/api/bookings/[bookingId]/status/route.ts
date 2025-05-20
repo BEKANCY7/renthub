@@ -1,12 +1,15 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 
-// PATCH /api/bookings/[bookingId]/status
+interface RouteParams {
+  bookingId: string;
+}
+
 export async function PATCH(
     request: Request,
-    { params }: { params: { bookingId: string } }
+    { params }: { params: RouteParams }
 ) {
     try {
         const session = await getServerSession(authOptions);
