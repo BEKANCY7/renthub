@@ -148,7 +148,7 @@ export default function NewListingPage() {
         },
     });
 
-    const onImageUpload = (e) => {
+    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = Array.from(e.target.files);
         if (files.length > 0) {
             const newImages = files.map(file => ({
@@ -161,11 +161,11 @@ export default function NewListingPage() {
         }
     };
 
-    const removeImage = (index) => {
+    const handleRemoveImage = (index: number) => {
         setImages(prev => prev.filter((_, i) => i !== index));
     };
 
-    const onLocationSelect = (details) => {
+    const handleLocationSelect = (details: Record<string, string>) => {
         form.setValue("location", details.address);
         setLocationDetails(details);
     };
@@ -418,7 +418,7 @@ export default function NewListingPage() {
                                             accept="image/*"
                                             multiple
                                             className="hidden"
-                                            onChange={onImageUpload}
+                                            onChange={handleImageUpload}
                                         />
                                         <label htmlFor="images" className="cursor-pointer flex flex-col items-center">
                                             <UploadCloud className="h-10 w-10 text-gray-400" />
@@ -442,7 +442,7 @@ export default function NewListingPage() {
                                                     />
                                                     <button
                                                         type="button"
-                                                        onClick={() => removeImage(index)}
+                                                        onClick={() => handleRemoveImage(index)}
                                                         className="absolute top-1 right-1 bg-black bg-opacity-50 rounded-full p-1"
                                                     >
                                                         <X className="h-3 w-3 text-white" />
@@ -466,7 +466,7 @@ export default function NewListingPage() {
                                                 <LocationSearch
                                                     value={field.value}
                                                     onChange={field.onChange}
-                                                    onSelectLocation={onLocationSelect}
+                                                    onSelectLocation={handleLocationSelect}
                                                     className="w-full"
                                                 />
                                             </FormControl>
