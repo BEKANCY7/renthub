@@ -2,34 +2,16 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
+import type { LocationDetails } from "@/types";
 
 interface LocationSearchProps {
     value: string;
     onChange: (value: string) => void;
-    onSelectLocation?: (details: LocationDetails) => void;
+    onSelectLocation: (details: LocationDetails) => void;
     className?: string;
-    placeholder?: string;
 }
 
-interface LocationDetails {
-    address: string;
-    city?: string;
-    state?: string;
-    country?: string;
-    coords?: {
-        lat: number;
-        lng: number;
-    };
-}
-
-export function LocationSearch({
-    value,
-    onChange,
-    onSelectLocation,
-    className,
-    placeholder = "Enter a location..."
-}: LocationSearchProps) {
+export function LocationSearch({ value, onChange, onSelectLocation, className }: LocationSearchProps) {
     const [suggestions, setSuggestions] = useState<LocationDetails[]>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -86,9 +68,7 @@ export function LocationSearch({
 
     const handleSelectLocation = (location: LocationDetails) => {
         onChange(location.address);
-        if (onSelectLocation) {
-            onSelectLocation(location);
-        }
+        onSelectLocation(location);
         setShowSuggestions(false);
     };
 
@@ -112,8 +92,8 @@ export function LocationSearch({
                 type="text"
                 value={value}
                 onChange={handleChange}
-                placeholder={placeholder}
-                className={cn(className)}
+                placeholder="Enter property location"
+                className={className}
             />
 
             {showSuggestions && suggestions.length > 0 && (

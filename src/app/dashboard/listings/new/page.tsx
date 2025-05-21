@@ -8,17 +8,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
-import { CalendarIcon, UploadCloud, X, Plus } from "lucide-react";
+import { CalendarIcon, UploadCloud, X } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { cn } from "@/lib/utils";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { LocationSearch } from "@/components/property/LocationSearch";
+import type { LocationDetails, ImageFile, CalendarProps } from "@/types";
+import Image from "next/image";
 
 const amenities = [
     { id: "wifi", label: "WiFi" },
@@ -74,7 +75,7 @@ const Textarea = ({ ...props }) => {
     );
 };
 
-const Calendar = ({ mode, selected, onSelect, initialFocus }) => {
+const Calendar = ({ selected, onSelect }: Omit<CalendarProps, "mode" | "initialFocus">) => {
     return (
         <div className="p-3">
             <div className="space-y-4">
@@ -96,9 +97,11 @@ const Calendar = ({ mode, selected, onSelect, initialFocus }) => {
                                     : "hover:bg-accent hover:text-accent-foreground"
                                     }`}
                                 onClick={() => {
-                                    const newDate = new Date(selected || new Date());
-                                    newDate.setDate(day);
-                                    onSelect(newDate);
+                                    if (onSelect) {
+                                        const newDate = new Date(selected || new Date());
+                                        newDate.setDate(day);
+                                        onSelect(newDate);
+                                    }
                                 }}
                             >
                                 {day}
@@ -114,17 +117,16 @@ const Calendar = ({ mode, selected, onSelect, initialFocus }) => {
 export default function NewListingPage() {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
-    const [images, setImages] = useState([]);
-    const [locationDetails, setLocationDetails] = useState(null);
-    const [error, setError] = useState("");
+    const [images, setImages] = useState<ImageFile[]>([]);
+    const [locationDetails, setLocationDetails] = useState<LocationDetails | null>(null);
 
-    const form = useForm({
+    const form = useForm<z.infer<typeof listingSchema>>({
         resolver: zodResolver(listingSchema),
         defaultValues: {
             title: "",
             description: "",
             category: "HOUSE",
-            price: 1000, // default in ETB
+            price: 1000,
             bedrooms: 1,
             bathrooms: 1,
             squareFeet: 0,
@@ -149,7 +151,7 @@ export default function NewListingPage() {
     });
 
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const files = Array.from(e.target.files);
+        const files = e.target.files ? Array.from(e.target.files) : [];
         if (files.length > 0) {
             const newImages = files.map(file => ({
                 name: file.name,
@@ -165,17 +167,15 @@ export default function NewListingPage() {
         setImages(prev => prev.filter((_, i) => i !== index));
     };
 
-    const handleLocationSelect = (details: Record<string, string>) => {
+    const handleLocationSelect = (details: LocationDetails) => {
         form.setValue("location", details.address);
         setLocationDetails(details);
     };
 
-    const onSubmit = async (data) => {
+    const onSubmit = async (data: z.infer<typeof listingSchema>) => {
         setLoading(true);
-        setError("");
 
         try {
-            // Prepare data for API
             const listingData = {
                 title: data.title,
                 description: data.description,
@@ -185,14 +185,13 @@ export default function NewListingPage() {
                     ? images.map(img => img.url).join(',')
                     : "https://source.unsplash.com/random/?property,ethiopia",
                 address: data.location,
-                city: locationDetails?.city || "Addis Ababa",
-                state: locationDetails?.state || "",
-                country: locationDetails?.country || "Ethiopia",
+                city: locationDetails?.city ?? "Addis Ababa",
+                state: locationDetails?.state ?? "",
+                country: locationDetails?.country ?? "Ethiopia",
                 features: data.amenities.join(','),
                 status: data.status
             };
 
-            // Save the listing to the database
             const response = await fetch('/api/listings', {
                 method: 'POST',
                 headers: {
@@ -208,9 +207,8 @@ export default function NewListingPage() {
 
             router.push("/dashboard/listings");
             router.refresh();
-        } catch (error) {
+        } catch (error: unknown) {
             console.error("Error creating listing:", error);
-            setError(error.message || "Failed to create listing. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -435,10 +433,12 @@ export default function NewListingPage() {
                                         <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                                             {images.map((image, index) => (
                                                 <div key={index} className="relative rounded-md overflow-hidden h-24 border">
-                                                    <img
+                                                    <Image
                                                         src={image.url}
                                                         alt={`Property image ${index + 1}`}
                                                         className="h-full w-full object-cover"
+                                                        width={200}
+                                                        height={96}
                                                     />
                                                     <button
                                                         type="button"
@@ -620,10 +620,8 @@ export default function NewListingPage() {
                                                 </PopoverTrigger>
                                                 <PopoverContent className="w-auto p-0" align="start">
                                                     <Calendar
-                                                        mode="single"
                                                         selected={field.value}
                                                         onSelect={field.onChange}
-                                                        initialFocus
                                                     />
                                                 </PopoverContent>
                                             </Popover>
