@@ -196,6 +196,7 @@ export function SearchFilters({ initialFilters = {}, className }: SearchFiltersP
                         <LocationSearch
                             value={location}
                             onChange={setLocation}
+                            onSelectLocation={() => { }}
                             className="w-full"
                         />
                     </div>
@@ -203,11 +204,11 @@ export function SearchFilters({ initialFilters = {}, className }: SearchFiltersP
                     <Popover>
                         <PopoverTrigger asChild>
                             <Button variant="outline" className="flex items-center">
-                                <DollarSign className="mr-2 h-4 w-4" />
+                                <span className="mr-2 font-bold">Br</span>
                                 <span>
                                     {priceRange[0] === 0 && priceRange[1] === 10000
                                         ? "Any Price"
-                                        : `$${priceRange[0]} - $${priceRange[1] === 10000 ? "10k+" : priceRange[1]}`}
+                                        : `ETB ${priceRange[0]} - ${priceRange[1] === 10000 ? "10k+" : priceRange[1]}`}
                                 </span>
                             </Button>
                         </PopoverTrigger>
@@ -251,9 +252,9 @@ export function SearchFilters({ initialFilters = {}, className }: SearchFiltersP
                                     className="pt-4"
                                 />
                                 <div className="flex justify-between text-xs text-gray-500">
-                                    <span>$0</span>
-                                    <span>$5,000</span>
-                                    <span>$10,000+</span>
+                                    <span>ETB 0</span>
+                                    <span>ETB 5,000</span>
+                                    <span>ETB 10,000+</span>
                                 </div>
                             </div>
                         </PopoverContent>
@@ -427,6 +428,7 @@ export function SearchFilters({ initialFilters = {}, className }: SearchFiltersP
                         <LocationSearch
                             value={location}
                             onChange={setLocation}
+                            onSelectLocation={() => { }}
                             className="w-full"
                         />
                     </div>
@@ -455,7 +457,7 @@ export function SearchFilters({ initialFilters = {}, className }: SearchFiltersP
                             <AccordionItem value="price">
                                 <AccordionTrigger>
                                     <span className="flex items-center">
-                                        <DollarSign className="mr-2 h-4 w-4" />
+                                        <span className="mr-2 font-bold">Br</span>
                                         Price Range
                                     </span>
                                 </AccordionTrigger>
@@ -680,7 +682,7 @@ export function SearchFilters({ initialFilters = {}, className }: SearchFiltersP
 
                     {(priceRange[0] > 0 || priceRange[1] < 10000) && (
                         <Badge variant="secondary" className="flex items-center gap-1">
-                            ${priceRange[0]} - ${priceRange[1] === 10000 ? "10k+" : priceRange[1]}
+                            ETB {priceRange[0]} - {priceRange[1] === 10000 ? "10k+" : priceRange[1]}
                             <X
                                 className="h-3 w-3 cursor-pointer"
                                 onClick={() => setPriceRange([0, 10000])}

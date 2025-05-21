@@ -51,7 +51,7 @@ export default function Header({ user }: HeaderProps) {
                     <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
                     <Input
                         type="search"
-                        placeholder="Search properties in Addis Ababa..."
+                        placeholder="Search by location or property type (e.g., apartment, house, car)..."
                         className="w-full pl-8"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}

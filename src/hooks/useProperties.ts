@@ -139,12 +139,14 @@ export default function useProperties(searchParams: { [key: string]: string | st
 
             // Apply filters based on search params
             if (searchParams.location) {
-                const location = searchParams.location as string;
+                const location = (searchParams.location as string).toLowerCase();
                 filteredProperties = filteredProperties.filter(
                     property =>
-                        property.city.toLowerCase().includes(location.toLowerCase()) ||
-                        property.state.toLowerCase().includes(location.toLowerCase()) ||
-                        property.address.toLowerCase().includes(location.toLowerCase())
+                        property.city.toLowerCase().includes(location) ||
+                        property.state.toLowerCase().includes(location) ||
+                        property.address.toLowerCase().includes(location) ||
+                        property.title.toLowerCase().includes(location) ||
+                        property.propertyType.toLowerCase().includes(location)
                 );
             }
 

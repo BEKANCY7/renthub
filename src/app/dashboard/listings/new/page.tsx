@@ -215,7 +215,7 @@ export default function NewListingPage() {
     };
 
     return (
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-2 pb-0">
             <div className="flex items-center justify-between">
                 <h1 className="text-3xl font-bold tracking-tight">Add New Listing</h1>
             </div>
@@ -579,7 +579,7 @@ export default function NewListingPage() {
                                     name="leaseTerms.securityDeposit"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Security Deposit ($)</FormLabel>
+                                            <FormLabel>Security Deposit (ETB)</FormLabel>
                                             <FormControl>
                                                 <Input
                                                     type="number"
