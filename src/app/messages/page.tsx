@@ -151,7 +151,7 @@ export default function MessagesPage() {
   }
 
   return (
-    <div className="flex h-screen bg-white">
+    <div className="flex bg-white h-full">
       {/* Conversation List (hidden on mobile when viewing a conversation) */}
       <div
         className={cn(
