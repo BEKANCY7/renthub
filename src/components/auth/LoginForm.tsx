@@ -38,8 +38,8 @@ const containerVariants = {
   visible: {
     opacity: 1,
     transition: {
-      delayChildren: 0.3,
-      staggerChildren: 0.2,
+      delayChildren: 0.2,
+      staggerChildren: 0.15,
     },
   },
 };
@@ -116,32 +116,37 @@ export function LoginForm() {
   return (
     <ClientOnly>
       <motion.div
-        className="space-y-6"
+        className="space-y-4 md:space-y-6"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-3 md:space-y-4"
+          >
             <motion.div variants={itemVariants}>
               <FormField
                 control={form.control}
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel className="text-sm md:text-base">
+                      Email
+                    </FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
                         <Input
                           type="email"
                           placeholder="you@example.com"
-                          className="pl-10"
+                          className="pl-10 h-9 md:h-10 text-sm md:text-base"
                           {...field}
                         />
                       </div>
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-xs md:text-sm" />
                   </FormItem>
                 )}
               />
@@ -153,23 +158,25 @@ export function LoginForm() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel className="text-sm md:text-base">
+                      Password
+                    </FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
                         <Input
                           type="password"
                           placeholder="••••••••"
-                          className="pl-10"
+                          className="pl-10 h-9 md:h-10 text-sm md:text-base"
                           {...field}
                         />
                       </div>
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-xs md:text-sm" />
                     <div className="text-right">
                       <Link
                         href="/forgot-password"
-                        className="text-sm text-primary hover:underline"
+                        className="text-xs md:text-sm text-primary hover:underline"
                       >
                         Forgot password?
                       </Link>
@@ -187,7 +194,7 @@ export function LoginForm() {
               >
                 <Alert
                   variant="destructive"
-                  className="border-red-500/50 bg-red-50 text-red-800 dark:bg-red-900/30 dark:text-red-400"
+                  className="border-red-500/50 bg-red-50 text-red-800 dark:bg-red-900/30 dark:text-red-400 py-2 text-xs md:text-sm"
                 >
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
@@ -195,7 +202,11 @@ export function LoginForm() {
             )}
 
             <motion.div variants={itemVariants}>
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button
+                type="submit"
+                className="w-full h-9 md:h-10 text-sm md:text-base"
+                disabled={isLoading}
+              >
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -224,7 +235,7 @@ export function LoginForm() {
           <Button
             variant="outline"
             type="button"
-            className="w-full"
+            className="w-full h-9 md:h-10 text-sm md:text-base"
             onClick={handleGoogleSignIn}
             disabled={isLoading}
           >
@@ -258,9 +269,9 @@ export function LoginForm() {
 
         <motion.div
           variants={itemVariants}
-          className="bg-blue-50 p-4 rounded-lg border border-blue-100"
+          className="bg-blue-50 p-3 md:p-4 rounded-lg border border-blue-100"
         >
-          <h3 className="text-sm font-medium text-blue-800 mb-2">
+          <h3 className="text-xs md:text-sm font-medium text-blue-800 mb-1 md:mb-2">
             Why join RentHub?
           </h3>
           <p className="text-xs text-blue-700">
