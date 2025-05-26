@@ -22,11 +22,11 @@ import MessageNotifications from "@/components/MessageNotifications";
 
 interface HeaderProps {
   user: Session["user"];
+  setMobileNavOpen?: (open: boolean) => void;
 }
 
-export default function Header({ user }: HeaderProps) {
+export default function Header({ user, setMobileNavOpen }: HeaderProps) {
   const router = useRouter();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleSearch = (e: React.FormEvent) => {
@@ -37,22 +37,30 @@ export default function Header({ user }: HeaderProps) {
   };
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-white px-4 sm:px-6">
-      <Button
-        variant="ghost"
-        size="icon"
-        className="md:hidden"
-        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-      >
-        <Menu className="h-5 w-5" />
-        <span className="sr-only">Toggle sidebar</span>
-      </Button>
+    <header className="sticky top-0 z-40 flex h-16 items-center gap-2 md:gap-4 border-b bg-white px-4 sm:px-6">
+      {/* Mobile menu button */}
+      {setMobileNavOpen && (
+        <Button
+          variant="ghost"
+          size="icon"
+          className="md:hidden"
+          onClick={() => setMobileNavOpen(true)}
+        >
+          <Menu className="h-5 w-5" />
+          <span className="sr-only">Open sidebar</span>
+        </Button>
+      )}
+
+      {/* Logo for mobile */}
+      <div className="md:hidden font-bold text-lg">RentHub</div>
+
+      {/* Search bar - hidden on mobile */}
       <div className="relative hidden md:flex md:grow">
         <form onSubmit={handleSearch} className="w-full max-w-sm">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
           <Input
             type="search"
-            placeholder="Search by location or property type (e.g., apartment, house, car)..."
+            placeholder="Search properties..."
             className="w-full pl-8"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -62,7 +70,9 @@ export default function Header({ user }: HeaderProps) {
           </Button>
         </form>
       </div>
-      <div className="flex items-center gap-4 md:ml-auto">
+
+      {/* User menu and notifications */}
+      <div className="flex items-center gap-2 md:gap-4 ml-auto">
         <MessageNotifications context="dashboard" />
 
         <DropdownMenu>
@@ -82,7 +92,7 @@ export default function Header({ user }: HeaderProps) {
                 <p className="text-sm font-medium leading-none">
                   {user.name || "User"}
                 </p>
-                <p className="text-xs leading-none text-gray-500">
+                <p className="text-xs leading-none text-gray-500 truncate">
                   {user.email || ""}
                 </p>
               </div>
@@ -105,6 +115,22 @@ export default function Header({ user }: HeaderProps) {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+      </div>
+
+      {/* Mobile search - full width below header */}
+      <div className="absolute left-0 right-0 top-16 md:hidden border-b bg-white px-4 py-2">
+        <form onSubmit={handleSearch} className="w-full">
+          <div className="relative">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+            <Input
+              type="search"
+              placeholder="Search properties..."
+              className="w-full pl-8 pr-4 h-9"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+        </form>
       </div>
     </header>
   );

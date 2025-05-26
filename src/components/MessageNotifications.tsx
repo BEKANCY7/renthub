@@ -26,7 +26,7 @@ interface Notification {
 }
 
 interface MessageNotificationsProps {
-  context?: "navbar" | "sidebar";
+  context?: "navbar" | "sidebar" | "dashboard" | "mobile";
 }
 
 export default function MessageNotifications({
@@ -81,7 +81,7 @@ export default function MessageNotifications({
 
   // Handle notification click
   const handleNotificationClick = (conversationId: string) => {
-    router.push(`/messages?conversation=${conversationId}`);
+    router.push(`/dashboard/messages?conversation=${conversationId}`);
   };
 
   // Format timestamp
@@ -97,6 +97,122 @@ export default function MessageNotifications({
     return null;
   }
 
+  // For mobile context, just return the icon with badge
+  if (context === "mobile") {
+    return (
+      <div className="relative">
+        <MessageCircle className="h-5 w-5" />
+        {notifications.length > 0 && (
+          <Badge
+            variant="destructive"
+            className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 text-xs"
+          >
+            {notifications.length}
+          </Badge>
+        )}
+      </div>
+    );
+  }
+
+  // For sidebar context, adjust styling
+  if (context === "sidebar") {
+    return (
+      <div className="relative">
+        {notifications.length > 0 && (
+          <Badge
+            variant="destructive"
+            className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 text-xs"
+          >
+            {notifications.length}
+          </Badge>
+        )}
+      </div>
+    );
+  }
+
+  // For dashboard context, use a slightly different style
+  if (context === "dashboard") {
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon" className="relative">
+            <MessageCircle className="h-5 w-5" />
+            {notifications.length > 0 && (
+              <Badge
+                variant="destructive"
+                className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 text-xs"
+              >
+                {notifications.length}
+              </Badge>
+            )}
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-80">
+          <DropdownMenuLabel>Messages</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+
+          {isLoading ? (
+            <div className="p-4 text-center text-sm text-muted-foreground">
+              Loading...
+            </div>
+          ) : notifications.length === 0 ? (
+            <div className="p-4 text-center text-sm text-muted-foreground">
+              No new messages
+            </div>
+          ) : (
+            <>
+              {notifications.map((notification) => (
+                <DropdownMenuItem
+                  key={notification.id}
+                  className="p-3 cursor-pointer"
+                  onClick={() =>
+                    handleNotificationClick(notification.conversationId)
+                  }
+                >
+                  <div className="flex items-start gap-3">
+                    {notification.senderImage ? (
+                      <img
+                        src={notification.senderImage}
+                        alt={notification.senderName}
+                        className="h-8 w-8 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+                        <MessageCircle className="h-4 w-4 text-gray-500" />
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-start">
+                        <p className="font-medium text-sm truncate">
+                          {notification.senderName}
+                        </p>
+                        <span className="text-xs text-muted-foreground">
+                          {formatTimestamp(notification.timestamp)}
+                        </span>
+                      </div>
+                      <p className="text-sm truncate text-muted-foreground">
+                        {notification.message}
+                      </p>
+                    </div>
+                  </div>
+                </DropdownMenuItem>
+              ))}
+
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="p-2 cursor-pointer text-center"
+                onClick={() => router.push("/dashboard/messages")}
+              >
+                View all messages
+              </DropdownMenuItem>
+            </>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+  }
+
+  // Default navbar context
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

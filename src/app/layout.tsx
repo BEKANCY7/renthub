@@ -16,6 +16,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "RentHub - Find Your Perfect Rental",
   description: "Find and rent properties in Ethiopia",
+  viewport: "width=device-width, initial-scale=1, maximum-scale=1",
 };
 
 export default function RootLayout({
@@ -24,12 +25,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="h-full">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-full`}
       >
         <Providers>
-          <main className="min-h-screen">{children}</main>
+          <div className="flex flex-col min-h-screen">{children}</div>
         </Providers>
       </body>
     </html>
