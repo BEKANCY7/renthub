@@ -24,6 +24,8 @@ model User {
   role            Role      @default(RENTER)
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
+  phoneNumber     String?   // Added phone number field
+  phoneVerified   Boolean   @default(false) // Whether phone is verified
 
   accounts        Account[]
   sessions        Session[]
@@ -35,6 +37,14 @@ model User {
   payments        Payment[]   @relation("UserPayments")
   receivedPayments Payment[]  @relation("ReceivedPayments")
   messages        Message[]
+  
+  // Conversations
+  startedConversations Conversation[] @relation("ConversationStarter")
+  receivedConversations Conversation[] @relation("ConversationReceiver")
+  conversationMessages ConversationMessage[] @relation("ConversationMessageSender")
+
+  // Security logs
+  securityLogs SecurityLog[]
 
   @@index([email])
 }
@@ -93,6 +103,7 @@ model Listing {
 
   owner        User      @relation("OwnerListings", fields: [ownerId], references: [id], onDelete: Cascade)
   bookings     Booking[]
+  conversations Conversation[]
 }
 
 model Booking {
@@ -100,7 +111,7 @@ model Booking {
   startDate   DateTime
   endDate     DateTime
   totalPrice  Float
-  status      String   @default("PENDING")
+  status      BookingStatus @default(PENDING)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -112,6 +123,7 @@ model Booking {
 
   payments Payment[]
   messages Message[]
+  conversation Conversation?
 
   @@index([renterId])
   @@index([listingId])
@@ -134,10 +146,13 @@ model Payment {
 }
 
 model Message {
-  id        String   @id @default(cuid())
-  content   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String   @id @default(cuid())
+  content       String
+  originalContent String? // Original message before filtering
+  wasFiltered   Boolean  @default(false) // Whether content was filtered
+  filteredTypes String?  // JSON array of filtered content types
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   booking   Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
   bookingId String
@@ -147,6 +162,77 @@ model Message {
 
   @@index([bookingId])
   @@index([senderId])
+}
+
+// New model for direct conversations between users
+model Conversation {
+  id            String   @id @default(cuid())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // The users involved in the conversation
+  starter       User     @relation("ConversationStarter", fields: [starterId], references: [id], onDelete: Cascade)
+  starterId     String
+  receiver      User     @relation("ConversationReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  receiverId    String
+  
+  // Associated listing and booking (if any)
+  listing       Listing? @relation(fields: [listingId], references: [id], onDelete: SetNull)
+  listingId     String?
+  booking       Booking? @relation(fields: [bookingId], references: [id], onDelete: SetNull)
+  bookingId     String? @unique // One booking has one conversation
+  
+  // Conversation status
+  status        ConversationStatus @default(ACTIVE)
+  
+  // Messages in this conversation
+  messages      ConversationMessage[]
+
+  @@unique([starterId, receiverId, listingId])
+  @@index([starterId])
+  @@index([receiverId])
+  @@index([listingId])
+  @@index([bookingId])
+}
+
+// Messages within a conversation
+model ConversationMessage {
+  id              String   @id @default(cuid())
+  content         String
+  originalContent String?  // Original message before filtering
+  wasFiltered     Boolean  @default(false) // Whether content was filtered
+  filteredTypes   String?  // JSON array of filtered content types
+  createdAt       DateTime @default(now())
+  
+  // Conversation this message belongs to
+  conversation    Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  conversationId  String
+  
+  // Sender of the message
+  sender          User     @relation("ConversationMessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+  senderId        String
+  
+  // Message read status
+  isRead          Boolean  @default(false)
+
+  @@index([conversationId])
+  @@index([senderId])
+}
+
+// Security log for tracking contact sharing attempts
+model SecurityLog {
+  id              String   @id @default(cuid())
+  userId          String
+  eventType       SecurityEventType
+  description     String
+  metadata        String?  // JSON string with additional data
+  createdAt       DateTime @default(now())
+  
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([eventType])
+  @@index([createdAt])
 }
 
 enum Role {
@@ -183,4 +269,17 @@ enum PaymentStatus {
   COMPLETED
   FAILED
   REFUNDED
+}
+
+enum ConversationStatus {
+  ACTIVE
+  ARCHIVED
+  BLOCKED
+}
+
+enum SecurityEventType {
+  CONTACT_SHARING_ATTEMPT
+  SUSPICIOUS_ACTIVITY
+  ACCOUNT_WARNING
+  PLATFORM_BYPASS_ATTEMPT
 }
