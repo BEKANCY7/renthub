@@ -85,15 +85,34 @@ export function LoginForm() {
 
       if (response?.ok) {
         // Check user role after successful login
-        const userResponse = await fetch("/api/users/me");
-        const userData = await userResponse.json();
+        try {
+          const userResponse = await fetch("/api/users/me");
 
-        if (userData?.role === "RENTER") {
-          router.push("/find-home");
-        } else {
+          if (!userResponse.ok) {
+            throw new Error("Failed to fetch user data");
+          }
+
+          const userData = await userResponse.json();
+          console.log("User role:", userData.role);
+
+          if (userData?.role === "ADMIN") {
+            router.push("/admin/dashboard");
+          } else if (userData?.role === "RENTER") {
+            router.push("/find-home");
+          } else if (userData?.role === "OWNER") {
+            router.push("/dashboard");
+          } else {
+            // Default fallback
+            router.push("/dashboard");
+          }
+
+          router.refresh();
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+          // Default redirect if user data fetch fails
           router.push("/dashboard");
+          router.refresh();
         }
-        router.refresh();
       }
     } catch (error) {
       setError("Something went wrong. Please try again.");
