@@ -126,7 +126,9 @@ exports.Prisma.UserScalarFieldEnum = {
   hashedPassword: 'hashedPassword',
   role: 'role',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  phoneNumber: 'phoneNumber',
+  phoneVerified: 'phoneVerified'
 };
 
 exports.Prisma.AccountScalarFieldEnum = {
@@ -170,6 +172,8 @@ exports.Prisma.ListingScalarFieldEnum = {
   country: 'country',
   features: 'features',
   status: 'status',
+  featured: 'featured',
+  flagged: 'flagged',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   ownerId: 'ownerId'
@@ -183,9 +187,9 @@ exports.Prisma.BookingScalarFieldEnum = {
   status: 'status',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  listingId: 'listingId',
   renterId: 'renterId',
-  ownerId: 'ownerId'
+  ownerId: 'ownerId',
+  listingId: 'listingId'
 };
 
 exports.Prisma.PaymentScalarFieldEnum = {
@@ -203,10 +207,46 @@ exports.Prisma.PaymentScalarFieldEnum = {
 exports.Prisma.MessageScalarFieldEnum = {
   id: 'id',
   content: 'content',
+  originalContent: 'originalContent',
+  wasFiltered: 'wasFiltered',
+  filteredTypes: 'filteredTypes',
   createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  bookingId: 'bookingId',
   senderId: 'senderId',
+  receiverId: 'receiverId'
+};
+
+exports.Prisma.ConversationScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  starterId: 'starterId',
   receiverId: 'receiverId',
-  bookingId: 'bookingId'
+  listingId: 'listingId',
+  bookingId: 'bookingId',
+  status: 'status'
+};
+
+exports.Prisma.ConversationMessageScalarFieldEnum = {
+  id: 'id',
+  content: 'content',
+  originalContent: 'originalContent',
+  wasFiltered: 'wasFiltered',
+  filteredTypes: 'filteredTypes',
+  createdAt: 'createdAt',
+  conversationId: 'conversationId',
+  senderId: 'senderId',
+  isRead: 'isRead'
+};
+
+exports.Prisma.SecurityLogScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  eventType: 'eventType',
+  description: 'description',
+  metadata: 'metadata',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -254,6 +294,19 @@ exports.PaymentStatus = exports.$Enums.PaymentStatus = {
   REFUNDED: 'REFUNDED'
 };
 
+exports.ConversationStatus = exports.$Enums.ConversationStatus = {
+  ACTIVE: 'ACTIVE',
+  ARCHIVED: 'ARCHIVED',
+  BLOCKED: 'BLOCKED'
+};
+
+exports.SecurityEventType = exports.$Enums.SecurityEventType = {
+  CONTACT_SHARING_ATTEMPT: 'CONTACT_SHARING_ATTEMPT',
+  SUSPICIOUS_ACTIVITY: 'SUSPICIOUS_ACTIVITY',
+  ACCOUNT_WARNING: 'ACCOUNT_WARNING',
+  PLATFORM_BYPASS_ATTEMPT: 'PLATFORM_BYPASS_ATTEMPT'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   Account: 'Account',
@@ -262,7 +315,10 @@ exports.Prisma.ModelName = {
   Listing: 'Listing',
   Booking: 'Booking',
   Payment: 'Payment',
-  Message: 'Message'
+  Message: 'Message',
+  Conversation: 'Conversation',
+  ConversationMessage: 'ConversationMessage',
+  SecurityLog: 'SecurityLog'
 };
 
 /**

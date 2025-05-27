@@ -6,31 +6,31 @@ import type { NextRequest } from "next/server";
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Check if the path starts with /admin
-  if (pathname.startsWith("/admin")) {
+  // Check if the path is an admin route or admin API route
+  if (pathname.startsWith("/admin") || pathname.startsWith("/api/admin")) {
     const token = await getToken({
       req: request,
       secret:
         process.env.NEXTAUTH_SECRET || "thisissecretkeyfornextauthlocaldev",
     });
 
-    console.log("Middleware token for admin route:", token);
-
     // Special case for admin@renthub.com - always allow access
     if (token?.email === "admin@renthub.com") {
-      console.log("Admin email detected, granting access");
       return NextResponse.next();
     }
 
-    // If user is not logged in or not an admin, redirect to login
+    // If user is not logged in or not an admin, redirect to login or return unauthorized
     if (!token || token.role !== "ADMIN") {
-      console.log("Access denied to admin route. User role:", token?.role);
+      // For API routes, return unauthorized
+      if (pathname.startsWith("/api/admin")) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+
+      // For admin pages, redirect to login
       const url = new URL("/login", request.url);
       url.searchParams.set("callbackUrl", encodeURI(pathname));
       return NextResponse.redirect(url);
     }
-
-    console.log("Admin access granted to:", pathname);
   }
 
   return NextResponse.next();
@@ -39,7 +39,7 @@ export async function middleware(request: NextRequest) {
 // Also export as default
 export default middleware;
 
-// Configure which routes the middleware should run on
+// Configure which paths the middleware should run on
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/admin/:path*", "/api/admin/:path*"],
 };

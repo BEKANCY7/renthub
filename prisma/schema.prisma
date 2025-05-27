@@ -36,7 +36,6 @@ model User {
   receivedMessages Message[]  @relation("MessageReceiver")
   payments        Payment[]   @relation("UserPayments")
   receivedPayments Payment[]  @relation("ReceivedPayments")
-  messages        Message[]
   
   // Conversations
   startedConversations Conversation[] @relation("ConversationStarter")
@@ -97,6 +96,8 @@ model Listing {
   country      String?
   features     String?
   status       ListingStatus @default(ACTIVE)
+  featured     Boolean    @default(false)
+  flagged      Boolean    @default(false)
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   ownerId      String
@@ -118,6 +119,9 @@ model Booking {
   renter   User   @relation("RenterBookings", fields: [renterId], references: [id], onDelete: Cascade)
   renterId String
 
+  owner   User   @relation("OwnerBookings", fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId String
+
   listing   Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
   listingId String
 
@@ -126,6 +130,7 @@ model Booking {
   conversation Conversation?
 
   @@index([renterId])
+  @@index([ownerId])
   @@index([listingId])
 }
 
@@ -157,11 +162,15 @@ model Message {
   booking   Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
   bookingId String
 
-  sender   User   @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  sender   User   @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
   senderId String
+  
+  receiver   User   @relation("MessageReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  receiverId String
 
   @@index([bookingId])
   @@index([senderId])
+  @@index([receiverId])
 }
 
 // New model for direct conversations between users
