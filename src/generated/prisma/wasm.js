@@ -125,6 +125,11 @@ exports.Prisma.UserScalarFieldEnum = {
   image: 'image',
   hashedPassword: 'hashedPassword',
   role: 'role',
+  status: 'status',
+  isVerified: 'isVerified',
+  verificationDocuments: 'verificationDocuments',
+  suspendedUntil: 'suspendedUntil',
+  suspensionReason: 'suspensionReason',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   phoneNumber: 'phoneNumber',
@@ -249,6 +254,16 @@ exports.Prisma.SecurityLogScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.NotificationScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  message: 'message',
+  type: 'type',
+  isRead: 'isRead',
+  createdAt: 'createdAt',
+  userId: 'userId'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -262,6 +277,12 @@ exports.Role = exports.$Enums.Role = {
   RENTER: 'RENTER',
   OWNER: 'OWNER',
   ADMIN: 'ADMIN'
+};
+
+exports.UserStatus = exports.$Enums.UserStatus = {
+  ACTIVE: 'ACTIVE',
+  SUSPENDED: 'SUSPENDED',
+  DELETED: 'DELETED'
 };
 
 exports.Category = exports.$Enums.Category = {
@@ -307,6 +328,13 @@ exports.SecurityEventType = exports.$Enums.SecurityEventType = {
   PLATFORM_BYPASS_ATTEMPT: 'PLATFORM_BYPASS_ATTEMPT'
 };
 
+exports.NotificationType = exports.$Enums.NotificationType = {
+  INFO: 'INFO',
+  WARNING: 'WARNING',
+  ALERT: 'ALERT',
+  SUCCESS: 'SUCCESS'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   Account: 'Account',
@@ -318,7 +346,8 @@ exports.Prisma.ModelName = {
   Message: 'Message',
   Conversation: 'Conversation',
   ConversationMessage: 'ConversationMessage',
-  SecurityLog: 'SecurityLog'
+  SecurityLog: 'SecurityLog',
+  Notification: 'Notification'
 };
 
 /**

@@ -22,6 +22,11 @@ model User {
   image           String?
   hashedPassword  String?
   role            Role      @default(RENTER)
+  status          UserStatus @default(ACTIVE)
+  isVerified      Boolean   @default(false)
+  verificationDocuments String?
+  suspendedUntil  DateTime?
+  suspensionReason String?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
   phoneNumber     String?   // Added phone number field
@@ -44,6 +49,7 @@ model User {
 
   // Security logs
   securityLogs SecurityLog[]
+  notifications Notification[]
 
   @@index([email])
 }
@@ -244,6 +250,20 @@ model SecurityLog {
   @@index([createdAt])
 }
 
+model Notification {
+  id          String   @id @default(cuid())
+  title       String
+  message     String
+  type        NotificationType @default(INFO)
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
 enum Role {
   RENTER
   OWNER
@@ -291,4 +311,17 @@ enum SecurityEventType {
   SUSPICIOUS_ACTIVITY
   ACCOUNT_WARNING
   PLATFORM_BYPASS_ATTEMPT
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  DELETED
+}
+
+enum NotificationType {
+  INFO
+  WARNING
+  ALERT
+  SUCCESS
 }
