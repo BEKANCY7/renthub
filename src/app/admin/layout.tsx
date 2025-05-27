@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { UserNav } from "@/components/admin/UserNav";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -111,17 +112,20 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         >
           RentHub Admin
         </Link>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        >
-          {isMobileMenuOpen ? (
-            <X className="h-5 w-5" />
-          ) : (
-            <Menu className="h-5 w-5" />
-          )}
-        </Button>
+        <div className="flex items-center gap-2">
+          <UserNav />
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            {isMobileMenuOpen ? (
+              <X className="h-5 w-5" />
+            ) : (
+              <Menu className="h-5 w-5" />
+            )}
+          </Button>
+        </div>
       </div>
 
       {/* Mobile menu */}
@@ -149,6 +153,11 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
       {/* Main content */}
       <div className="md:pl-64 flex flex-col flex-1">
+        {/* Desktop header with user nav */}
+        <div className="hidden md:flex md:h-16 md:items-center md:justify-end md:px-8 md:border-b">
+          <UserNav />
+        </div>
+        
         <main className="flex-1 pt-16 md:pt-0">
           <div className="py-6 px-4 sm:px-6 md:px-8">{children}</div>
         </main>
