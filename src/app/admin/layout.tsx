@@ -1,23 +1,5 @@
-"use client";
-
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import { usePathname, redirect } from "next/navigation";
-import {
-  LayoutDashboard,
-  Users,
-  Home,
-  CreditCard,
-  Settings,
-  BarChart,
-  Bell,
-  Menu,
-  X,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { UserNav } from "@/components/admin/UserNav";
-import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
+import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 
@@ -29,7 +11,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
   // Check if user is authenticated and is an admin
   const session = await getServerSession(authOptions);
 
-  if (!session || session.user.role !== "ADMIN") {
+  if (!session?.user || session.user.role !== "ADMIN") {
     redirect("/");
   }
 

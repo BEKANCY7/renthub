@@ -15,15 +15,22 @@ datasource db {
 }
 
 model User {
-  id             String    @id @default(cuid())
-  name           String?
-  email          String?   @unique
-  emailVerified  DateTime?
-  image          String?
-  hashedPassword String?
-  role           Role      @default(RENTER)
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  id                    String     @id @default(cuid())
+  name                  String?
+  email                 String?    @unique
+  emailVerified         DateTime?
+  image                 String?
+  hashedPassword        String?
+  role                  Role       @default(RENTER)
+  status                UserStatus @default(ACTIVE)
+  isVerified            Boolean    @default(false)
+  verificationDocuments String?
+  suspendedUntil        DateTime?
+  suspensionReason      String?
+  createdAt             DateTime   @default(now())
+  updatedAt             DateTime   @updatedAt
+  phoneNumber           String? // Added phone number field
+  phoneVerified         Boolean    @default(false) // Whether phone is verified
 
   accounts         Account[]
   sessions         Session[]
@@ -34,6 +41,19 @@ model User {
   receivedMessages Message[] @relation("MessageReceiver")
   payments         Payment[] @relation("UserPayments")
   receivedPayments Payment[] @relation("ReceivedPayments")
+
+  // Conversations
+  startedConversations  Conversation[]        @relation("ConversationStarter")
+  receivedConversations Conversation[]        @relation("ConversationReceiver")
+  conversationMessages  ConversationMessage[] @relation("ConversationMessageSender")
+
+  // Security logs
+  securityLogs  SecurityLog[]
+  notifications Notification[]
+
+  adminNotes PaymentNote[]
+
+  @@index([email])
 }
 
 model Account {
@@ -84,12 +104,15 @@ model Listing {
   country     String?
   features    String?
   status      ListingStatus @default(ACTIVE)
+  featured    Boolean       @default(false)
+  flagged     Boolean       @default(false)
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   ownerId     String
 
-  owner    User      @relation("OwnerListings", fields: [ownerId], references: [id], onDelete: Cascade)
-  bookings Booking[]
+  owner         User           @relation("OwnerListings", fields: [ownerId], references: [id], onDelete: Cascade)
+  bookings      Booking[]
+  conversations Conversation[]
 }
 
 model Booking {
@@ -100,44 +123,174 @@ model Booking {
   status     BookingStatus @default(PENDING)
   createdAt  DateTime      @default(now())
   updatedAt  DateTime      @updatedAt
-  listingId  String
-  renterId   String
-  ownerId    String
 
-  listing  Listing   @relation(fields: [listingId], references: [id])
-  renter   User      @relation("RenterBookings", fields: [renterId], references: [id])
-  owner    User      @relation("OwnerBookings", fields: [ownerId], references: [id])
-  payments Payment[]
-  messages Message[]
+  renter   User   @relation("RenterBookings", fields: [renterId], references: [id], onDelete: Cascade)
+  renterId String
+
+  owner   User   @relation("OwnerBookings", fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId String
+
+  listing   Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  listingId String
+
+  payments     Payment[]
+  messages     Message[]
+  conversation Conversation?
+
+  @@index([renterId])
+  @@index([ownerId])
+  @@index([listingId])
 }
 
 model Payment {
-  id          String        @id @default(cuid())
-  amount      Float
-  status      PaymentStatus @default(PENDING)
-  paymentDate DateTime?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  bookingId   String
-  payerId     String
-  receiverId  String
+  id            String        @id @default(cuid())
+  amount        Float
+  status        PaymentStatus @default(PENDING)
+  paymentMethod PaymentMethod @default(CARD)
+  paymentDate   DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  bookingId     String
+  payerId       String
+  receiverId    String
+  referenceCode String? // For Telebirr or CBE reference numbers
+  transactionId String? // External transaction ID
+  metadata      String? // JSON string with additional payment data
+  verifiedBy    String? // Admin who verified the payment
+  verifiedAt    DateTime?
+  notes         PaymentNote[]
+  flagged       Boolean       @default(false)
+  flagReason    String?
 
   booking  Booking @relation(fields: [bookingId], references: [id])
   payer    User    @relation("UserPayments", fields: [payerId], references: [id])
   receiver User    @relation("ReceivedPayments", fields: [receiverId], references: [id])
+
+  @@index([status])
+  @@index([paymentMethod])
+  @@index([createdAt])
+  @@index([paymentDate])
+}
+
+model PaymentNote {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  content String
+
+  paymentId String
+  payment   Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+
+  adminId String
+  admin   User   @relation(fields: [adminId], references: [id], onDelete: Cascade)
 }
 
 model Message {
-  id         String   @id @default(cuid())
-  content    String
-  createdAt  DateTime @default(now())
-  senderId   String
-  receiverId String
-  bookingId  String?
+  id              String   @id @default(cuid())
+  content         String
+  originalContent String? // Original message before filtering
+  wasFiltered     Boolean  @default(false) // Whether content was filtered
+  filteredTypes   String? // JSON array of filtered content types
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
-  sender   User     @relation("MessageSender", fields: [senderId], references: [id])
-  receiver User     @relation("MessageReceiver", fields: [receiverId], references: [id])
-  booking  Booking? @relation(fields: [bookingId], references: [id])
+  booking   Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  bookingId String
+
+  sender   User   @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+  senderId String
+
+  receiver   User   @relation("MessageReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  receiverId String
+
+  @@index([bookingId])
+  @@index([senderId])
+  @@index([receiverId])
+}
+
+// New model for direct conversations between users
+model Conversation {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // The users involved in the conversation
+  starter    User   @relation("ConversationStarter", fields: [starterId], references: [id], onDelete: Cascade)
+  starterId  String
+  receiver   User   @relation("ConversationReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  receiverId String
+
+  // Associated listing and booking (if any)
+  listing   Listing? @relation(fields: [listingId], references: [id], onDelete: SetNull)
+  listingId String?
+  booking   Booking? @relation(fields: [bookingId], references: [id], onDelete: SetNull)
+  bookingId String?  @unique // One booking has one conversation
+
+  // Conversation status
+  status ConversationStatus @default(ACTIVE)
+
+  // Messages in this conversation
+  messages ConversationMessage[]
+
+  @@unique([starterId, receiverId, listingId])
+  @@index([starterId])
+  @@index([receiverId])
+  @@index([listingId])
+  @@index([bookingId])
+}
+
+// Messages within a conversation
+model ConversationMessage {
+  id              String   @id @default(cuid())
+  content         String
+  originalContent String? // Original message before filtering
+  wasFiltered     Boolean  @default(false) // Whether content was filtered
+  filteredTypes   String? // JSON array of filtered content types
+  createdAt       DateTime @default(now())
+
+  // Conversation this message belongs to
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  conversationId String
+
+  // Sender of the message
+  sender   User   @relation("ConversationMessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+  senderId String
+
+  // Message read status
+  isRead Boolean @default(false)
+
+  @@index([conversationId])
+  @@index([senderId])
+}
+
+// Security log for tracking contact sharing attempts
+model SecurityLog {
+  id          String            @id @default(cuid())
+  userId      String
+  eventType   SecurityEventType
+  description String
+  metadata    String? // JSON string with additional data
+  createdAt   DateTime          @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([eventType])
+  @@index([createdAt])
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  title     String
+  message   String
+  type      NotificationType @default(INFO)
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
 }
 
 enum Role {
@@ -174,4 +327,40 @@ enum PaymentStatus {
   COMPLETED
   FAILED
   REFUNDED
+  VERIFIED
+  FLAGGED
+}
+
+enum ConversationStatus {
+  ACTIVE
+  ARCHIVED
+  BLOCKED
+}
+
+enum SecurityEventType {
+  CONTACT_SHARING_ATTEMPT
+  SUSPICIOUS_ACTIVITY
+  ACCOUNT_WARNING
+  PLATFORM_BYPASS_ATTEMPT
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  DELETED
+}
+
+enum NotificationType {
+  INFO
+  WARNING
+  ALERT
+  SUCCESS
+}
+
+enum PaymentMethod {
+  CARD
+  TELEBIRR
+  CBE
+  CASH
+  OTHER
 }

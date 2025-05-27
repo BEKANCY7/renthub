@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { format } from "date-fns";
 import { Activity, DollarSign, Home, Calendar } from "lucide-react";
 import {
@@ -31,10 +31,36 @@ type UserDetails = {
   role: string;
   status: string;
   createdAt: string;
-  listings: any[];
-  bookings: any[];
-  payments: any[];
-  receivedPayments: any[];
+  listings: Array<{
+    id: string;
+    title: string;
+    status: string;
+    createdAt: string;
+    price: number;
+  }>;
+  bookings: Array<{
+    id: string;
+    startDate: string;
+    endDate: string;
+    totalPrice: number;
+    status: string;
+    listing?: {
+      id: string;
+      title: string;
+    };
+  }>;
+  payments: Array<{
+    id: string;
+    amount: number;
+    status: string;
+    createdAt: string;
+  }>;
+  receivedPayments: Array<{
+    id: string;
+    amount: number;
+    status: string;
+    createdAt: string;
+  }>;
   _count: {
     listings: number;
     bookings: number;
@@ -53,21 +79,7 @@ export function UserActivityDrawer({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (isOpen && userId) {
-      fetchUserDetails();
-    }
-
-    return () => {
-      // Reset state when drawer closes
-      if (!isOpen) {
-        setUser(null);
-        setError(null);
-      }
-    };
-  }, [isOpen, userId]);
-
-  const fetchUserDetails = async () => {
+  const fetchUserDetails = useCallback(async () => {
     if (!userId) return;
 
     setIsLoading(true);
@@ -88,7 +100,21 @@ export function UserActivityDrawer({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [userId]);
+
+  useEffect(() => {
+    if (isOpen && userId) {
+      fetchUserDetails();
+    }
+
+    return () => {
+      // Reset state when drawer closes
+      if (!isOpen) {
+        setUser(null);
+        setError(null);
+      }
+    };
+  }, [isOpen, userId, fetchUserDetails]);
 
   const formatDate = (dateString: string) => {
     return format(new Date(dateString), "MMM d, yyyy");
