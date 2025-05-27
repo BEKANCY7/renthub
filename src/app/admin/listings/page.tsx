@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import {
   Card,
@@ -92,12 +92,8 @@ export default function AdminListingsPage() {
   const [ownerDetailsOpen, setOwnerDetailsOpen] = useState(false);
   const [selectedListing, setSelectedListing] = useState<Listing | null>(null);
 
-  // Fetch listings on component mount and when filters change
-  useEffect(() => {
-    fetchListings();
-  }, [propertyType, status]);
-
-  const fetchListings = async () => {
+  // Memoize fetchListings function to avoid recreating it on every render
+  const fetchListings = useCallback(async () => {
     setIsLoading(true);
     try {
       // Build query parameters
@@ -120,7 +116,12 @@ export default function AdminListingsPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [propertyType, status, searchQuery]);
+
+  // Fetch listings on component mount and when filters change
+  useEffect(() => {
+    fetchListings();
+  }, [propertyType, status, fetchListings]);
 
   // Handle search form submission
   const handleSearch = (e: React.FormEvent) => {

@@ -201,12 +201,28 @@ exports.Prisma.PaymentScalarFieldEnum = {
   id: 'id',
   amount: 'amount',
   status: 'status',
+  paymentMethod: 'paymentMethod',
   paymentDate: 'paymentDate',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   bookingId: 'bookingId',
   payerId: 'payerId',
-  receiverId: 'receiverId'
+  receiverId: 'receiverId',
+  referenceCode: 'referenceCode',
+  transactionId: 'transactionId',
+  metadata: 'metadata',
+  verifiedBy: 'verifiedBy',
+  verifiedAt: 'verifiedAt',
+  flagged: 'flagged',
+  flagReason: 'flagReason'
+};
+
+exports.Prisma.PaymentNoteScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  content: 'content',
+  paymentId: 'paymentId',
+  adminId: 'adminId'
 };
 
 exports.Prisma.MessageScalarFieldEnum = {
@@ -312,7 +328,17 @@ exports.PaymentStatus = exports.$Enums.PaymentStatus = {
   PENDING: 'PENDING',
   COMPLETED: 'COMPLETED',
   FAILED: 'FAILED',
-  REFUNDED: 'REFUNDED'
+  REFUNDED: 'REFUNDED',
+  VERIFIED: 'VERIFIED',
+  FLAGGED: 'FLAGGED'
+};
+
+exports.PaymentMethod = exports.$Enums.PaymentMethod = {
+  CARD: 'CARD',
+  TELEBIRR: 'TELEBIRR',
+  CBE: 'CBE',
+  CASH: 'CASH',
+  OTHER: 'OTHER'
 };
 
 exports.ConversationStatus = exports.$Enums.ConversationStatus = {
@@ -343,6 +369,7 @@ exports.Prisma.ModelName = {
   Listing: 'Listing',
   Booking: 'Booking',
   Payment: 'Payment',
+  PaymentNote: 'PaymentNote',
   Message: 'Message',
   Conversation: 'Conversation',
   ConversationMessage: 'ConversationMessage',

@@ -49,6 +49,11 @@ export type Booking = $Result.DefaultSelection<Prisma.$BookingPayload>
  */
 export type Payment = $Result.DefaultSelection<Prisma.$PaymentPayload>
 /**
+ * Model PaymentNote
+ * 
+ */
+export type PaymentNote = $Result.DefaultSelection<Prisma.$PaymentNotePayload>
+/**
  * Model Message
  * 
  */
@@ -123,7 +128,9 @@ export const PaymentStatus: {
   PENDING: 'PENDING',
   COMPLETED: 'COMPLETED',
   FAILED: 'FAILED',
-  REFUNDED: 'REFUNDED'
+  REFUNDED: 'REFUNDED',
+  VERIFIED: 'VERIFIED',
+  FLAGGED: 'FLAGGED'
 };
 
 export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus]
@@ -166,6 +173,17 @@ export const NotificationType: {
 
 export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType]
 
+
+export const PaymentMethod: {
+  CARD: 'CARD',
+  TELEBIRR: 'TELEBIRR',
+  CBE: 'CBE',
+  CASH: 'CASH',
+  OTHER: 'OTHER'
+};
+
+export type PaymentMethod = (typeof PaymentMethod)[keyof typeof PaymentMethod]
+
 }
 
 export type Role = $Enums.Role
@@ -203,6 +221,10 @@ export const UserStatus: typeof $Enums.UserStatus
 export type NotificationType = $Enums.NotificationType
 
 export const NotificationType: typeof $Enums.NotificationType
+
+export type PaymentMethod = $Enums.PaymentMethod
+
+export const PaymentMethod: typeof $Enums.PaymentMethod
 
 /**
  * ##  Prisma Client ʲˢ
@@ -398,6 +420,16 @@ export class PrismaClient<
     * ```
     */
   get payment(): Prisma.PaymentDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.paymentNote`: Exposes CRUD operations for the **PaymentNote** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PaymentNotes
+    * const paymentNotes = await prisma.paymentNote.findMany()
+    * ```
+    */
+  get paymentNote(): Prisma.PaymentNoteDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.message`: Exposes CRUD operations for the **Message** model.
@@ -895,6 +927,7 @@ export namespace Prisma {
     Listing: 'Listing',
     Booking: 'Booking',
     Payment: 'Payment',
+    PaymentNote: 'PaymentNote',
     Message: 'Message',
     Conversation: 'Conversation',
     ConversationMessage: 'ConversationMessage',
@@ -918,7 +951,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "account" | "session" | "verificationToken" | "listing" | "booking" | "payment" | "message" | "conversation" | "conversationMessage" | "securityLog" | "notification"
+      modelProps: "user" | "account" | "session" | "verificationToken" | "listing" | "booking" | "payment" | "paymentNote" | "message" | "conversation" | "conversationMessage" | "securityLog" | "notification"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1440,6 +1473,80 @@ export namespace Prisma {
           }
         }
       }
+      PaymentNote: {
+        payload: Prisma.$PaymentNotePayload<ExtArgs>
+        fields: Prisma.PaymentNoteFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PaymentNoteFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentNotePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PaymentNoteFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentNotePayload>
+          }
+          findFirst: {
+            args: Prisma.PaymentNoteFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentNotePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PaymentNoteFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentNotePayload>
+          }
+          findMany: {
+            args: Prisma.PaymentNoteFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentNotePayload>[]
+          }
+          create: {
+            args: Prisma.PaymentNoteCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentNotePayload>
+          }
+          createMany: {
+            args: Prisma.PaymentNoteCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PaymentNoteCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentNotePayload>[]
+          }
+          delete: {
+            args: Prisma.PaymentNoteDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentNotePayload>
+          }
+          update: {
+            args: Prisma.PaymentNoteUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentNotePayload>
+          }
+          deleteMany: {
+            args: Prisma.PaymentNoteDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PaymentNoteUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.PaymentNoteUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentNotePayload>[]
+          }
+          upsert: {
+            args: Prisma.PaymentNoteUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentNotePayload>
+          }
+          aggregate: {
+            args: Prisma.PaymentNoteAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePaymentNote>
+          }
+          groupBy: {
+            args: Prisma.PaymentNoteGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PaymentNoteGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PaymentNoteCountArgs<ExtArgs>
+            result: $Utils.Optional<PaymentNoteCountAggregateOutputType> | number
+          }
+        }
+      }
       Message: {
         payload: Prisma.$MessagePayload<ExtArgs>
         fields: Prisma.MessageFieldRefs
@@ -1901,6 +2008,7 @@ export namespace Prisma {
     listing?: ListingOmit
     booking?: BookingOmit
     payment?: PaymentOmit
+    paymentNote?: PaymentNoteOmit
     message?: MessageOmit
     conversation?: ConversationOmit
     conversationMessage?: ConversationMessageOmit
@@ -2014,6 +2122,7 @@ export namespace Prisma {
     conversationMessages: number
     securityLogs: number
     notifications: number
+    adminNotes: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2031,6 +2140,7 @@ export namespace Prisma {
     conversationMessages?: boolean | UserCountOutputTypeCountConversationMessagesArgs
     securityLogs?: boolean | UserCountOutputTypeCountSecurityLogsArgs
     notifications?: boolean | UserCountOutputTypeCountNotificationsArgs
+    adminNotes?: boolean | UserCountOutputTypeCountAdminNotesArgs
   }
 
   // Custom InputTypes
@@ -2142,6 +2252,13 @@ export namespace Prisma {
     where?: NotificationWhereInput
   }
 
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountAdminNotesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PaymentNoteWhereInput
+  }
+
 
   /**
    * Count Type ListingCountOutputType
@@ -2220,6 +2337,37 @@ export namespace Prisma {
    */
   export type BookingCountOutputTypeCountMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: MessageWhereInput
+  }
+
+
+  /**
+   * Count Type PaymentCountOutputType
+   */
+
+  export type PaymentCountOutputType = {
+    notes: number
+  }
+
+  export type PaymentCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    notes?: boolean | PaymentCountOutputTypeCountNotesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * PaymentCountOutputType without action
+   */
+  export type PaymentCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentCountOutputType
+     */
+    select?: PaymentCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * PaymentCountOutputType without action
+   */
+  export type PaymentCountOutputTypeCountNotesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PaymentNoteWhereInput
   }
 
 
@@ -2524,6 +2672,7 @@ export namespace Prisma {
     conversationMessages?: boolean | User$conversationMessagesArgs<ExtArgs>
     securityLogs?: boolean | User$securityLogsArgs<ExtArgs>
     notifications?: boolean | User$notificationsArgs<ExtArgs>
+    adminNotes?: boolean | User$adminNotesArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -2600,6 +2749,7 @@ export namespace Prisma {
     conversationMessages?: boolean | User$conversationMessagesArgs<ExtArgs>
     securityLogs?: boolean | User$securityLogsArgs<ExtArgs>
     notifications?: boolean | User$notificationsArgs<ExtArgs>
+    adminNotes?: boolean | User$adminNotesArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2622,6 +2772,7 @@ export namespace Prisma {
       conversationMessages: Prisma.$ConversationMessagePayload<ExtArgs>[]
       securityLogs: Prisma.$SecurityLogPayload<ExtArgs>[]
       notifications: Prisma.$NotificationPayload<ExtArgs>[]
+      adminNotes: Prisma.$PaymentNotePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -3048,6 +3199,7 @@ export namespace Prisma {
     conversationMessages<T extends User$conversationMessagesArgs<ExtArgs> = {}>(args?: Subset<T, User$conversationMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConversationMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     securityLogs<T extends User$securityLogsArgs<ExtArgs> = {}>(args?: Subset<T, User$securityLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SecurityLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     notifications<T extends User$notificationsArgs<ExtArgs> = {}>(args?: Subset<T, User$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    adminNotes<T extends User$adminNotesArgs<ExtArgs> = {}>(args?: Subset<T, User$adminNotesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaymentNotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3812,6 +3964,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: NotificationScalarFieldEnum | NotificationScalarFieldEnum[]
+  }
+
+  /**
+   * User.adminNotes
+   */
+  export type User$adminNotesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentNote
+     */
+    select?: PaymentNoteSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaymentNote
+     */
+    omit?: PaymentNoteOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentNoteInclude<ExtArgs> | null
+    where?: PaymentNoteWhereInput
+    orderBy?: PaymentNoteOrderByWithRelationInput | PaymentNoteOrderByWithRelationInput[]
+    cursor?: PaymentNoteWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PaymentNoteScalarFieldEnum | PaymentNoteScalarFieldEnum[]
   }
 
   /**
@@ -9604,36 +9780,60 @@ export namespace Prisma {
     id: string | null
     amount: number | null
     status: $Enums.PaymentStatus | null
+    paymentMethod: $Enums.PaymentMethod | null
     paymentDate: Date | null
     createdAt: Date | null
     updatedAt: Date | null
     bookingId: string | null
     payerId: string | null
     receiverId: string | null
+    referenceCode: string | null
+    transactionId: string | null
+    metadata: string | null
+    verifiedBy: string | null
+    verifiedAt: Date | null
+    flagged: boolean | null
+    flagReason: string | null
   }
 
   export type PaymentMaxAggregateOutputType = {
     id: string | null
     amount: number | null
     status: $Enums.PaymentStatus | null
+    paymentMethod: $Enums.PaymentMethod | null
     paymentDate: Date | null
     createdAt: Date | null
     updatedAt: Date | null
     bookingId: string | null
     payerId: string | null
     receiverId: string | null
+    referenceCode: string | null
+    transactionId: string | null
+    metadata: string | null
+    verifiedBy: string | null
+    verifiedAt: Date | null
+    flagged: boolean | null
+    flagReason: string | null
   }
 
   export type PaymentCountAggregateOutputType = {
     id: number
     amount: number
     status: number
+    paymentMethod: number
     paymentDate: number
     createdAt: number
     updatedAt: number
     bookingId: number
     payerId: number
     receiverId: number
+    referenceCode: number
+    transactionId: number
+    metadata: number
+    verifiedBy: number
+    verifiedAt: number
+    flagged: number
+    flagReason: number
     _all: number
   }
 
@@ -9650,36 +9850,60 @@ export namespace Prisma {
     id?: true
     amount?: true
     status?: true
+    paymentMethod?: true
     paymentDate?: true
     createdAt?: true
     updatedAt?: true
     bookingId?: true
     payerId?: true
     receiverId?: true
+    referenceCode?: true
+    transactionId?: true
+    metadata?: true
+    verifiedBy?: true
+    verifiedAt?: true
+    flagged?: true
+    flagReason?: true
   }
 
   export type PaymentMaxAggregateInputType = {
     id?: true
     amount?: true
     status?: true
+    paymentMethod?: true
     paymentDate?: true
     createdAt?: true
     updatedAt?: true
     bookingId?: true
     payerId?: true
     receiverId?: true
+    referenceCode?: true
+    transactionId?: true
+    metadata?: true
+    verifiedBy?: true
+    verifiedAt?: true
+    flagged?: true
+    flagReason?: true
   }
 
   export type PaymentCountAggregateInputType = {
     id?: true
     amount?: true
     status?: true
+    paymentMethod?: true
     paymentDate?: true
     createdAt?: true
     updatedAt?: true
     bookingId?: true
     payerId?: true
     receiverId?: true
+    referenceCode?: true
+    transactionId?: true
+    metadata?: true
+    verifiedBy?: true
+    verifiedAt?: true
+    flagged?: true
+    flagReason?: true
     _all?: true
   }
 
@@ -9773,12 +9997,20 @@ export namespace Prisma {
     id: string
     amount: number
     status: $Enums.PaymentStatus
+    paymentMethod: $Enums.PaymentMethod
     paymentDate: Date | null
     createdAt: Date
     updatedAt: Date
     bookingId: string
     payerId: string
     receiverId: string
+    referenceCode: string | null
+    transactionId: string | null
+    metadata: string | null
+    verifiedBy: string | null
+    verifiedAt: Date | null
+    flagged: boolean
+    flagReason: string | null
     _count: PaymentCountAggregateOutputType | null
     _avg: PaymentAvgAggregateOutputType | null
     _sum: PaymentSumAggregateOutputType | null
@@ -9804,27 +10036,45 @@ export namespace Prisma {
     id?: boolean
     amount?: boolean
     status?: boolean
+    paymentMethod?: boolean
     paymentDate?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     bookingId?: boolean
     payerId?: boolean
     receiverId?: boolean
+    referenceCode?: boolean
+    transactionId?: boolean
+    metadata?: boolean
+    verifiedBy?: boolean
+    verifiedAt?: boolean
+    flagged?: boolean
+    flagReason?: boolean
+    notes?: boolean | Payment$notesArgs<ExtArgs>
     booking?: boolean | BookingDefaultArgs<ExtArgs>
     payer?: boolean | UserDefaultArgs<ExtArgs>
     receiver?: boolean | UserDefaultArgs<ExtArgs>
+    _count?: boolean | PaymentCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["payment"]>
 
   export type PaymentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     amount?: boolean
     status?: boolean
+    paymentMethod?: boolean
     paymentDate?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     bookingId?: boolean
     payerId?: boolean
     receiverId?: boolean
+    referenceCode?: boolean
+    transactionId?: boolean
+    metadata?: boolean
+    verifiedBy?: boolean
+    verifiedAt?: boolean
+    flagged?: boolean
+    flagReason?: boolean
     booking?: boolean | BookingDefaultArgs<ExtArgs>
     payer?: boolean | UserDefaultArgs<ExtArgs>
     receiver?: boolean | UserDefaultArgs<ExtArgs>
@@ -9834,12 +10084,20 @@ export namespace Prisma {
     id?: boolean
     amount?: boolean
     status?: boolean
+    paymentMethod?: boolean
     paymentDate?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     bookingId?: boolean
     payerId?: boolean
     receiverId?: boolean
+    referenceCode?: boolean
+    transactionId?: boolean
+    metadata?: boolean
+    verifiedBy?: boolean
+    verifiedAt?: boolean
+    flagged?: boolean
+    flagReason?: boolean
     booking?: boolean | BookingDefaultArgs<ExtArgs>
     payer?: boolean | UserDefaultArgs<ExtArgs>
     receiver?: boolean | UserDefaultArgs<ExtArgs>
@@ -9849,19 +10107,29 @@ export namespace Prisma {
     id?: boolean
     amount?: boolean
     status?: boolean
+    paymentMethod?: boolean
     paymentDate?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     bookingId?: boolean
     payerId?: boolean
     receiverId?: boolean
+    referenceCode?: boolean
+    transactionId?: boolean
+    metadata?: boolean
+    verifiedBy?: boolean
+    verifiedAt?: boolean
+    flagged?: boolean
+    flagReason?: boolean
   }
 
-  export type PaymentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "amount" | "status" | "paymentDate" | "createdAt" | "updatedAt" | "bookingId" | "payerId" | "receiverId", ExtArgs["result"]["payment"]>
+  export type PaymentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "amount" | "status" | "paymentMethod" | "paymentDate" | "createdAt" | "updatedAt" | "bookingId" | "payerId" | "receiverId" | "referenceCode" | "transactionId" | "metadata" | "verifiedBy" | "verifiedAt" | "flagged" | "flagReason", ExtArgs["result"]["payment"]>
   export type PaymentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    notes?: boolean | Payment$notesArgs<ExtArgs>
     booking?: boolean | BookingDefaultArgs<ExtArgs>
     payer?: boolean | UserDefaultArgs<ExtArgs>
     receiver?: boolean | UserDefaultArgs<ExtArgs>
+    _count?: boolean | PaymentCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type PaymentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     booking?: boolean | BookingDefaultArgs<ExtArgs>
@@ -9877,6 +10145,7 @@ export namespace Prisma {
   export type $PaymentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Payment"
     objects: {
+      notes: Prisma.$PaymentNotePayload<ExtArgs>[]
       booking: Prisma.$BookingPayload<ExtArgs>
       payer: Prisma.$UserPayload<ExtArgs>
       receiver: Prisma.$UserPayload<ExtArgs>
@@ -9885,12 +10154,20 @@ export namespace Prisma {
       id: string
       amount: number
       status: $Enums.PaymentStatus
+      paymentMethod: $Enums.PaymentMethod
       paymentDate: Date | null
       createdAt: Date
       updatedAt: Date
       bookingId: string
       payerId: string
       receiverId: string
+      referenceCode: string | null
+      transactionId: string | null
+      metadata: string | null
+      verifiedBy: string | null
+      verifiedAt: Date | null
+      flagged: boolean
+      flagReason: string | null
     }, ExtArgs["result"]["payment"]>
     composites: {}
   }
@@ -10285,6 +10562,7 @@ export namespace Prisma {
    */
   export interface Prisma__PaymentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    notes<T extends Payment$notesArgs<ExtArgs> = {}>(args?: Subset<T, Payment$notesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaymentNotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     booking<T extends BookingDefaultArgs<ExtArgs> = {}>(args?: Subset<T, BookingDefaultArgs<ExtArgs>>): Prisma__BookingClient<$Result.GetResult<Prisma.$BookingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     payer<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     receiver<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
@@ -10320,12 +10598,20 @@ export namespace Prisma {
     readonly id: FieldRef<"Payment", 'String'>
     readonly amount: FieldRef<"Payment", 'Float'>
     readonly status: FieldRef<"Payment", 'PaymentStatus'>
+    readonly paymentMethod: FieldRef<"Payment", 'PaymentMethod'>
     readonly paymentDate: FieldRef<"Payment", 'DateTime'>
     readonly createdAt: FieldRef<"Payment", 'DateTime'>
     readonly updatedAt: FieldRef<"Payment", 'DateTime'>
     readonly bookingId: FieldRef<"Payment", 'String'>
     readonly payerId: FieldRef<"Payment", 'String'>
     readonly receiverId: FieldRef<"Payment", 'String'>
+    readonly referenceCode: FieldRef<"Payment", 'String'>
+    readonly transactionId: FieldRef<"Payment", 'String'>
+    readonly metadata: FieldRef<"Payment", 'String'>
+    readonly verifiedBy: FieldRef<"Payment", 'String'>
+    readonly verifiedAt: FieldRef<"Payment", 'DateTime'>
+    readonly flagged: FieldRef<"Payment", 'Boolean'>
+    readonly flagReason: FieldRef<"Payment", 'String'>
   }
     
 
@@ -10720,6 +11006,30 @@ export namespace Prisma {
   }
 
   /**
+   * Payment.notes
+   */
+  export type Payment$notesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentNote
+     */
+    select?: PaymentNoteSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaymentNote
+     */
+    omit?: PaymentNoteOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentNoteInclude<ExtArgs> | null
+    where?: PaymentNoteWhereInput
+    orderBy?: PaymentNoteOrderByWithRelationInput | PaymentNoteOrderByWithRelationInput[]
+    cursor?: PaymentNoteWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PaymentNoteScalarFieldEnum | PaymentNoteScalarFieldEnum[]
+  }
+
+  /**
    * Payment without action
    */
   export type PaymentDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -10735,6 +11045,1070 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: PaymentInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model PaymentNote
+   */
+
+  export type AggregatePaymentNote = {
+    _count: PaymentNoteCountAggregateOutputType | null
+    _min: PaymentNoteMinAggregateOutputType | null
+    _max: PaymentNoteMaxAggregateOutputType | null
+  }
+
+  export type PaymentNoteMinAggregateOutputType = {
+    id: string | null
+    createdAt: Date | null
+    content: string | null
+    paymentId: string | null
+    adminId: string | null
+  }
+
+  export type PaymentNoteMaxAggregateOutputType = {
+    id: string | null
+    createdAt: Date | null
+    content: string | null
+    paymentId: string | null
+    adminId: string | null
+  }
+
+  export type PaymentNoteCountAggregateOutputType = {
+    id: number
+    createdAt: number
+    content: number
+    paymentId: number
+    adminId: number
+    _all: number
+  }
+
+
+  export type PaymentNoteMinAggregateInputType = {
+    id?: true
+    createdAt?: true
+    content?: true
+    paymentId?: true
+    adminId?: true
+  }
+
+  export type PaymentNoteMaxAggregateInputType = {
+    id?: true
+    createdAt?: true
+    content?: true
+    paymentId?: true
+    adminId?: true
+  }
+
+  export type PaymentNoteCountAggregateInputType = {
+    id?: true
+    createdAt?: true
+    content?: true
+    paymentId?: true
+    adminId?: true
+    _all?: true
+  }
+
+  export type PaymentNoteAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PaymentNote to aggregate.
+     */
+    where?: PaymentNoteWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PaymentNotes to fetch.
+     */
+    orderBy?: PaymentNoteOrderByWithRelationInput | PaymentNoteOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PaymentNoteWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PaymentNotes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PaymentNotes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PaymentNotes
+    **/
+    _count?: true | PaymentNoteCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PaymentNoteMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PaymentNoteMaxAggregateInputType
+  }
+
+  export type GetPaymentNoteAggregateType<T extends PaymentNoteAggregateArgs> = {
+        [P in keyof T & keyof AggregatePaymentNote]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePaymentNote[P]>
+      : GetScalarType<T[P], AggregatePaymentNote[P]>
+  }
+
+
+
+
+  export type PaymentNoteGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PaymentNoteWhereInput
+    orderBy?: PaymentNoteOrderByWithAggregationInput | PaymentNoteOrderByWithAggregationInput[]
+    by: PaymentNoteScalarFieldEnum[] | PaymentNoteScalarFieldEnum
+    having?: PaymentNoteScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PaymentNoteCountAggregateInputType | true
+    _min?: PaymentNoteMinAggregateInputType
+    _max?: PaymentNoteMaxAggregateInputType
+  }
+
+  export type PaymentNoteGroupByOutputType = {
+    id: string
+    createdAt: Date
+    content: string
+    paymentId: string
+    adminId: string
+    _count: PaymentNoteCountAggregateOutputType | null
+    _min: PaymentNoteMinAggregateOutputType | null
+    _max: PaymentNoteMaxAggregateOutputType | null
+  }
+
+  type GetPaymentNoteGroupByPayload<T extends PaymentNoteGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PaymentNoteGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PaymentNoteGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PaymentNoteGroupByOutputType[P]>
+            : GetScalarType<T[P], PaymentNoteGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PaymentNoteSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    createdAt?: boolean
+    content?: boolean
+    paymentId?: boolean
+    adminId?: boolean
+    payment?: boolean | PaymentDefaultArgs<ExtArgs>
+    admin?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["paymentNote"]>
+
+  export type PaymentNoteSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    createdAt?: boolean
+    content?: boolean
+    paymentId?: boolean
+    adminId?: boolean
+    payment?: boolean | PaymentDefaultArgs<ExtArgs>
+    admin?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["paymentNote"]>
+
+  export type PaymentNoteSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    createdAt?: boolean
+    content?: boolean
+    paymentId?: boolean
+    adminId?: boolean
+    payment?: boolean | PaymentDefaultArgs<ExtArgs>
+    admin?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["paymentNote"]>
+
+  export type PaymentNoteSelectScalar = {
+    id?: boolean
+    createdAt?: boolean
+    content?: boolean
+    paymentId?: boolean
+    adminId?: boolean
+  }
+
+  export type PaymentNoteOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "createdAt" | "content" | "paymentId" | "adminId", ExtArgs["result"]["paymentNote"]>
+  export type PaymentNoteInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    payment?: boolean | PaymentDefaultArgs<ExtArgs>
+    admin?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type PaymentNoteIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    payment?: boolean | PaymentDefaultArgs<ExtArgs>
+    admin?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type PaymentNoteIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    payment?: boolean | PaymentDefaultArgs<ExtArgs>
+    admin?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $PaymentNotePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PaymentNote"
+    objects: {
+      payment: Prisma.$PaymentPayload<ExtArgs>
+      admin: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      createdAt: Date
+      content: string
+      paymentId: string
+      adminId: string
+    }, ExtArgs["result"]["paymentNote"]>
+    composites: {}
+  }
+
+  type PaymentNoteGetPayload<S extends boolean | null | undefined | PaymentNoteDefaultArgs> = $Result.GetResult<Prisma.$PaymentNotePayload, S>
+
+  type PaymentNoteCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PaymentNoteFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PaymentNoteCountAggregateInputType | true
+    }
+
+  export interface PaymentNoteDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PaymentNote'], meta: { name: 'PaymentNote' } }
+    /**
+     * Find zero or one PaymentNote that matches the filter.
+     * @param {PaymentNoteFindUniqueArgs} args - Arguments to find a PaymentNote
+     * @example
+     * // Get one PaymentNote
+     * const paymentNote = await prisma.paymentNote.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PaymentNoteFindUniqueArgs>(args: SelectSubset<T, PaymentNoteFindUniqueArgs<ExtArgs>>): Prisma__PaymentNoteClient<$Result.GetResult<Prisma.$PaymentNotePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one PaymentNote that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PaymentNoteFindUniqueOrThrowArgs} args - Arguments to find a PaymentNote
+     * @example
+     * // Get one PaymentNote
+     * const paymentNote = await prisma.paymentNote.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PaymentNoteFindUniqueOrThrowArgs>(args: SelectSubset<T, PaymentNoteFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PaymentNoteClient<$Result.GetResult<Prisma.$PaymentNotePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PaymentNote that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PaymentNoteFindFirstArgs} args - Arguments to find a PaymentNote
+     * @example
+     * // Get one PaymentNote
+     * const paymentNote = await prisma.paymentNote.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PaymentNoteFindFirstArgs>(args?: SelectSubset<T, PaymentNoteFindFirstArgs<ExtArgs>>): Prisma__PaymentNoteClient<$Result.GetResult<Prisma.$PaymentNotePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PaymentNote that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PaymentNoteFindFirstOrThrowArgs} args - Arguments to find a PaymentNote
+     * @example
+     * // Get one PaymentNote
+     * const paymentNote = await prisma.paymentNote.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PaymentNoteFindFirstOrThrowArgs>(args?: SelectSubset<T, PaymentNoteFindFirstOrThrowArgs<ExtArgs>>): Prisma__PaymentNoteClient<$Result.GetResult<Prisma.$PaymentNotePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more PaymentNotes that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PaymentNoteFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PaymentNotes
+     * const paymentNotes = await prisma.paymentNote.findMany()
+     * 
+     * // Get first 10 PaymentNotes
+     * const paymentNotes = await prisma.paymentNote.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const paymentNoteWithIdOnly = await prisma.paymentNote.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PaymentNoteFindManyArgs>(args?: SelectSubset<T, PaymentNoteFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaymentNotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a PaymentNote.
+     * @param {PaymentNoteCreateArgs} args - Arguments to create a PaymentNote.
+     * @example
+     * // Create one PaymentNote
+     * const PaymentNote = await prisma.paymentNote.create({
+     *   data: {
+     *     // ... data to create a PaymentNote
+     *   }
+     * })
+     * 
+     */
+    create<T extends PaymentNoteCreateArgs>(args: SelectSubset<T, PaymentNoteCreateArgs<ExtArgs>>): Prisma__PaymentNoteClient<$Result.GetResult<Prisma.$PaymentNotePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many PaymentNotes.
+     * @param {PaymentNoteCreateManyArgs} args - Arguments to create many PaymentNotes.
+     * @example
+     * // Create many PaymentNotes
+     * const paymentNote = await prisma.paymentNote.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PaymentNoteCreateManyArgs>(args?: SelectSubset<T, PaymentNoteCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PaymentNotes and returns the data saved in the database.
+     * @param {PaymentNoteCreateManyAndReturnArgs} args - Arguments to create many PaymentNotes.
+     * @example
+     * // Create many PaymentNotes
+     * const paymentNote = await prisma.paymentNote.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PaymentNotes and only return the `id`
+     * const paymentNoteWithIdOnly = await prisma.paymentNote.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PaymentNoteCreateManyAndReturnArgs>(args?: SelectSubset<T, PaymentNoteCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaymentNotePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a PaymentNote.
+     * @param {PaymentNoteDeleteArgs} args - Arguments to delete one PaymentNote.
+     * @example
+     * // Delete one PaymentNote
+     * const PaymentNote = await prisma.paymentNote.delete({
+     *   where: {
+     *     // ... filter to delete one PaymentNote
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PaymentNoteDeleteArgs>(args: SelectSubset<T, PaymentNoteDeleteArgs<ExtArgs>>): Prisma__PaymentNoteClient<$Result.GetResult<Prisma.$PaymentNotePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one PaymentNote.
+     * @param {PaymentNoteUpdateArgs} args - Arguments to update one PaymentNote.
+     * @example
+     * // Update one PaymentNote
+     * const paymentNote = await prisma.paymentNote.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PaymentNoteUpdateArgs>(args: SelectSubset<T, PaymentNoteUpdateArgs<ExtArgs>>): Prisma__PaymentNoteClient<$Result.GetResult<Prisma.$PaymentNotePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more PaymentNotes.
+     * @param {PaymentNoteDeleteManyArgs} args - Arguments to filter PaymentNotes to delete.
+     * @example
+     * // Delete a few PaymentNotes
+     * const { count } = await prisma.paymentNote.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PaymentNoteDeleteManyArgs>(args?: SelectSubset<T, PaymentNoteDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PaymentNotes.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PaymentNoteUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PaymentNotes
+     * const paymentNote = await prisma.paymentNote.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PaymentNoteUpdateManyArgs>(args: SelectSubset<T, PaymentNoteUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PaymentNotes and returns the data updated in the database.
+     * @param {PaymentNoteUpdateManyAndReturnArgs} args - Arguments to update many PaymentNotes.
+     * @example
+     * // Update many PaymentNotes
+     * const paymentNote = await prisma.paymentNote.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more PaymentNotes and only return the `id`
+     * const paymentNoteWithIdOnly = await prisma.paymentNote.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends PaymentNoteUpdateManyAndReturnArgs>(args: SelectSubset<T, PaymentNoteUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaymentNotePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one PaymentNote.
+     * @param {PaymentNoteUpsertArgs} args - Arguments to update or create a PaymentNote.
+     * @example
+     * // Update or create a PaymentNote
+     * const paymentNote = await prisma.paymentNote.upsert({
+     *   create: {
+     *     // ... data to create a PaymentNote
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PaymentNote we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PaymentNoteUpsertArgs>(args: SelectSubset<T, PaymentNoteUpsertArgs<ExtArgs>>): Prisma__PaymentNoteClient<$Result.GetResult<Prisma.$PaymentNotePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of PaymentNotes.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PaymentNoteCountArgs} args - Arguments to filter PaymentNotes to count.
+     * @example
+     * // Count the number of PaymentNotes
+     * const count = await prisma.paymentNote.count({
+     *   where: {
+     *     // ... the filter for the PaymentNotes we want to count
+     *   }
+     * })
+    **/
+    count<T extends PaymentNoteCountArgs>(
+      args?: Subset<T, PaymentNoteCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PaymentNoteCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PaymentNote.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PaymentNoteAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PaymentNoteAggregateArgs>(args: Subset<T, PaymentNoteAggregateArgs>): Prisma.PrismaPromise<GetPaymentNoteAggregateType<T>>
+
+    /**
+     * Group by PaymentNote.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PaymentNoteGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PaymentNoteGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PaymentNoteGroupByArgs['orderBy'] }
+        : { orderBy?: PaymentNoteGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PaymentNoteGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPaymentNoteGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PaymentNote model
+   */
+  readonly fields: PaymentNoteFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PaymentNote.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PaymentNoteClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    payment<T extends PaymentDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PaymentDefaultArgs<ExtArgs>>): Prisma__PaymentClient<$Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    admin<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PaymentNote model
+   */
+  interface PaymentNoteFieldRefs {
+    readonly id: FieldRef<"PaymentNote", 'String'>
+    readonly createdAt: FieldRef<"PaymentNote", 'DateTime'>
+    readonly content: FieldRef<"PaymentNote", 'String'>
+    readonly paymentId: FieldRef<"PaymentNote", 'String'>
+    readonly adminId: FieldRef<"PaymentNote", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PaymentNote findUnique
+   */
+  export type PaymentNoteFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentNote
+     */
+    select?: PaymentNoteSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaymentNote
+     */
+    omit?: PaymentNoteOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentNoteInclude<ExtArgs> | null
+    /**
+     * Filter, which PaymentNote to fetch.
+     */
+    where: PaymentNoteWhereUniqueInput
+  }
+
+  /**
+   * PaymentNote findUniqueOrThrow
+   */
+  export type PaymentNoteFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentNote
+     */
+    select?: PaymentNoteSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaymentNote
+     */
+    omit?: PaymentNoteOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentNoteInclude<ExtArgs> | null
+    /**
+     * Filter, which PaymentNote to fetch.
+     */
+    where: PaymentNoteWhereUniqueInput
+  }
+
+  /**
+   * PaymentNote findFirst
+   */
+  export type PaymentNoteFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentNote
+     */
+    select?: PaymentNoteSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaymentNote
+     */
+    omit?: PaymentNoteOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentNoteInclude<ExtArgs> | null
+    /**
+     * Filter, which PaymentNote to fetch.
+     */
+    where?: PaymentNoteWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PaymentNotes to fetch.
+     */
+    orderBy?: PaymentNoteOrderByWithRelationInput | PaymentNoteOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PaymentNotes.
+     */
+    cursor?: PaymentNoteWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PaymentNotes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PaymentNotes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PaymentNotes.
+     */
+    distinct?: PaymentNoteScalarFieldEnum | PaymentNoteScalarFieldEnum[]
+  }
+
+  /**
+   * PaymentNote findFirstOrThrow
+   */
+  export type PaymentNoteFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentNote
+     */
+    select?: PaymentNoteSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaymentNote
+     */
+    omit?: PaymentNoteOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentNoteInclude<ExtArgs> | null
+    /**
+     * Filter, which PaymentNote to fetch.
+     */
+    where?: PaymentNoteWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PaymentNotes to fetch.
+     */
+    orderBy?: PaymentNoteOrderByWithRelationInput | PaymentNoteOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PaymentNotes.
+     */
+    cursor?: PaymentNoteWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PaymentNotes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PaymentNotes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PaymentNotes.
+     */
+    distinct?: PaymentNoteScalarFieldEnum | PaymentNoteScalarFieldEnum[]
+  }
+
+  /**
+   * PaymentNote findMany
+   */
+  export type PaymentNoteFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentNote
+     */
+    select?: PaymentNoteSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaymentNote
+     */
+    omit?: PaymentNoteOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentNoteInclude<ExtArgs> | null
+    /**
+     * Filter, which PaymentNotes to fetch.
+     */
+    where?: PaymentNoteWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PaymentNotes to fetch.
+     */
+    orderBy?: PaymentNoteOrderByWithRelationInput | PaymentNoteOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PaymentNotes.
+     */
+    cursor?: PaymentNoteWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PaymentNotes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PaymentNotes.
+     */
+    skip?: number
+    distinct?: PaymentNoteScalarFieldEnum | PaymentNoteScalarFieldEnum[]
+  }
+
+  /**
+   * PaymentNote create
+   */
+  export type PaymentNoteCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentNote
+     */
+    select?: PaymentNoteSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaymentNote
+     */
+    omit?: PaymentNoteOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentNoteInclude<ExtArgs> | null
+    /**
+     * The data needed to create a PaymentNote.
+     */
+    data: XOR<PaymentNoteCreateInput, PaymentNoteUncheckedCreateInput>
+  }
+
+  /**
+   * PaymentNote createMany
+   */
+  export type PaymentNoteCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PaymentNotes.
+     */
+    data: PaymentNoteCreateManyInput | PaymentNoteCreateManyInput[]
+  }
+
+  /**
+   * PaymentNote createManyAndReturn
+   */
+  export type PaymentNoteCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentNote
+     */
+    select?: PaymentNoteSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaymentNote
+     */
+    omit?: PaymentNoteOmit<ExtArgs> | null
+    /**
+     * The data used to create many PaymentNotes.
+     */
+    data: PaymentNoteCreateManyInput | PaymentNoteCreateManyInput[]
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentNoteIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PaymentNote update
+   */
+  export type PaymentNoteUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentNote
+     */
+    select?: PaymentNoteSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaymentNote
+     */
+    omit?: PaymentNoteOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentNoteInclude<ExtArgs> | null
+    /**
+     * The data needed to update a PaymentNote.
+     */
+    data: XOR<PaymentNoteUpdateInput, PaymentNoteUncheckedUpdateInput>
+    /**
+     * Choose, which PaymentNote to update.
+     */
+    where: PaymentNoteWhereUniqueInput
+  }
+
+  /**
+   * PaymentNote updateMany
+   */
+  export type PaymentNoteUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PaymentNotes.
+     */
+    data: XOR<PaymentNoteUpdateManyMutationInput, PaymentNoteUncheckedUpdateManyInput>
+    /**
+     * Filter which PaymentNotes to update
+     */
+    where?: PaymentNoteWhereInput
+    /**
+     * Limit how many PaymentNotes to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PaymentNote updateManyAndReturn
+   */
+  export type PaymentNoteUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentNote
+     */
+    select?: PaymentNoteSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaymentNote
+     */
+    omit?: PaymentNoteOmit<ExtArgs> | null
+    /**
+     * The data used to update PaymentNotes.
+     */
+    data: XOR<PaymentNoteUpdateManyMutationInput, PaymentNoteUncheckedUpdateManyInput>
+    /**
+     * Filter which PaymentNotes to update
+     */
+    where?: PaymentNoteWhereInput
+    /**
+     * Limit how many PaymentNotes to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentNoteIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PaymentNote upsert
+   */
+  export type PaymentNoteUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentNote
+     */
+    select?: PaymentNoteSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaymentNote
+     */
+    omit?: PaymentNoteOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentNoteInclude<ExtArgs> | null
+    /**
+     * The filter to search for the PaymentNote to update in case it exists.
+     */
+    where: PaymentNoteWhereUniqueInput
+    /**
+     * In case the PaymentNote found by the `where` argument doesn't exist, create a new PaymentNote with this data.
+     */
+    create: XOR<PaymentNoteCreateInput, PaymentNoteUncheckedCreateInput>
+    /**
+     * In case the PaymentNote was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PaymentNoteUpdateInput, PaymentNoteUncheckedUpdateInput>
+  }
+
+  /**
+   * PaymentNote delete
+   */
+  export type PaymentNoteDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentNote
+     */
+    select?: PaymentNoteSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaymentNote
+     */
+    omit?: PaymentNoteOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentNoteInclude<ExtArgs> | null
+    /**
+     * Filter which PaymentNote to delete.
+     */
+    where: PaymentNoteWhereUniqueInput
+  }
+
+  /**
+   * PaymentNote deleteMany
+   */
+  export type PaymentNoteDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PaymentNotes to delete
+     */
+    where?: PaymentNoteWhereInput
+    /**
+     * Limit how many PaymentNotes to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * PaymentNote without action
+   */
+  export type PaymentNoteDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentNote
+     */
+    select?: PaymentNoteSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaymentNote
+     */
+    omit?: PaymentNoteOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentNoteInclude<ExtArgs> | null
   }
 
 
@@ -16442,15 +17816,34 @@ export namespace Prisma {
     id: 'id',
     amount: 'amount',
     status: 'status',
+    paymentMethod: 'paymentMethod',
     paymentDate: 'paymentDate',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     bookingId: 'bookingId',
     payerId: 'payerId',
-    receiverId: 'receiverId'
+    receiverId: 'receiverId',
+    referenceCode: 'referenceCode',
+    transactionId: 'transactionId',
+    metadata: 'metadata',
+    verifiedBy: 'verifiedBy',
+    verifiedAt: 'verifiedAt',
+    flagged: 'flagged',
+    flagReason: 'flagReason'
   };
 
   export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
+
+
+  export const PaymentNoteScalarFieldEnum: {
+    id: 'id',
+    createdAt: 'createdAt',
+    content: 'content',
+    paymentId: 'paymentId',
+    adminId: 'adminId'
+  };
+
+  export type PaymentNoteScalarFieldEnum = (typeof PaymentNoteScalarFieldEnum)[keyof typeof PaymentNoteScalarFieldEnum]
 
 
   export const MessageScalarFieldEnum: {
@@ -16622,6 +18015,13 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'PaymentMethod'
+   */
+  export type EnumPaymentMethodFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentMethod'>
+    
+
+
+  /**
    * Reference to a field of type 'ConversationStatus'
    */
   export type EnumConversationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ConversationStatus'>
@@ -16679,6 +18079,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageListRelationFilter
     securityLogs?: SecurityLogListRelationFilter
     notifications?: NotificationListRelationFilter
+    adminNotes?: PaymentNoteListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -16712,6 +18113,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageOrderByRelationAggregateInput
     securityLogs?: SecurityLogOrderByRelationAggregateInput
     notifications?: NotificationOrderByRelationAggregateInput
+    adminNotes?: PaymentNoteOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -16748,6 +18150,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageListRelationFilter
     securityLogs?: SecurityLogListRelationFilter
     notifications?: NotificationListRelationFilter
+    adminNotes?: PaymentNoteListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -17207,12 +18610,21 @@ export namespace Prisma {
     id?: StringFilter<"Payment"> | string
     amount?: FloatFilter<"Payment"> | number
     status?: EnumPaymentStatusFilter<"Payment"> | $Enums.PaymentStatus
+    paymentMethod?: EnumPaymentMethodFilter<"Payment"> | $Enums.PaymentMethod
     paymentDate?: DateTimeNullableFilter<"Payment"> | Date | string | null
     createdAt?: DateTimeFilter<"Payment"> | Date | string
     updatedAt?: DateTimeFilter<"Payment"> | Date | string
     bookingId?: StringFilter<"Payment"> | string
     payerId?: StringFilter<"Payment"> | string
     receiverId?: StringFilter<"Payment"> | string
+    referenceCode?: StringNullableFilter<"Payment"> | string | null
+    transactionId?: StringNullableFilter<"Payment"> | string | null
+    metadata?: StringNullableFilter<"Payment"> | string | null
+    verifiedBy?: StringNullableFilter<"Payment"> | string | null
+    verifiedAt?: DateTimeNullableFilter<"Payment"> | Date | string | null
+    flagged?: BoolFilter<"Payment"> | boolean
+    flagReason?: StringNullableFilter<"Payment"> | string | null
+    notes?: PaymentNoteListRelationFilter
     booking?: XOR<BookingScalarRelationFilter, BookingWhereInput>
     payer?: XOR<UserScalarRelationFilter, UserWhereInput>
     receiver?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -17222,12 +18634,21 @@ export namespace Prisma {
     id?: SortOrder
     amount?: SortOrder
     status?: SortOrder
+    paymentMethod?: SortOrder
     paymentDate?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     bookingId?: SortOrder
     payerId?: SortOrder
     receiverId?: SortOrder
+    referenceCode?: SortOrderInput | SortOrder
+    transactionId?: SortOrderInput | SortOrder
+    metadata?: SortOrderInput | SortOrder
+    verifiedBy?: SortOrderInput | SortOrder
+    verifiedAt?: SortOrderInput | SortOrder
+    flagged?: SortOrder
+    flagReason?: SortOrderInput | SortOrder
+    notes?: PaymentNoteOrderByRelationAggregateInput
     booking?: BookingOrderByWithRelationInput
     payer?: UserOrderByWithRelationInput
     receiver?: UserOrderByWithRelationInput
@@ -17240,12 +18661,21 @@ export namespace Prisma {
     NOT?: PaymentWhereInput | PaymentWhereInput[]
     amount?: FloatFilter<"Payment"> | number
     status?: EnumPaymentStatusFilter<"Payment"> | $Enums.PaymentStatus
+    paymentMethod?: EnumPaymentMethodFilter<"Payment"> | $Enums.PaymentMethod
     paymentDate?: DateTimeNullableFilter<"Payment"> | Date | string | null
     createdAt?: DateTimeFilter<"Payment"> | Date | string
     updatedAt?: DateTimeFilter<"Payment"> | Date | string
     bookingId?: StringFilter<"Payment"> | string
     payerId?: StringFilter<"Payment"> | string
     receiverId?: StringFilter<"Payment"> | string
+    referenceCode?: StringNullableFilter<"Payment"> | string | null
+    transactionId?: StringNullableFilter<"Payment"> | string | null
+    metadata?: StringNullableFilter<"Payment"> | string | null
+    verifiedBy?: StringNullableFilter<"Payment"> | string | null
+    verifiedAt?: DateTimeNullableFilter<"Payment"> | Date | string | null
+    flagged?: BoolFilter<"Payment"> | boolean
+    flagReason?: StringNullableFilter<"Payment"> | string | null
+    notes?: PaymentNoteListRelationFilter
     booking?: XOR<BookingScalarRelationFilter, BookingWhereInput>
     payer?: XOR<UserScalarRelationFilter, UserWhereInput>
     receiver?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -17255,12 +18685,20 @@ export namespace Prisma {
     id?: SortOrder
     amount?: SortOrder
     status?: SortOrder
+    paymentMethod?: SortOrder
     paymentDate?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     bookingId?: SortOrder
     payerId?: SortOrder
     receiverId?: SortOrder
+    referenceCode?: SortOrderInput | SortOrder
+    transactionId?: SortOrderInput | SortOrder
+    metadata?: SortOrderInput | SortOrder
+    verifiedBy?: SortOrderInput | SortOrder
+    verifiedAt?: SortOrderInput | SortOrder
+    flagged?: SortOrder
+    flagReason?: SortOrderInput | SortOrder
     _count?: PaymentCountOrderByAggregateInput
     _avg?: PaymentAvgOrderByAggregateInput
     _max?: PaymentMaxOrderByAggregateInput
@@ -17275,12 +18713,78 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Payment"> | string
     amount?: FloatWithAggregatesFilter<"Payment"> | number
     status?: EnumPaymentStatusWithAggregatesFilter<"Payment"> | $Enums.PaymentStatus
+    paymentMethod?: EnumPaymentMethodWithAggregatesFilter<"Payment"> | $Enums.PaymentMethod
     paymentDate?: DateTimeNullableWithAggregatesFilter<"Payment"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Payment"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Payment"> | Date | string
     bookingId?: StringWithAggregatesFilter<"Payment"> | string
     payerId?: StringWithAggregatesFilter<"Payment"> | string
     receiverId?: StringWithAggregatesFilter<"Payment"> | string
+    referenceCode?: StringNullableWithAggregatesFilter<"Payment"> | string | null
+    transactionId?: StringNullableWithAggregatesFilter<"Payment"> | string | null
+    metadata?: StringNullableWithAggregatesFilter<"Payment"> | string | null
+    verifiedBy?: StringNullableWithAggregatesFilter<"Payment"> | string | null
+    verifiedAt?: DateTimeNullableWithAggregatesFilter<"Payment"> | Date | string | null
+    flagged?: BoolWithAggregatesFilter<"Payment"> | boolean
+    flagReason?: StringNullableWithAggregatesFilter<"Payment"> | string | null
+  }
+
+  export type PaymentNoteWhereInput = {
+    AND?: PaymentNoteWhereInput | PaymentNoteWhereInput[]
+    OR?: PaymentNoteWhereInput[]
+    NOT?: PaymentNoteWhereInput | PaymentNoteWhereInput[]
+    id?: StringFilter<"PaymentNote"> | string
+    createdAt?: DateTimeFilter<"PaymentNote"> | Date | string
+    content?: StringFilter<"PaymentNote"> | string
+    paymentId?: StringFilter<"PaymentNote"> | string
+    adminId?: StringFilter<"PaymentNote"> | string
+    payment?: XOR<PaymentScalarRelationFilter, PaymentWhereInput>
+    admin?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type PaymentNoteOrderByWithRelationInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    content?: SortOrder
+    paymentId?: SortOrder
+    adminId?: SortOrder
+    payment?: PaymentOrderByWithRelationInput
+    admin?: UserOrderByWithRelationInput
+  }
+
+  export type PaymentNoteWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: PaymentNoteWhereInput | PaymentNoteWhereInput[]
+    OR?: PaymentNoteWhereInput[]
+    NOT?: PaymentNoteWhereInput | PaymentNoteWhereInput[]
+    createdAt?: DateTimeFilter<"PaymentNote"> | Date | string
+    content?: StringFilter<"PaymentNote"> | string
+    paymentId?: StringFilter<"PaymentNote"> | string
+    adminId?: StringFilter<"PaymentNote"> | string
+    payment?: XOR<PaymentScalarRelationFilter, PaymentWhereInput>
+    admin?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id">
+
+  export type PaymentNoteOrderByWithAggregationInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    content?: SortOrder
+    paymentId?: SortOrder
+    adminId?: SortOrder
+    _count?: PaymentNoteCountOrderByAggregateInput
+    _max?: PaymentNoteMaxOrderByAggregateInput
+    _min?: PaymentNoteMinOrderByAggregateInput
+  }
+
+  export type PaymentNoteScalarWhereWithAggregatesInput = {
+    AND?: PaymentNoteScalarWhereWithAggregatesInput | PaymentNoteScalarWhereWithAggregatesInput[]
+    OR?: PaymentNoteScalarWhereWithAggregatesInput[]
+    NOT?: PaymentNoteScalarWhereWithAggregatesInput | PaymentNoteScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"PaymentNote"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"PaymentNote"> | Date | string
+    content?: StringWithAggregatesFilter<"PaymentNote"> | string
+    paymentId?: StringWithAggregatesFilter<"PaymentNote"> | string
+    adminId?: StringWithAggregatesFilter<"PaymentNote"> | string
   }
 
   export type MessageWhereInput = {
@@ -17686,6 +19190,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageCreateNestedManyWithoutSenderInput
     securityLogs?: SecurityLogCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    adminNotes?: PaymentNoteCreateNestedManyWithoutAdminInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -17719,6 +19224,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageUncheckedCreateNestedManyWithoutSenderInput
     securityLogs?: SecurityLogUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    adminNotes?: PaymentNoteUncheckedCreateNestedManyWithoutAdminInput
   }
 
   export type UserUpdateInput = {
@@ -17752,6 +19258,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageUpdateManyWithoutSenderNestedInput
     securityLogs?: SecurityLogUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    adminNotes?: PaymentNoteUpdateManyWithoutAdminNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -17785,6 +19292,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageUncheckedUpdateManyWithoutSenderNestedInput
     securityLogs?: SecurityLogUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    adminNotes?: PaymentNoteUncheckedUpdateManyWithoutAdminNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -18289,9 +19797,18 @@ export namespace Prisma {
     id?: string
     amount: number
     status?: $Enums.PaymentStatus
+    paymentMethod?: $Enums.PaymentMethod
     paymentDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    referenceCode?: string | null
+    transactionId?: string | null
+    metadata?: string | null
+    verifiedBy?: string | null
+    verifiedAt?: Date | string | null
+    flagged?: boolean
+    flagReason?: string | null
+    notes?: PaymentNoteCreateNestedManyWithoutPaymentInput
     booking: BookingCreateNestedOneWithoutPaymentsInput
     payer: UserCreateNestedOneWithoutPaymentsInput
     receiver: UserCreateNestedOneWithoutReceivedPaymentsInput
@@ -18301,21 +19818,39 @@ export namespace Prisma {
     id?: string
     amount: number
     status?: $Enums.PaymentStatus
+    paymentMethod?: $Enums.PaymentMethod
     paymentDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     bookingId: string
     payerId: string
     receiverId: string
+    referenceCode?: string | null
+    transactionId?: string | null
+    metadata?: string | null
+    verifiedBy?: string | null
+    verifiedAt?: Date | string | null
+    flagged?: boolean
+    flagReason?: string | null
+    notes?: PaymentNoteUncheckedCreateNestedManyWithoutPaymentInput
   }
 
   export type PaymentUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: FloatFieldUpdateOperationsInput | number
     status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentMethod?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
     paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referenceCode?: NullableStringFieldUpdateOperationsInput | string | null
+    transactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableStringFieldUpdateOperationsInput | string | null
+    verifiedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    flagged?: BoolFieldUpdateOperationsInput | boolean
+    flagReason?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: PaymentNoteUpdateManyWithoutPaymentNestedInput
     booking?: BookingUpdateOneRequiredWithoutPaymentsNestedInput
     payer?: UserUpdateOneRequiredWithoutPaymentsNestedInput
     receiver?: UserUpdateOneRequiredWithoutReceivedPaymentsNestedInput
@@ -18325,45 +19860,132 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     amount?: FloatFieldUpdateOperationsInput | number
     status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentMethod?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
     paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     bookingId?: StringFieldUpdateOperationsInput | string
     payerId?: StringFieldUpdateOperationsInput | string
     receiverId?: StringFieldUpdateOperationsInput | string
+    referenceCode?: NullableStringFieldUpdateOperationsInput | string | null
+    transactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableStringFieldUpdateOperationsInput | string | null
+    verifiedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    flagged?: BoolFieldUpdateOperationsInput | boolean
+    flagReason?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: PaymentNoteUncheckedUpdateManyWithoutPaymentNestedInput
   }
 
   export type PaymentCreateManyInput = {
     id?: string
     amount: number
     status?: $Enums.PaymentStatus
+    paymentMethod?: $Enums.PaymentMethod
     paymentDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     bookingId: string
     payerId: string
     receiverId: string
+    referenceCode?: string | null
+    transactionId?: string | null
+    metadata?: string | null
+    verifiedBy?: string | null
+    verifiedAt?: Date | string | null
+    flagged?: boolean
+    flagReason?: string | null
   }
 
   export type PaymentUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: FloatFieldUpdateOperationsInput | number
     status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentMethod?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
     paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referenceCode?: NullableStringFieldUpdateOperationsInput | string | null
+    transactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableStringFieldUpdateOperationsInput | string | null
+    verifiedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    flagged?: BoolFieldUpdateOperationsInput | boolean
+    flagReason?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type PaymentUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: FloatFieldUpdateOperationsInput | number
     status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentMethod?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
     paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     bookingId?: StringFieldUpdateOperationsInput | string
     payerId?: StringFieldUpdateOperationsInput | string
     receiverId?: StringFieldUpdateOperationsInput | string
+    referenceCode?: NullableStringFieldUpdateOperationsInput | string | null
+    transactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableStringFieldUpdateOperationsInput | string | null
+    verifiedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    flagged?: BoolFieldUpdateOperationsInput | boolean
+    flagReason?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type PaymentNoteCreateInput = {
+    id?: string
+    createdAt?: Date | string
+    content: string
+    payment: PaymentCreateNestedOneWithoutNotesInput
+    admin: UserCreateNestedOneWithoutAdminNotesInput
+  }
+
+  export type PaymentNoteUncheckedCreateInput = {
+    id?: string
+    createdAt?: Date | string
+    content: string
+    paymentId: string
+    adminId: string
+  }
+
+  export type PaymentNoteUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    content?: StringFieldUpdateOperationsInput | string
+    payment?: PaymentUpdateOneRequiredWithoutNotesNestedInput
+    admin?: UserUpdateOneRequiredWithoutAdminNotesNestedInput
+  }
+
+  export type PaymentNoteUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    content?: StringFieldUpdateOperationsInput | string
+    paymentId?: StringFieldUpdateOperationsInput | string
+    adminId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type PaymentNoteCreateManyInput = {
+    id?: string
+    createdAt?: Date | string
+    content: string
+    paymentId: string
+    adminId: string
+  }
+
+  export type PaymentNoteUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    content?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type PaymentNoteUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    content?: StringFieldUpdateOperationsInput | string
+    paymentId?: StringFieldUpdateOperationsInput | string
+    adminId?: StringFieldUpdateOperationsInput | string
   }
 
   export type MessageCreateInput = {
@@ -18873,6 +20495,12 @@ export namespace Prisma {
     none?: NotificationWhereInput
   }
 
+  export type PaymentNoteListRelationFilter = {
+    every?: PaymentNoteWhereInput
+    some?: PaymentNoteWhereInput
+    none?: PaymentNoteWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -18915,6 +20543,10 @@ export namespace Prisma {
   }
 
   export type NotificationOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type PaymentNoteOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -19409,6 +21041,13 @@ export namespace Prisma {
     not?: NestedEnumPaymentStatusFilter<$PrismaModel> | $Enums.PaymentStatus
   }
 
+  export type EnumPaymentMethodFilter<$PrismaModel = never> = {
+    equals?: $Enums.PaymentMethod | EnumPaymentMethodFieldRefInput<$PrismaModel>
+    in?: $Enums.PaymentMethod[]
+    notIn?: $Enums.PaymentMethod[]
+    not?: NestedEnumPaymentMethodFilter<$PrismaModel> | $Enums.PaymentMethod
+  }
+
   export type BookingScalarRelationFilter = {
     is?: BookingWhereInput
     isNot?: BookingWhereInput
@@ -19418,12 +21057,20 @@ export namespace Prisma {
     id?: SortOrder
     amount?: SortOrder
     status?: SortOrder
+    paymentMethod?: SortOrder
     paymentDate?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     bookingId?: SortOrder
     payerId?: SortOrder
     receiverId?: SortOrder
+    referenceCode?: SortOrder
+    transactionId?: SortOrder
+    metadata?: SortOrder
+    verifiedBy?: SortOrder
+    verifiedAt?: SortOrder
+    flagged?: SortOrder
+    flagReason?: SortOrder
   }
 
   export type PaymentAvgOrderByAggregateInput = {
@@ -19434,24 +21081,40 @@ export namespace Prisma {
     id?: SortOrder
     amount?: SortOrder
     status?: SortOrder
+    paymentMethod?: SortOrder
     paymentDate?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     bookingId?: SortOrder
     payerId?: SortOrder
     receiverId?: SortOrder
+    referenceCode?: SortOrder
+    transactionId?: SortOrder
+    metadata?: SortOrder
+    verifiedBy?: SortOrder
+    verifiedAt?: SortOrder
+    flagged?: SortOrder
+    flagReason?: SortOrder
   }
 
   export type PaymentMinOrderByAggregateInput = {
     id?: SortOrder
     amount?: SortOrder
     status?: SortOrder
+    paymentMethod?: SortOrder
     paymentDate?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     bookingId?: SortOrder
     payerId?: SortOrder
     receiverId?: SortOrder
+    referenceCode?: SortOrder
+    transactionId?: SortOrder
+    metadata?: SortOrder
+    verifiedBy?: SortOrder
+    verifiedAt?: SortOrder
+    flagged?: SortOrder
+    flagReason?: SortOrder
   }
 
   export type PaymentSumOrderByAggregateInput = {
@@ -19466,6 +21129,45 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumPaymentStatusFilter<$PrismaModel>
     _max?: NestedEnumPaymentStatusFilter<$PrismaModel>
+  }
+
+  export type EnumPaymentMethodWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PaymentMethod | EnumPaymentMethodFieldRefInput<$PrismaModel>
+    in?: $Enums.PaymentMethod[]
+    notIn?: $Enums.PaymentMethod[]
+    not?: NestedEnumPaymentMethodWithAggregatesFilter<$PrismaModel> | $Enums.PaymentMethod
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPaymentMethodFilter<$PrismaModel>
+    _max?: NestedEnumPaymentMethodFilter<$PrismaModel>
+  }
+
+  export type PaymentScalarRelationFilter = {
+    is?: PaymentWhereInput
+    isNot?: PaymentWhereInput
+  }
+
+  export type PaymentNoteCountOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    content?: SortOrder
+    paymentId?: SortOrder
+    adminId?: SortOrder
+  }
+
+  export type PaymentNoteMaxOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    content?: SortOrder
+    paymentId?: SortOrder
+    adminId?: SortOrder
+  }
+
+  export type PaymentNoteMinOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    content?: SortOrder
+    paymentId?: SortOrder
+    adminId?: SortOrder
   }
 
   export type MessageCountOrderByAggregateInput = {
@@ -19803,6 +21505,13 @@ export namespace Prisma {
     connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
   }
 
+  export type PaymentNoteCreateNestedManyWithoutAdminInput = {
+    create?: XOR<PaymentNoteCreateWithoutAdminInput, PaymentNoteUncheckedCreateWithoutAdminInput> | PaymentNoteCreateWithoutAdminInput[] | PaymentNoteUncheckedCreateWithoutAdminInput[]
+    connectOrCreate?: PaymentNoteCreateOrConnectWithoutAdminInput | PaymentNoteCreateOrConnectWithoutAdminInput[]
+    createMany?: PaymentNoteCreateManyAdminInputEnvelope
+    connect?: PaymentNoteWhereUniqueInput | PaymentNoteWhereUniqueInput[]
+  }
+
   export type AccountUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<AccountCreateWithoutUserInput, AccountUncheckedCreateWithoutUserInput> | AccountCreateWithoutUserInput[] | AccountUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AccountCreateOrConnectWithoutUserInput | AccountCreateOrConnectWithoutUserInput[]
@@ -19899,6 +21608,13 @@ export namespace Prisma {
     connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
     createMany?: NotificationCreateManyUserInputEnvelope
     connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+  }
+
+  export type PaymentNoteUncheckedCreateNestedManyWithoutAdminInput = {
+    create?: XOR<PaymentNoteCreateWithoutAdminInput, PaymentNoteUncheckedCreateWithoutAdminInput> | PaymentNoteCreateWithoutAdminInput[] | PaymentNoteUncheckedCreateWithoutAdminInput[]
+    connectOrCreate?: PaymentNoteCreateOrConnectWithoutAdminInput | PaymentNoteCreateOrConnectWithoutAdminInput[]
+    createMany?: PaymentNoteCreateManyAdminInputEnvelope
+    connect?: PaymentNoteWhereUniqueInput | PaymentNoteWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -20125,6 +21841,20 @@ export namespace Prisma {
     deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
   }
 
+  export type PaymentNoteUpdateManyWithoutAdminNestedInput = {
+    create?: XOR<PaymentNoteCreateWithoutAdminInput, PaymentNoteUncheckedCreateWithoutAdminInput> | PaymentNoteCreateWithoutAdminInput[] | PaymentNoteUncheckedCreateWithoutAdminInput[]
+    connectOrCreate?: PaymentNoteCreateOrConnectWithoutAdminInput | PaymentNoteCreateOrConnectWithoutAdminInput[]
+    upsert?: PaymentNoteUpsertWithWhereUniqueWithoutAdminInput | PaymentNoteUpsertWithWhereUniqueWithoutAdminInput[]
+    createMany?: PaymentNoteCreateManyAdminInputEnvelope
+    set?: PaymentNoteWhereUniqueInput | PaymentNoteWhereUniqueInput[]
+    disconnect?: PaymentNoteWhereUniqueInput | PaymentNoteWhereUniqueInput[]
+    delete?: PaymentNoteWhereUniqueInput | PaymentNoteWhereUniqueInput[]
+    connect?: PaymentNoteWhereUniqueInput | PaymentNoteWhereUniqueInput[]
+    update?: PaymentNoteUpdateWithWhereUniqueWithoutAdminInput | PaymentNoteUpdateWithWhereUniqueWithoutAdminInput[]
+    updateMany?: PaymentNoteUpdateManyWithWhereWithoutAdminInput | PaymentNoteUpdateManyWithWhereWithoutAdminInput[]
+    deleteMany?: PaymentNoteScalarWhereInput | PaymentNoteScalarWhereInput[]
+  }
+
   export type AccountUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<AccountCreateWithoutUserInput, AccountUncheckedCreateWithoutUserInput> | AccountCreateWithoutUserInput[] | AccountUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AccountCreateOrConnectWithoutUserInput | AccountCreateOrConnectWithoutUserInput[]
@@ -20319,6 +22049,20 @@ export namespace Prisma {
     update?: NotificationUpdateWithWhereUniqueWithoutUserInput | NotificationUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: NotificationUpdateManyWithWhereWithoutUserInput | NotificationUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
+  }
+
+  export type PaymentNoteUncheckedUpdateManyWithoutAdminNestedInput = {
+    create?: XOR<PaymentNoteCreateWithoutAdminInput, PaymentNoteUncheckedCreateWithoutAdminInput> | PaymentNoteCreateWithoutAdminInput[] | PaymentNoteUncheckedCreateWithoutAdminInput[]
+    connectOrCreate?: PaymentNoteCreateOrConnectWithoutAdminInput | PaymentNoteCreateOrConnectWithoutAdminInput[]
+    upsert?: PaymentNoteUpsertWithWhereUniqueWithoutAdminInput | PaymentNoteUpsertWithWhereUniqueWithoutAdminInput[]
+    createMany?: PaymentNoteCreateManyAdminInputEnvelope
+    set?: PaymentNoteWhereUniqueInput | PaymentNoteWhereUniqueInput[]
+    disconnect?: PaymentNoteWhereUniqueInput | PaymentNoteWhereUniqueInput[]
+    delete?: PaymentNoteWhereUniqueInput | PaymentNoteWhereUniqueInput[]
+    connect?: PaymentNoteWhereUniqueInput | PaymentNoteWhereUniqueInput[]
+    update?: PaymentNoteUpdateWithWhereUniqueWithoutAdminInput | PaymentNoteUpdateWithWhereUniqueWithoutAdminInput[]
+    updateMany?: PaymentNoteUpdateManyWithWhereWithoutAdminInput | PaymentNoteUpdateManyWithWhereWithoutAdminInput[]
+    deleteMany?: PaymentNoteScalarWhereInput | PaymentNoteScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutAccountsInput = {
@@ -20633,6 +22377,13 @@ export namespace Prisma {
     update?: XOR<XOR<ConversationUpdateToOneWithWhereWithoutBookingInput, ConversationUpdateWithoutBookingInput>, ConversationUncheckedUpdateWithoutBookingInput>
   }
 
+  export type PaymentNoteCreateNestedManyWithoutPaymentInput = {
+    create?: XOR<PaymentNoteCreateWithoutPaymentInput, PaymentNoteUncheckedCreateWithoutPaymentInput> | PaymentNoteCreateWithoutPaymentInput[] | PaymentNoteUncheckedCreateWithoutPaymentInput[]
+    connectOrCreate?: PaymentNoteCreateOrConnectWithoutPaymentInput | PaymentNoteCreateOrConnectWithoutPaymentInput[]
+    createMany?: PaymentNoteCreateManyPaymentInputEnvelope
+    connect?: PaymentNoteWhereUniqueInput | PaymentNoteWhereUniqueInput[]
+  }
+
   export type BookingCreateNestedOneWithoutPaymentsInput = {
     create?: XOR<BookingCreateWithoutPaymentsInput, BookingUncheckedCreateWithoutPaymentsInput>
     connectOrCreate?: BookingCreateOrConnectWithoutPaymentsInput
@@ -20651,8 +22402,33 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
+  export type PaymentNoteUncheckedCreateNestedManyWithoutPaymentInput = {
+    create?: XOR<PaymentNoteCreateWithoutPaymentInput, PaymentNoteUncheckedCreateWithoutPaymentInput> | PaymentNoteCreateWithoutPaymentInput[] | PaymentNoteUncheckedCreateWithoutPaymentInput[]
+    connectOrCreate?: PaymentNoteCreateOrConnectWithoutPaymentInput | PaymentNoteCreateOrConnectWithoutPaymentInput[]
+    createMany?: PaymentNoteCreateManyPaymentInputEnvelope
+    connect?: PaymentNoteWhereUniqueInput | PaymentNoteWhereUniqueInput[]
+  }
+
   export type EnumPaymentStatusFieldUpdateOperationsInput = {
     set?: $Enums.PaymentStatus
+  }
+
+  export type EnumPaymentMethodFieldUpdateOperationsInput = {
+    set?: $Enums.PaymentMethod
+  }
+
+  export type PaymentNoteUpdateManyWithoutPaymentNestedInput = {
+    create?: XOR<PaymentNoteCreateWithoutPaymentInput, PaymentNoteUncheckedCreateWithoutPaymentInput> | PaymentNoteCreateWithoutPaymentInput[] | PaymentNoteUncheckedCreateWithoutPaymentInput[]
+    connectOrCreate?: PaymentNoteCreateOrConnectWithoutPaymentInput | PaymentNoteCreateOrConnectWithoutPaymentInput[]
+    upsert?: PaymentNoteUpsertWithWhereUniqueWithoutPaymentInput | PaymentNoteUpsertWithWhereUniqueWithoutPaymentInput[]
+    createMany?: PaymentNoteCreateManyPaymentInputEnvelope
+    set?: PaymentNoteWhereUniqueInput | PaymentNoteWhereUniqueInput[]
+    disconnect?: PaymentNoteWhereUniqueInput | PaymentNoteWhereUniqueInput[]
+    delete?: PaymentNoteWhereUniqueInput | PaymentNoteWhereUniqueInput[]
+    connect?: PaymentNoteWhereUniqueInput | PaymentNoteWhereUniqueInput[]
+    update?: PaymentNoteUpdateWithWhereUniqueWithoutPaymentInput | PaymentNoteUpdateWithWhereUniqueWithoutPaymentInput[]
+    updateMany?: PaymentNoteUpdateManyWithWhereWithoutPaymentInput | PaymentNoteUpdateManyWithWhereWithoutPaymentInput[]
+    deleteMany?: PaymentNoteScalarWhereInput | PaymentNoteScalarWhereInput[]
   }
 
   export type BookingUpdateOneRequiredWithoutPaymentsNestedInput = {
@@ -20677,6 +22453,48 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutReceivedPaymentsInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutReceivedPaymentsInput, UserUpdateWithoutReceivedPaymentsInput>, UserUncheckedUpdateWithoutReceivedPaymentsInput>
+  }
+
+  export type PaymentNoteUncheckedUpdateManyWithoutPaymentNestedInput = {
+    create?: XOR<PaymentNoteCreateWithoutPaymentInput, PaymentNoteUncheckedCreateWithoutPaymentInput> | PaymentNoteCreateWithoutPaymentInput[] | PaymentNoteUncheckedCreateWithoutPaymentInput[]
+    connectOrCreate?: PaymentNoteCreateOrConnectWithoutPaymentInput | PaymentNoteCreateOrConnectWithoutPaymentInput[]
+    upsert?: PaymentNoteUpsertWithWhereUniqueWithoutPaymentInput | PaymentNoteUpsertWithWhereUniqueWithoutPaymentInput[]
+    createMany?: PaymentNoteCreateManyPaymentInputEnvelope
+    set?: PaymentNoteWhereUniqueInput | PaymentNoteWhereUniqueInput[]
+    disconnect?: PaymentNoteWhereUniqueInput | PaymentNoteWhereUniqueInput[]
+    delete?: PaymentNoteWhereUniqueInput | PaymentNoteWhereUniqueInput[]
+    connect?: PaymentNoteWhereUniqueInput | PaymentNoteWhereUniqueInput[]
+    update?: PaymentNoteUpdateWithWhereUniqueWithoutPaymentInput | PaymentNoteUpdateWithWhereUniqueWithoutPaymentInput[]
+    updateMany?: PaymentNoteUpdateManyWithWhereWithoutPaymentInput | PaymentNoteUpdateManyWithWhereWithoutPaymentInput[]
+    deleteMany?: PaymentNoteScalarWhereInput | PaymentNoteScalarWhereInput[]
+  }
+
+  export type PaymentCreateNestedOneWithoutNotesInput = {
+    create?: XOR<PaymentCreateWithoutNotesInput, PaymentUncheckedCreateWithoutNotesInput>
+    connectOrCreate?: PaymentCreateOrConnectWithoutNotesInput
+    connect?: PaymentWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutAdminNotesInput = {
+    create?: XOR<UserCreateWithoutAdminNotesInput, UserUncheckedCreateWithoutAdminNotesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutAdminNotesInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type PaymentUpdateOneRequiredWithoutNotesNestedInput = {
+    create?: XOR<PaymentCreateWithoutNotesInput, PaymentUncheckedCreateWithoutNotesInput>
+    connectOrCreate?: PaymentCreateOrConnectWithoutNotesInput
+    upsert?: PaymentUpsertWithoutNotesInput
+    connect?: PaymentWhereUniqueInput
+    update?: XOR<XOR<PaymentUpdateToOneWithWhereWithoutNotesInput, PaymentUpdateWithoutNotesInput>, PaymentUncheckedUpdateWithoutNotesInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutAdminNotesNestedInput = {
+    create?: XOR<UserCreateWithoutAdminNotesInput, UserUncheckedCreateWithoutAdminNotesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutAdminNotesInput
+    upsert?: UserUpsertWithoutAdminNotesInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutAdminNotesInput, UserUpdateWithoutAdminNotesInput>, UserUncheckedUpdateWithoutAdminNotesInput>
   }
 
   export type BookingCreateNestedOneWithoutMessagesInput = {
@@ -21184,6 +23002,13 @@ export namespace Prisma {
     not?: NestedEnumPaymentStatusFilter<$PrismaModel> | $Enums.PaymentStatus
   }
 
+  export type NestedEnumPaymentMethodFilter<$PrismaModel = never> = {
+    equals?: $Enums.PaymentMethod | EnumPaymentMethodFieldRefInput<$PrismaModel>
+    in?: $Enums.PaymentMethod[]
+    notIn?: $Enums.PaymentMethod[]
+    not?: NestedEnumPaymentMethodFilter<$PrismaModel> | $Enums.PaymentMethod
+  }
+
   export type NestedEnumPaymentStatusWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.PaymentStatus | EnumPaymentStatusFieldRefInput<$PrismaModel>
     in?: $Enums.PaymentStatus[]
@@ -21192,6 +23017,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumPaymentStatusFilter<$PrismaModel>
     _max?: NestedEnumPaymentStatusFilter<$PrismaModel>
+  }
+
+  export type NestedEnumPaymentMethodWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PaymentMethod | EnumPaymentMethodFieldRefInput<$PrismaModel>
+    in?: $Enums.PaymentMethod[]
+    notIn?: $Enums.PaymentMethod[]
+    not?: NestedEnumPaymentMethodWithAggregatesFilter<$PrismaModel> | $Enums.PaymentMethod
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPaymentMethodFilter<$PrismaModel>
+    _max?: NestedEnumPaymentMethodFilter<$PrismaModel>
   }
 
   export type NestedEnumConversationStatusFilter<$PrismaModel = never> = {
@@ -21502,9 +23337,18 @@ export namespace Prisma {
     id?: string
     amount: number
     status?: $Enums.PaymentStatus
+    paymentMethod?: $Enums.PaymentMethod
     paymentDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    referenceCode?: string | null
+    transactionId?: string | null
+    metadata?: string | null
+    verifiedBy?: string | null
+    verifiedAt?: Date | string | null
+    flagged?: boolean
+    flagReason?: string | null
+    notes?: PaymentNoteCreateNestedManyWithoutPaymentInput
     booking: BookingCreateNestedOneWithoutPaymentsInput
     receiver: UserCreateNestedOneWithoutReceivedPaymentsInput
   }
@@ -21513,11 +23357,20 @@ export namespace Prisma {
     id?: string
     amount: number
     status?: $Enums.PaymentStatus
+    paymentMethod?: $Enums.PaymentMethod
     paymentDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     bookingId: string
     receiverId: string
+    referenceCode?: string | null
+    transactionId?: string | null
+    metadata?: string | null
+    verifiedBy?: string | null
+    verifiedAt?: Date | string | null
+    flagged?: boolean
+    flagReason?: string | null
+    notes?: PaymentNoteUncheckedCreateNestedManyWithoutPaymentInput
   }
 
   export type PaymentCreateOrConnectWithoutPayerInput = {
@@ -21533,9 +23386,18 @@ export namespace Prisma {
     id?: string
     amount: number
     status?: $Enums.PaymentStatus
+    paymentMethod?: $Enums.PaymentMethod
     paymentDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    referenceCode?: string | null
+    transactionId?: string | null
+    metadata?: string | null
+    verifiedBy?: string | null
+    verifiedAt?: Date | string | null
+    flagged?: boolean
+    flagReason?: string | null
+    notes?: PaymentNoteCreateNestedManyWithoutPaymentInput
     booking: BookingCreateNestedOneWithoutPaymentsInput
     payer: UserCreateNestedOneWithoutPaymentsInput
   }
@@ -21544,11 +23406,20 @@ export namespace Prisma {
     id?: string
     amount: number
     status?: $Enums.PaymentStatus
+    paymentMethod?: $Enums.PaymentMethod
     paymentDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     bookingId: string
     payerId: string
+    referenceCode?: string | null
+    transactionId?: string | null
+    metadata?: string | null
+    verifiedBy?: string | null
+    verifiedAt?: Date | string | null
+    flagged?: boolean
+    flagReason?: string | null
+    notes?: PaymentNoteUncheckedCreateNestedManyWithoutPaymentInput
   }
 
   export type PaymentCreateOrConnectWithoutReceiverInput = {
@@ -21703,6 +23574,29 @@ export namespace Prisma {
 
   export type NotificationCreateManyUserInputEnvelope = {
     data: NotificationCreateManyUserInput | NotificationCreateManyUserInput[]
+  }
+
+  export type PaymentNoteCreateWithoutAdminInput = {
+    id?: string
+    createdAt?: Date | string
+    content: string
+    payment: PaymentCreateNestedOneWithoutNotesInput
+  }
+
+  export type PaymentNoteUncheckedCreateWithoutAdminInput = {
+    id?: string
+    createdAt?: Date | string
+    content: string
+    paymentId: string
+  }
+
+  export type PaymentNoteCreateOrConnectWithoutAdminInput = {
+    where: PaymentNoteWhereUniqueInput
+    create: XOR<PaymentNoteCreateWithoutAdminInput, PaymentNoteUncheckedCreateWithoutAdminInput>
+  }
+
+  export type PaymentNoteCreateManyAdminInputEnvelope = {
+    data: PaymentNoteCreateManyAdminInput | PaymentNoteCreateManyAdminInput[]
   }
 
   export type AccountUpsertWithWhereUniqueWithoutUserInput = {
@@ -21923,12 +23817,20 @@ export namespace Prisma {
     id?: StringFilter<"Payment"> | string
     amount?: FloatFilter<"Payment"> | number
     status?: EnumPaymentStatusFilter<"Payment"> | $Enums.PaymentStatus
+    paymentMethod?: EnumPaymentMethodFilter<"Payment"> | $Enums.PaymentMethod
     paymentDate?: DateTimeNullableFilter<"Payment"> | Date | string | null
     createdAt?: DateTimeFilter<"Payment"> | Date | string
     updatedAt?: DateTimeFilter<"Payment"> | Date | string
     bookingId?: StringFilter<"Payment"> | string
     payerId?: StringFilter<"Payment"> | string
     receiverId?: StringFilter<"Payment"> | string
+    referenceCode?: StringNullableFilter<"Payment"> | string | null
+    transactionId?: StringNullableFilter<"Payment"> | string | null
+    metadata?: StringNullableFilter<"Payment"> | string | null
+    verifiedBy?: StringNullableFilter<"Payment"> | string | null
+    verifiedAt?: DateTimeNullableFilter<"Payment"> | Date | string | null
+    flagged?: BoolFilter<"Payment"> | boolean
+    flagReason?: StringNullableFilter<"Payment"> | string | null
   }
 
   export type PaymentUpsertWithWhereUniqueWithoutReceiverInput = {
@@ -22081,6 +23983,33 @@ export namespace Prisma {
     userId?: StringFilter<"Notification"> | string
   }
 
+  export type PaymentNoteUpsertWithWhereUniqueWithoutAdminInput = {
+    where: PaymentNoteWhereUniqueInput
+    update: XOR<PaymentNoteUpdateWithoutAdminInput, PaymentNoteUncheckedUpdateWithoutAdminInput>
+    create: XOR<PaymentNoteCreateWithoutAdminInput, PaymentNoteUncheckedCreateWithoutAdminInput>
+  }
+
+  export type PaymentNoteUpdateWithWhereUniqueWithoutAdminInput = {
+    where: PaymentNoteWhereUniqueInput
+    data: XOR<PaymentNoteUpdateWithoutAdminInput, PaymentNoteUncheckedUpdateWithoutAdminInput>
+  }
+
+  export type PaymentNoteUpdateManyWithWhereWithoutAdminInput = {
+    where: PaymentNoteScalarWhereInput
+    data: XOR<PaymentNoteUpdateManyMutationInput, PaymentNoteUncheckedUpdateManyWithoutAdminInput>
+  }
+
+  export type PaymentNoteScalarWhereInput = {
+    AND?: PaymentNoteScalarWhereInput | PaymentNoteScalarWhereInput[]
+    OR?: PaymentNoteScalarWhereInput[]
+    NOT?: PaymentNoteScalarWhereInput | PaymentNoteScalarWhereInput[]
+    id?: StringFilter<"PaymentNote"> | string
+    createdAt?: DateTimeFilter<"PaymentNote"> | Date | string
+    content?: StringFilter<"PaymentNote"> | string
+    paymentId?: StringFilter<"PaymentNote"> | string
+    adminId?: StringFilter<"PaymentNote"> | string
+  }
+
   export type UserCreateWithoutAccountsInput = {
     id?: string
     name?: string | null
@@ -22111,6 +24040,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageCreateNestedManyWithoutSenderInput
     securityLogs?: SecurityLogCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    adminNotes?: PaymentNoteCreateNestedManyWithoutAdminInput
   }
 
   export type UserUncheckedCreateWithoutAccountsInput = {
@@ -22143,6 +24073,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageUncheckedCreateNestedManyWithoutSenderInput
     securityLogs?: SecurityLogUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    adminNotes?: PaymentNoteUncheckedCreateNestedManyWithoutAdminInput
   }
 
   export type UserCreateOrConnectWithoutAccountsInput = {
@@ -22191,6 +24122,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageUpdateManyWithoutSenderNestedInput
     securityLogs?: SecurityLogUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    adminNotes?: PaymentNoteUpdateManyWithoutAdminNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -22223,6 +24155,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageUncheckedUpdateManyWithoutSenderNestedInput
     securityLogs?: SecurityLogUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    adminNotes?: PaymentNoteUncheckedUpdateManyWithoutAdminNestedInput
   }
 
   export type UserCreateWithoutSessionsInput = {
@@ -22255,6 +24188,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageCreateNestedManyWithoutSenderInput
     securityLogs?: SecurityLogCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    adminNotes?: PaymentNoteCreateNestedManyWithoutAdminInput
   }
 
   export type UserUncheckedCreateWithoutSessionsInput = {
@@ -22287,6 +24221,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageUncheckedCreateNestedManyWithoutSenderInput
     securityLogs?: SecurityLogUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    adminNotes?: PaymentNoteUncheckedCreateNestedManyWithoutAdminInput
   }
 
   export type UserCreateOrConnectWithoutSessionsInput = {
@@ -22335,6 +24270,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageUpdateManyWithoutSenderNestedInput
     securityLogs?: SecurityLogUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    adminNotes?: PaymentNoteUpdateManyWithoutAdminNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -22367,6 +24303,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageUncheckedUpdateManyWithoutSenderNestedInput
     securityLogs?: SecurityLogUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    adminNotes?: PaymentNoteUncheckedUpdateManyWithoutAdminNestedInput
   }
 
   export type UserCreateWithoutListingsInput = {
@@ -22399,6 +24336,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageCreateNestedManyWithoutSenderInput
     securityLogs?: SecurityLogCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    adminNotes?: PaymentNoteCreateNestedManyWithoutAdminInput
   }
 
   export type UserUncheckedCreateWithoutListingsInput = {
@@ -22431,6 +24369,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageUncheckedCreateNestedManyWithoutSenderInput
     securityLogs?: SecurityLogUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    adminNotes?: PaymentNoteUncheckedCreateNestedManyWithoutAdminInput
   }
 
   export type UserCreateOrConnectWithoutListingsInput = {
@@ -22549,6 +24488,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageUpdateManyWithoutSenderNestedInput
     securityLogs?: SecurityLogUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    adminNotes?: PaymentNoteUpdateManyWithoutAdminNestedInput
   }
 
   export type UserUncheckedUpdateWithoutListingsInput = {
@@ -22581,6 +24521,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageUncheckedUpdateManyWithoutSenderNestedInput
     securityLogs?: SecurityLogUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    adminNotes?: PaymentNoteUncheckedUpdateManyWithoutAdminNestedInput
   }
 
   export type BookingUpsertWithWhereUniqueWithoutListingInput = {
@@ -22645,6 +24586,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageCreateNestedManyWithoutSenderInput
     securityLogs?: SecurityLogCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    adminNotes?: PaymentNoteCreateNestedManyWithoutAdminInput
   }
 
   export type UserUncheckedCreateWithoutBookingsInput = {
@@ -22677,6 +24619,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageUncheckedCreateNestedManyWithoutSenderInput
     securityLogs?: SecurityLogUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    adminNotes?: PaymentNoteUncheckedCreateNestedManyWithoutAdminInput
   }
 
   export type UserCreateOrConnectWithoutBookingsInput = {
@@ -22714,6 +24657,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageCreateNestedManyWithoutSenderInput
     securityLogs?: SecurityLogCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    adminNotes?: PaymentNoteCreateNestedManyWithoutAdminInput
   }
 
   export type UserUncheckedCreateWithoutReceivedBookingsInput = {
@@ -22746,6 +24690,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageUncheckedCreateNestedManyWithoutSenderInput
     securityLogs?: SecurityLogUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    adminNotes?: PaymentNoteUncheckedCreateNestedManyWithoutAdminInput
   }
 
   export type UserCreateOrConnectWithoutReceivedBookingsInput = {
@@ -22804,9 +24749,18 @@ export namespace Prisma {
     id?: string
     amount: number
     status?: $Enums.PaymentStatus
+    paymentMethod?: $Enums.PaymentMethod
     paymentDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    referenceCode?: string | null
+    transactionId?: string | null
+    metadata?: string | null
+    verifiedBy?: string | null
+    verifiedAt?: Date | string | null
+    flagged?: boolean
+    flagReason?: string | null
+    notes?: PaymentNoteCreateNestedManyWithoutPaymentInput
     payer: UserCreateNestedOneWithoutPaymentsInput
     receiver: UserCreateNestedOneWithoutReceivedPaymentsInput
   }
@@ -22815,11 +24769,20 @@ export namespace Prisma {
     id?: string
     amount: number
     status?: $Enums.PaymentStatus
+    paymentMethod?: $Enums.PaymentMethod
     paymentDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     payerId: string
     receiverId: string
+    referenceCode?: string | null
+    transactionId?: string | null
+    metadata?: string | null
+    verifiedBy?: string | null
+    verifiedAt?: Date | string | null
+    flagged?: boolean
+    flagReason?: string | null
+    notes?: PaymentNoteUncheckedCreateNestedManyWithoutPaymentInput
   }
 
   export type PaymentCreateOrConnectWithoutBookingInput = {
@@ -22932,6 +24895,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageUpdateManyWithoutSenderNestedInput
     securityLogs?: SecurityLogUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    adminNotes?: PaymentNoteUpdateManyWithoutAdminNestedInput
   }
 
   export type UserUncheckedUpdateWithoutBookingsInput = {
@@ -22964,6 +24928,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageUncheckedUpdateManyWithoutSenderNestedInput
     securityLogs?: SecurityLogUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    adminNotes?: PaymentNoteUncheckedUpdateManyWithoutAdminNestedInput
   }
 
   export type UserUpsertWithoutReceivedBookingsInput = {
@@ -23007,6 +24972,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageUpdateManyWithoutSenderNestedInput
     securityLogs?: SecurityLogUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    adminNotes?: PaymentNoteUpdateManyWithoutAdminNestedInput
   }
 
   export type UserUncheckedUpdateWithoutReceivedBookingsInput = {
@@ -23039,6 +25005,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageUncheckedUpdateManyWithoutSenderNestedInput
     securityLogs?: SecurityLogUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    adminNotes?: PaymentNoteUncheckedUpdateManyWithoutAdminNestedInput
   }
 
   export type ListingUpsertWithoutBookingsInput = {
@@ -23159,6 +25126,29 @@ export namespace Prisma {
     messages?: ConversationMessageUncheckedUpdateManyWithoutConversationNestedInput
   }
 
+  export type PaymentNoteCreateWithoutPaymentInput = {
+    id?: string
+    createdAt?: Date | string
+    content: string
+    admin: UserCreateNestedOneWithoutAdminNotesInput
+  }
+
+  export type PaymentNoteUncheckedCreateWithoutPaymentInput = {
+    id?: string
+    createdAt?: Date | string
+    content: string
+    adminId: string
+  }
+
+  export type PaymentNoteCreateOrConnectWithoutPaymentInput = {
+    where: PaymentNoteWhereUniqueInput
+    create: XOR<PaymentNoteCreateWithoutPaymentInput, PaymentNoteUncheckedCreateWithoutPaymentInput>
+  }
+
+  export type PaymentNoteCreateManyPaymentInputEnvelope = {
+    data: PaymentNoteCreateManyPaymentInput | PaymentNoteCreateManyPaymentInput[]
+  }
+
   export type BookingCreateWithoutPaymentsInput = {
     id?: string
     startDate: Date | string
@@ -23224,6 +25214,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageCreateNestedManyWithoutSenderInput
     securityLogs?: SecurityLogCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    adminNotes?: PaymentNoteCreateNestedManyWithoutAdminInput
   }
 
   export type UserUncheckedCreateWithoutPaymentsInput = {
@@ -23256,6 +25247,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageUncheckedCreateNestedManyWithoutSenderInput
     securityLogs?: SecurityLogUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    adminNotes?: PaymentNoteUncheckedCreateNestedManyWithoutAdminInput
   }
 
   export type UserCreateOrConnectWithoutPaymentsInput = {
@@ -23293,6 +25285,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageCreateNestedManyWithoutSenderInput
     securityLogs?: SecurityLogCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    adminNotes?: PaymentNoteCreateNestedManyWithoutAdminInput
   }
 
   export type UserUncheckedCreateWithoutReceivedPaymentsInput = {
@@ -23325,11 +25318,28 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageUncheckedCreateNestedManyWithoutSenderInput
     securityLogs?: SecurityLogUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    adminNotes?: PaymentNoteUncheckedCreateNestedManyWithoutAdminInput
   }
 
   export type UserCreateOrConnectWithoutReceivedPaymentsInput = {
     where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutReceivedPaymentsInput, UserUncheckedCreateWithoutReceivedPaymentsInput>
+  }
+
+  export type PaymentNoteUpsertWithWhereUniqueWithoutPaymentInput = {
+    where: PaymentNoteWhereUniqueInput
+    update: XOR<PaymentNoteUpdateWithoutPaymentInput, PaymentNoteUncheckedUpdateWithoutPaymentInput>
+    create: XOR<PaymentNoteCreateWithoutPaymentInput, PaymentNoteUncheckedCreateWithoutPaymentInput>
+  }
+
+  export type PaymentNoteUpdateWithWhereUniqueWithoutPaymentInput = {
+    where: PaymentNoteWhereUniqueInput
+    data: XOR<PaymentNoteUpdateWithoutPaymentInput, PaymentNoteUncheckedUpdateWithoutPaymentInput>
+  }
+
+  export type PaymentNoteUpdateManyWithWhereWithoutPaymentInput = {
+    where: PaymentNoteScalarWhereInput
+    data: XOR<PaymentNoteUpdateManyMutationInput, PaymentNoteUncheckedUpdateManyWithoutPaymentInput>
   }
 
   export type BookingUpsertWithoutPaymentsInput = {
@@ -23414,6 +25424,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageUpdateManyWithoutSenderNestedInput
     securityLogs?: SecurityLogUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    adminNotes?: PaymentNoteUpdateManyWithoutAdminNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPaymentsInput = {
@@ -23446,6 +25457,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageUncheckedUpdateManyWithoutSenderNestedInput
     securityLogs?: SecurityLogUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    adminNotes?: PaymentNoteUncheckedUpdateManyWithoutAdminNestedInput
   }
 
   export type UserUpsertWithoutReceivedPaymentsInput = {
@@ -23489,6 +25501,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageUpdateManyWithoutSenderNestedInput
     securityLogs?: SecurityLogUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    adminNotes?: PaymentNoteUpdateManyWithoutAdminNestedInput
   }
 
   export type UserUncheckedUpdateWithoutReceivedPaymentsInput = {
@@ -23516,6 +25529,251 @@ export namespace Prisma {
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
     receivedMessages?: MessageUncheckedUpdateManyWithoutReceiverNestedInput
     payments?: PaymentUncheckedUpdateManyWithoutPayerNestedInput
+    startedConversations?: ConversationUncheckedUpdateManyWithoutStarterNestedInput
+    receivedConversations?: ConversationUncheckedUpdateManyWithoutReceiverNestedInput
+    conversationMessages?: ConversationMessageUncheckedUpdateManyWithoutSenderNestedInput
+    securityLogs?: SecurityLogUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    adminNotes?: PaymentNoteUncheckedUpdateManyWithoutAdminNestedInput
+  }
+
+  export type PaymentCreateWithoutNotesInput = {
+    id?: string
+    amount: number
+    status?: $Enums.PaymentStatus
+    paymentMethod?: $Enums.PaymentMethod
+    paymentDate?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referenceCode?: string | null
+    transactionId?: string | null
+    metadata?: string | null
+    verifiedBy?: string | null
+    verifiedAt?: Date | string | null
+    flagged?: boolean
+    flagReason?: string | null
+    booking: BookingCreateNestedOneWithoutPaymentsInput
+    payer: UserCreateNestedOneWithoutPaymentsInput
+    receiver: UserCreateNestedOneWithoutReceivedPaymentsInput
+  }
+
+  export type PaymentUncheckedCreateWithoutNotesInput = {
+    id?: string
+    amount: number
+    status?: $Enums.PaymentStatus
+    paymentMethod?: $Enums.PaymentMethod
+    paymentDate?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    bookingId: string
+    payerId: string
+    receiverId: string
+    referenceCode?: string | null
+    transactionId?: string | null
+    metadata?: string | null
+    verifiedBy?: string | null
+    verifiedAt?: Date | string | null
+    flagged?: boolean
+    flagReason?: string | null
+  }
+
+  export type PaymentCreateOrConnectWithoutNotesInput = {
+    where: PaymentWhereUniqueInput
+    create: XOR<PaymentCreateWithoutNotesInput, PaymentUncheckedCreateWithoutNotesInput>
+  }
+
+  export type UserCreateWithoutAdminNotesInput = {
+    id?: string
+    name?: string | null
+    email?: string | null
+    emailVerified?: Date | string | null
+    image?: string | null
+    hashedPassword?: string | null
+    role?: $Enums.Role
+    status?: $Enums.UserStatus
+    isVerified?: boolean
+    verificationDocuments?: string | null
+    suspendedUntil?: Date | string | null
+    suspensionReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    phoneNumber?: string | null
+    phoneVerified?: boolean
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    listings?: ListingCreateNestedManyWithoutOwnerInput
+    bookings?: BookingCreateNestedManyWithoutRenterInput
+    receivedBookings?: BookingCreateNestedManyWithoutOwnerInput
+    sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    receivedMessages?: MessageCreateNestedManyWithoutReceiverInput
+    payments?: PaymentCreateNestedManyWithoutPayerInput
+    receivedPayments?: PaymentCreateNestedManyWithoutReceiverInput
+    startedConversations?: ConversationCreateNestedManyWithoutStarterInput
+    receivedConversations?: ConversationCreateNestedManyWithoutReceiverInput
+    conversationMessages?: ConversationMessageCreateNestedManyWithoutSenderInput
+    securityLogs?: SecurityLogCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutAdminNotesInput = {
+    id?: string
+    name?: string | null
+    email?: string | null
+    emailVerified?: Date | string | null
+    image?: string | null
+    hashedPassword?: string | null
+    role?: $Enums.Role
+    status?: $Enums.UserStatus
+    isVerified?: boolean
+    verificationDocuments?: string | null
+    suspendedUntil?: Date | string | null
+    suspensionReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    phoneNumber?: string | null
+    phoneVerified?: boolean
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    listings?: ListingUncheckedCreateNestedManyWithoutOwnerInput
+    bookings?: BookingUncheckedCreateNestedManyWithoutRenterInput
+    receivedBookings?: BookingUncheckedCreateNestedManyWithoutOwnerInput
+    sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    receivedMessages?: MessageUncheckedCreateNestedManyWithoutReceiverInput
+    payments?: PaymentUncheckedCreateNestedManyWithoutPayerInput
+    receivedPayments?: PaymentUncheckedCreateNestedManyWithoutReceiverInput
+    startedConversations?: ConversationUncheckedCreateNestedManyWithoutStarterInput
+    receivedConversations?: ConversationUncheckedCreateNestedManyWithoutReceiverInput
+    conversationMessages?: ConversationMessageUncheckedCreateNestedManyWithoutSenderInput
+    securityLogs?: SecurityLogUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutAdminNotesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutAdminNotesInput, UserUncheckedCreateWithoutAdminNotesInput>
+  }
+
+  export type PaymentUpsertWithoutNotesInput = {
+    update: XOR<PaymentUpdateWithoutNotesInput, PaymentUncheckedUpdateWithoutNotesInput>
+    create: XOR<PaymentCreateWithoutNotesInput, PaymentUncheckedCreateWithoutNotesInput>
+    where?: PaymentWhereInput
+  }
+
+  export type PaymentUpdateToOneWithWhereWithoutNotesInput = {
+    where?: PaymentWhereInput
+    data: XOR<PaymentUpdateWithoutNotesInput, PaymentUncheckedUpdateWithoutNotesInput>
+  }
+
+  export type PaymentUpdateWithoutNotesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentMethod?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+    paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referenceCode?: NullableStringFieldUpdateOperationsInput | string | null
+    transactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableStringFieldUpdateOperationsInput | string | null
+    verifiedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    flagged?: BoolFieldUpdateOperationsInput | boolean
+    flagReason?: NullableStringFieldUpdateOperationsInput | string | null
+    booking?: BookingUpdateOneRequiredWithoutPaymentsNestedInput
+    payer?: UserUpdateOneRequiredWithoutPaymentsNestedInput
+    receiver?: UserUpdateOneRequiredWithoutReceivedPaymentsNestedInput
+  }
+
+  export type PaymentUncheckedUpdateWithoutNotesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentMethod?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+    paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    bookingId?: StringFieldUpdateOperationsInput | string
+    payerId?: StringFieldUpdateOperationsInput | string
+    receiverId?: StringFieldUpdateOperationsInput | string
+    referenceCode?: NullableStringFieldUpdateOperationsInput | string | null
+    transactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableStringFieldUpdateOperationsInput | string | null
+    verifiedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    flagged?: BoolFieldUpdateOperationsInput | boolean
+    flagReason?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type UserUpsertWithoutAdminNotesInput = {
+    update: XOR<UserUpdateWithoutAdminNotesInput, UserUncheckedUpdateWithoutAdminNotesInput>
+    create: XOR<UserCreateWithoutAdminNotesInput, UserUncheckedCreateWithoutAdminNotesInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutAdminNotesInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutAdminNotesInput, UserUncheckedUpdateWithoutAdminNotesInput>
+  }
+
+  export type UserUpdateWithoutAdminNotesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    hashedPassword?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    status?: EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    verificationDocuments?: NullableStringFieldUpdateOperationsInput | string | null
+    suspendedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspensionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    phoneVerified?: BoolFieldUpdateOperationsInput | boolean
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    listings?: ListingUpdateManyWithoutOwnerNestedInput
+    bookings?: BookingUpdateManyWithoutRenterNestedInput
+    receivedBookings?: BookingUpdateManyWithoutOwnerNestedInput
+    sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    receivedMessages?: MessageUpdateManyWithoutReceiverNestedInput
+    payments?: PaymentUpdateManyWithoutPayerNestedInput
+    receivedPayments?: PaymentUpdateManyWithoutReceiverNestedInput
+    startedConversations?: ConversationUpdateManyWithoutStarterNestedInput
+    receivedConversations?: ConversationUpdateManyWithoutReceiverNestedInput
+    conversationMessages?: ConversationMessageUpdateManyWithoutSenderNestedInput
+    securityLogs?: SecurityLogUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutAdminNotesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    hashedPassword?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    status?: EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    verificationDocuments?: NullableStringFieldUpdateOperationsInput | string | null
+    suspendedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspensionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    phoneVerified?: BoolFieldUpdateOperationsInput | boolean
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    listings?: ListingUncheckedUpdateManyWithoutOwnerNestedInput
+    bookings?: BookingUncheckedUpdateManyWithoutRenterNestedInput
+    receivedBookings?: BookingUncheckedUpdateManyWithoutOwnerNestedInput
+    sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    receivedMessages?: MessageUncheckedUpdateManyWithoutReceiverNestedInput
+    payments?: PaymentUncheckedUpdateManyWithoutPayerNestedInput
+    receivedPayments?: PaymentUncheckedUpdateManyWithoutReceiverNestedInput
     startedConversations?: ConversationUncheckedUpdateManyWithoutStarterNestedInput
     receivedConversations?: ConversationUncheckedUpdateManyWithoutReceiverNestedInput
     conversationMessages?: ConversationMessageUncheckedUpdateManyWithoutSenderNestedInput
@@ -23588,6 +25846,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageCreateNestedManyWithoutSenderInput
     securityLogs?: SecurityLogCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    adminNotes?: PaymentNoteCreateNestedManyWithoutAdminInput
   }
 
   export type UserUncheckedCreateWithoutSentMessagesInput = {
@@ -23620,6 +25879,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageUncheckedCreateNestedManyWithoutSenderInput
     securityLogs?: SecurityLogUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    adminNotes?: PaymentNoteUncheckedCreateNestedManyWithoutAdminInput
   }
 
   export type UserCreateOrConnectWithoutSentMessagesInput = {
@@ -23657,6 +25917,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageCreateNestedManyWithoutSenderInput
     securityLogs?: SecurityLogCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    adminNotes?: PaymentNoteCreateNestedManyWithoutAdminInput
   }
 
   export type UserUncheckedCreateWithoutReceivedMessagesInput = {
@@ -23689,6 +25950,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageUncheckedCreateNestedManyWithoutSenderInput
     securityLogs?: SecurityLogUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    adminNotes?: PaymentNoteUncheckedCreateNestedManyWithoutAdminInput
   }
 
   export type UserCreateOrConnectWithoutReceivedMessagesInput = {
@@ -23778,6 +26040,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageUpdateManyWithoutSenderNestedInput
     securityLogs?: SecurityLogUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    adminNotes?: PaymentNoteUpdateManyWithoutAdminNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSentMessagesInput = {
@@ -23810,6 +26073,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageUncheckedUpdateManyWithoutSenderNestedInput
     securityLogs?: SecurityLogUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    adminNotes?: PaymentNoteUncheckedUpdateManyWithoutAdminNestedInput
   }
 
   export type UserUpsertWithoutReceivedMessagesInput = {
@@ -23853,6 +26117,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageUpdateManyWithoutSenderNestedInput
     securityLogs?: SecurityLogUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    adminNotes?: PaymentNoteUpdateManyWithoutAdminNestedInput
   }
 
   export type UserUncheckedUpdateWithoutReceivedMessagesInput = {
@@ -23885,6 +26150,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageUncheckedUpdateManyWithoutSenderNestedInput
     securityLogs?: SecurityLogUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    adminNotes?: PaymentNoteUncheckedUpdateManyWithoutAdminNestedInput
   }
 
   export type UserCreateWithoutStartedConversationsInput = {
@@ -23917,6 +26183,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageCreateNestedManyWithoutSenderInput
     securityLogs?: SecurityLogCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    adminNotes?: PaymentNoteCreateNestedManyWithoutAdminInput
   }
 
   export type UserUncheckedCreateWithoutStartedConversationsInput = {
@@ -23949,6 +26216,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageUncheckedCreateNestedManyWithoutSenderInput
     securityLogs?: SecurityLogUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    adminNotes?: PaymentNoteUncheckedCreateNestedManyWithoutAdminInput
   }
 
   export type UserCreateOrConnectWithoutStartedConversationsInput = {
@@ -23986,6 +26254,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageCreateNestedManyWithoutSenderInput
     securityLogs?: SecurityLogCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    adminNotes?: PaymentNoteCreateNestedManyWithoutAdminInput
   }
 
   export type UserUncheckedCreateWithoutReceivedConversationsInput = {
@@ -24018,6 +26287,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageUncheckedCreateNestedManyWithoutSenderInput
     securityLogs?: SecurityLogUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    adminNotes?: PaymentNoteUncheckedCreateNestedManyWithoutAdminInput
   }
 
   export type UserCreateOrConnectWithoutReceivedConversationsInput = {
@@ -24179,6 +26449,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageUpdateManyWithoutSenderNestedInput
     securityLogs?: SecurityLogUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    adminNotes?: PaymentNoteUpdateManyWithoutAdminNestedInput
   }
 
   export type UserUncheckedUpdateWithoutStartedConversationsInput = {
@@ -24211,6 +26482,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageUncheckedUpdateManyWithoutSenderNestedInput
     securityLogs?: SecurityLogUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    adminNotes?: PaymentNoteUncheckedUpdateManyWithoutAdminNestedInput
   }
 
   export type UserUpsertWithoutReceivedConversationsInput = {
@@ -24254,6 +26526,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageUpdateManyWithoutSenderNestedInput
     securityLogs?: SecurityLogUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    adminNotes?: PaymentNoteUpdateManyWithoutAdminNestedInput
   }
 
   export type UserUncheckedUpdateWithoutReceivedConversationsInput = {
@@ -24286,6 +26559,7 @@ export namespace Prisma {
     conversationMessages?: ConversationMessageUncheckedUpdateManyWithoutSenderNestedInput
     securityLogs?: SecurityLogUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    adminNotes?: PaymentNoteUncheckedUpdateManyWithoutAdminNestedInput
   }
 
   export type ListingUpsertWithoutConversationsInput = {
@@ -24455,6 +26729,7 @@ export namespace Prisma {
     receivedConversations?: ConversationCreateNestedManyWithoutReceiverInput
     securityLogs?: SecurityLogCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    adminNotes?: PaymentNoteCreateNestedManyWithoutAdminInput
   }
 
   export type UserUncheckedCreateWithoutConversationMessagesInput = {
@@ -24487,6 +26762,7 @@ export namespace Prisma {
     receivedConversations?: ConversationUncheckedCreateNestedManyWithoutReceiverInput
     securityLogs?: SecurityLogUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    adminNotes?: PaymentNoteUncheckedCreateNestedManyWithoutAdminInput
   }
 
   export type UserCreateOrConnectWithoutConversationMessagesInput = {
@@ -24568,6 +26844,7 @@ export namespace Prisma {
     receivedConversations?: ConversationUpdateManyWithoutReceiverNestedInput
     securityLogs?: SecurityLogUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    adminNotes?: PaymentNoteUpdateManyWithoutAdminNestedInput
   }
 
   export type UserUncheckedUpdateWithoutConversationMessagesInput = {
@@ -24600,6 +26877,7 @@ export namespace Prisma {
     receivedConversations?: ConversationUncheckedUpdateManyWithoutReceiverNestedInput
     securityLogs?: SecurityLogUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    adminNotes?: PaymentNoteUncheckedUpdateManyWithoutAdminNestedInput
   }
 
   export type UserCreateWithoutSecurityLogsInput = {
@@ -24632,6 +26910,7 @@ export namespace Prisma {
     receivedConversations?: ConversationCreateNestedManyWithoutReceiverInput
     conversationMessages?: ConversationMessageCreateNestedManyWithoutSenderInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    adminNotes?: PaymentNoteCreateNestedManyWithoutAdminInput
   }
 
   export type UserUncheckedCreateWithoutSecurityLogsInput = {
@@ -24664,6 +26943,7 @@ export namespace Prisma {
     receivedConversations?: ConversationUncheckedCreateNestedManyWithoutReceiverInput
     conversationMessages?: ConversationMessageUncheckedCreateNestedManyWithoutSenderInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    adminNotes?: PaymentNoteUncheckedCreateNestedManyWithoutAdminInput
   }
 
   export type UserCreateOrConnectWithoutSecurityLogsInput = {
@@ -24712,6 +26992,7 @@ export namespace Prisma {
     receivedConversations?: ConversationUpdateManyWithoutReceiverNestedInput
     conversationMessages?: ConversationMessageUpdateManyWithoutSenderNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    adminNotes?: PaymentNoteUpdateManyWithoutAdminNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSecurityLogsInput = {
@@ -24744,6 +27025,7 @@ export namespace Prisma {
     receivedConversations?: ConversationUncheckedUpdateManyWithoutReceiverNestedInput
     conversationMessages?: ConversationMessageUncheckedUpdateManyWithoutSenderNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    adminNotes?: PaymentNoteUncheckedUpdateManyWithoutAdminNestedInput
   }
 
   export type UserCreateWithoutNotificationsInput = {
@@ -24776,6 +27058,7 @@ export namespace Prisma {
     receivedConversations?: ConversationCreateNestedManyWithoutReceiverInput
     conversationMessages?: ConversationMessageCreateNestedManyWithoutSenderInput
     securityLogs?: SecurityLogCreateNestedManyWithoutUserInput
+    adminNotes?: PaymentNoteCreateNestedManyWithoutAdminInput
   }
 
   export type UserUncheckedCreateWithoutNotificationsInput = {
@@ -24808,6 +27091,7 @@ export namespace Prisma {
     receivedConversations?: ConversationUncheckedCreateNestedManyWithoutReceiverInput
     conversationMessages?: ConversationMessageUncheckedCreateNestedManyWithoutSenderInput
     securityLogs?: SecurityLogUncheckedCreateNestedManyWithoutUserInput
+    adminNotes?: PaymentNoteUncheckedCreateNestedManyWithoutAdminInput
   }
 
   export type UserCreateOrConnectWithoutNotificationsInput = {
@@ -24856,6 +27140,7 @@ export namespace Prisma {
     receivedConversations?: ConversationUpdateManyWithoutReceiverNestedInput
     conversationMessages?: ConversationMessageUpdateManyWithoutSenderNestedInput
     securityLogs?: SecurityLogUpdateManyWithoutUserNestedInput
+    adminNotes?: PaymentNoteUpdateManyWithoutAdminNestedInput
   }
 
   export type UserUncheckedUpdateWithoutNotificationsInput = {
@@ -24888,6 +27173,7 @@ export namespace Prisma {
     receivedConversations?: ConversationUncheckedUpdateManyWithoutReceiverNestedInput
     conversationMessages?: ConversationMessageUncheckedUpdateManyWithoutSenderNestedInput
     securityLogs?: SecurityLogUncheckedUpdateManyWithoutUserNestedInput
+    adminNotes?: PaymentNoteUncheckedUpdateManyWithoutAdminNestedInput
   }
 
   export type AccountCreateManyUserInput = {
@@ -24981,22 +27267,38 @@ export namespace Prisma {
     id?: string
     amount: number
     status?: $Enums.PaymentStatus
+    paymentMethod?: $Enums.PaymentMethod
     paymentDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     bookingId: string
     receiverId: string
+    referenceCode?: string | null
+    transactionId?: string | null
+    metadata?: string | null
+    verifiedBy?: string | null
+    verifiedAt?: Date | string | null
+    flagged?: boolean
+    flagReason?: string | null
   }
 
   export type PaymentCreateManyReceiverInput = {
     id?: string
     amount: number
     status?: $Enums.PaymentStatus
+    paymentMethod?: $Enums.PaymentMethod
     paymentDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     bookingId: string
     payerId: string
+    referenceCode?: string | null
+    transactionId?: string | null
+    metadata?: string | null
+    verifiedBy?: string | null
+    verifiedAt?: Date | string | null
+    flagged?: boolean
+    flagReason?: string | null
   }
 
   export type ConversationCreateManyStarterInput = {
@@ -25045,6 +27347,13 @@ export namespace Prisma {
     type?: $Enums.NotificationType
     isRead?: boolean
     createdAt?: Date | string
+  }
+
+  export type PaymentNoteCreateManyAdminInput = {
+    id?: string
+    createdAt?: Date | string
+    content: string
+    paymentId: string
   }
 
   export type AccountUpdateWithoutUserInput = {
@@ -25328,9 +27637,18 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     amount?: FloatFieldUpdateOperationsInput | number
     status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentMethod?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
     paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referenceCode?: NullableStringFieldUpdateOperationsInput | string | null
+    transactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableStringFieldUpdateOperationsInput | string | null
+    verifiedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    flagged?: BoolFieldUpdateOperationsInput | boolean
+    flagReason?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: PaymentNoteUpdateManyWithoutPaymentNestedInput
     booking?: BookingUpdateOneRequiredWithoutPaymentsNestedInput
     receiver?: UserUpdateOneRequiredWithoutReceivedPaymentsNestedInput
   }
@@ -25339,31 +27657,57 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     amount?: FloatFieldUpdateOperationsInput | number
     status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentMethod?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
     paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     bookingId?: StringFieldUpdateOperationsInput | string
     receiverId?: StringFieldUpdateOperationsInput | string
+    referenceCode?: NullableStringFieldUpdateOperationsInput | string | null
+    transactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableStringFieldUpdateOperationsInput | string | null
+    verifiedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    flagged?: BoolFieldUpdateOperationsInput | boolean
+    flagReason?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: PaymentNoteUncheckedUpdateManyWithoutPaymentNestedInput
   }
 
   export type PaymentUncheckedUpdateManyWithoutPayerInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: FloatFieldUpdateOperationsInput | number
     status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentMethod?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
     paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     bookingId?: StringFieldUpdateOperationsInput | string
     receiverId?: StringFieldUpdateOperationsInput | string
+    referenceCode?: NullableStringFieldUpdateOperationsInput | string | null
+    transactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableStringFieldUpdateOperationsInput | string | null
+    verifiedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    flagged?: BoolFieldUpdateOperationsInput | boolean
+    flagReason?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type PaymentUpdateWithoutReceiverInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: FloatFieldUpdateOperationsInput | number
     status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentMethod?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
     paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referenceCode?: NullableStringFieldUpdateOperationsInput | string | null
+    transactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableStringFieldUpdateOperationsInput | string | null
+    verifiedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    flagged?: BoolFieldUpdateOperationsInput | boolean
+    flagReason?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: PaymentNoteUpdateManyWithoutPaymentNestedInput
     booking?: BookingUpdateOneRequiredWithoutPaymentsNestedInput
     payer?: UserUpdateOneRequiredWithoutPaymentsNestedInput
   }
@@ -25372,22 +27716,39 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     amount?: FloatFieldUpdateOperationsInput | number
     status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentMethod?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
     paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     bookingId?: StringFieldUpdateOperationsInput | string
     payerId?: StringFieldUpdateOperationsInput | string
+    referenceCode?: NullableStringFieldUpdateOperationsInput | string | null
+    transactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableStringFieldUpdateOperationsInput | string | null
+    verifiedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    flagged?: BoolFieldUpdateOperationsInput | boolean
+    flagReason?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: PaymentNoteUncheckedUpdateManyWithoutPaymentNestedInput
   }
 
   export type PaymentUncheckedUpdateManyWithoutReceiverInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: FloatFieldUpdateOperationsInput | number
     status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentMethod?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
     paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     bookingId?: StringFieldUpdateOperationsInput | string
     payerId?: StringFieldUpdateOperationsInput | string
+    referenceCode?: NullableStringFieldUpdateOperationsInput | string | null
+    transactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableStringFieldUpdateOperationsInput | string | null
+    verifiedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    flagged?: BoolFieldUpdateOperationsInput | boolean
+    flagReason?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ConversationUpdateWithoutStarterInput = {
@@ -25538,6 +27899,27 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type PaymentNoteUpdateWithoutAdminInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    content?: StringFieldUpdateOperationsInput | string
+    payment?: PaymentUpdateOneRequiredWithoutNotesNestedInput
+  }
+
+  export type PaymentNoteUncheckedUpdateWithoutAdminInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    content?: StringFieldUpdateOperationsInput | string
+    paymentId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type PaymentNoteUncheckedUpdateManyWithoutAdminInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    content?: StringFieldUpdateOperationsInput | string
+    paymentId?: StringFieldUpdateOperationsInput | string
+  }
+
   export type BookingCreateManyListingInput = {
     id?: string
     startDate: Date | string
@@ -25638,11 +28020,19 @@ export namespace Prisma {
     id?: string
     amount: number
     status?: $Enums.PaymentStatus
+    paymentMethod?: $Enums.PaymentMethod
     paymentDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     payerId: string
     receiverId: string
+    referenceCode?: string | null
+    transactionId?: string | null
+    metadata?: string | null
+    verifiedBy?: string | null
+    verifiedAt?: Date | string | null
+    flagged?: boolean
+    flagReason?: string | null
   }
 
   export type MessageCreateManyBookingInput = {
@@ -25661,9 +28051,18 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     amount?: FloatFieldUpdateOperationsInput | number
     status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentMethod?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
     paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referenceCode?: NullableStringFieldUpdateOperationsInput | string | null
+    transactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableStringFieldUpdateOperationsInput | string | null
+    verifiedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    flagged?: BoolFieldUpdateOperationsInput | boolean
+    flagReason?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: PaymentNoteUpdateManyWithoutPaymentNestedInput
     payer?: UserUpdateOneRequiredWithoutPaymentsNestedInput
     receiver?: UserUpdateOneRequiredWithoutReceivedPaymentsNestedInput
   }
@@ -25672,22 +28071,39 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     amount?: FloatFieldUpdateOperationsInput | number
     status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentMethod?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
     paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     payerId?: StringFieldUpdateOperationsInput | string
     receiverId?: StringFieldUpdateOperationsInput | string
+    referenceCode?: NullableStringFieldUpdateOperationsInput | string | null
+    transactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableStringFieldUpdateOperationsInput | string | null
+    verifiedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    flagged?: BoolFieldUpdateOperationsInput | boolean
+    flagReason?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: PaymentNoteUncheckedUpdateManyWithoutPaymentNestedInput
   }
 
   export type PaymentUncheckedUpdateManyWithoutBookingInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: FloatFieldUpdateOperationsInput | number
     status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentMethod?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
     paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     payerId?: StringFieldUpdateOperationsInput | string
     receiverId?: StringFieldUpdateOperationsInput | string
+    referenceCode?: NullableStringFieldUpdateOperationsInput | string | null
+    transactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableStringFieldUpdateOperationsInput | string | null
+    verifiedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    flagged?: BoolFieldUpdateOperationsInput | boolean
+    flagReason?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type MessageUpdateWithoutBookingInput = {
@@ -25724,6 +28140,34 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     senderId?: StringFieldUpdateOperationsInput | string
     receiverId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type PaymentNoteCreateManyPaymentInput = {
+    id?: string
+    createdAt?: Date | string
+    content: string
+    adminId: string
+  }
+
+  export type PaymentNoteUpdateWithoutPaymentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    content?: StringFieldUpdateOperationsInput | string
+    admin?: UserUpdateOneRequiredWithoutAdminNotesNestedInput
+  }
+
+  export type PaymentNoteUncheckedUpdateWithoutPaymentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    content?: StringFieldUpdateOperationsInput | string
+    adminId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type PaymentNoteUncheckedUpdateManyWithoutPaymentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    content?: StringFieldUpdateOperationsInput | string
+    adminId?: StringFieldUpdateOperationsInput | string
   }
 
   export type ConversationMessageCreateManyConversationInput = {

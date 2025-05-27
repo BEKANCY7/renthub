@@ -51,6 +51,8 @@ model User {
   securityLogs SecurityLog[]
   notifications Notification[]
 
+  adminNotes    PaymentNote[]
+
   @@index([email])
 }
 
@@ -144,16 +146,43 @@ model Payment {
   id           String    @id @default(cuid())
   amount       Float
   status       PaymentStatus @default(PENDING)
+  paymentMethod PaymentMethod @default(CARD)
   paymentDate  DateTime?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   bookingId    String
   payerId      String
   receiverId   String
+  referenceCode String?  // For Telebirr or CBE reference numbers
+  transactionId String?  // External transaction ID
+  metadata     String?   // JSON string with additional payment data
+  verifiedBy   String?   // Admin who verified the payment
+  verifiedAt   DateTime?
+  notes        PaymentNote[]
+  flagged      Boolean   @default(false)
+  flagReason   String?
 
   booking      Booking   @relation(fields: [bookingId], references: [id])
   payer        User      @relation("UserPayments", fields: [payerId], references: [id])
   receiver     User      @relation("ReceivedPayments", fields: [receiverId], references: [id])
+
+  @@index([status])
+  @@index([paymentMethod])
+  @@index([createdAt])
+  @@index([paymentDate])
+}
+
+model PaymentNote {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  
+  content   String
+  
+  paymentId String
+  payment   Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  
+  adminId   String
+  admin     User   @relation(fields: [adminId], references: [id], onDelete: Cascade)
 }
 
 model Message {
@@ -298,6 +327,8 @@ enum PaymentStatus {
   COMPLETED
   FAILED
   REFUNDED
+  VERIFIED
+  FLAGGED
 }
 
 enum ConversationStatus {
@@ -324,4 +355,12 @@ enum NotificationType {
   WARNING
   ALERT
   SUCCESS
+}
+
+enum PaymentMethod {
+  CARD
+  TELEBIRR
+  CBE
+  CASH
+  OTHER
 }
