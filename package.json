@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "create-admin": "ts-node --compiler-options \"{\\\"module\\\":\\\"commonjs\\\"}\" src/scripts/create-admin.ts"
+    "create-admin": "ts-node --compiler-options \"{\\\"module\\\":\\\"commonjs\\\"}\" src/scripts/create-admin.ts",
+    "verify-admin": "ts-node --compiler-options \"{\\\"module\\\":\\\"commonjs\\\"}\" src/scripts/verify-admin.ts"
   },
   "dependencies": {
     "@auth/core": "^0.34.2",

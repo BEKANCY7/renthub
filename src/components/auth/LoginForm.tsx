@@ -71,6 +71,9 @@ export function LoginForm() {
     setError(null);
 
     try {
+      // First, check if this is the admin user by email
+      const isAdminEmail = values.email.toLowerCase() === "admin@renthub.com";
+
       const response = await signIn("credentials", {
         email: values.email,
         password: values.password,
@@ -84,7 +87,15 @@ export function LoginForm() {
       }
 
       if (response?.ok) {
-        // Check user role after successful login
+        // If we already know this is the admin email and login was successful,
+        // redirect directly to admin dashboard
+        if (isAdminEmail) {
+          console.log("Admin login detected, redirecting to admin dashboard");
+          window.location.href = "/admin/dashboard";
+          return;
+        }
+
+        // For other users, check their role via API
         try {
           const userResponse = await fetch("/api/users/me");
 
@@ -93,16 +104,23 @@ export function LoginForm() {
           }
 
           const userData = await userResponse.json();
-          console.log("User role:", userData.role);
+          console.log("User data from API:", userData);
 
           if (userData?.role === "ADMIN") {
-            router.push("/admin/dashboard");
+            console.log(
+              "Admin user detected via API, redirecting to admin dashboard"
+            );
+            window.location.href = "/admin/dashboard";
+            return;
           } else if (userData?.role === "RENTER") {
+            console.log("Redirecting to find-home");
             router.push("/find-home");
           } else if (userData?.role === "OWNER") {
+            console.log("Redirecting to owner dashboard");
             router.push("/dashboard");
           } else {
             // Default fallback
+            console.log("Redirecting to default dashboard");
             router.push("/dashboard");
           }
 
