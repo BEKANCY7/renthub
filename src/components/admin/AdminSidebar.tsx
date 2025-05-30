@@ -27,7 +27,7 @@ const navigationItems = [
   { name: "Users", href: "/admin/users", icon: Users },
   { name: "Listings", href: "/admin/listings", icon: Building2 },
   { name: "Transactions", href: "/admin/transactions", icon: CreditCard },
-  { name: "Messages", href: "/admin/messages", icon: MessageSquare },
+  { name: "Messages", href: "/admin/messaging", icon: MessageSquare },
   { name: "Notifications", href: "/admin/notifications", icon: Bell },
   { name: "Reports", href: "/admin/reports", icon: FileText },
   { name: "Settings", href: "/admin/settings", icon: Settings },

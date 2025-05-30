@@ -37,9 +37,13 @@ interface Conversation {
 
 interface ConversationViewProps {
   conversationId: string;
+  isAdmin?: boolean;
 }
 
-export function ConversationView({ conversationId }: ConversationViewProps) {
+export function ConversationView({
+  conversationId,
+  isAdmin = false,
+}: ConversationViewProps) {
   const { data: session } = useSession();
   const [conversation, setConversation] = useState<Conversation | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -57,7 +61,12 @@ export function ConversationView({ conversationId }: ConversationViewProps) {
 
       try {
         setIsLoading(true);
-        const response = await fetch(`/api/conversations/${conversationId}`);
+        // Use admin API endpoint if in admin mode
+        const endpoint = isAdmin
+          ? `/api/admin/conversations/${conversationId}`
+          : `/api/conversations/${conversationId}`;
+
+        const response = await fetch(endpoint);
 
         if (!response.ok) {
           throw new Error("Failed to load conversation");
@@ -80,7 +89,7 @@ export function ConversationView({ conversationId }: ConversationViewProps) {
     const intervalId = setInterval(fetchNewMessages, 10000); // Poll every 10 seconds
 
     return () => clearInterval(intervalId);
-  }, [conversationId]);
+  }, [conversationId, isAdmin]);
 
   // Fetch new messages
   const fetchNewMessages = async () => {
@@ -88,8 +97,10 @@ export function ConversationView({ conversationId }: ConversationViewProps) {
 
     try {
       const latestMessageId = messages[0]?.id;
+      // Use admin API endpoint if in admin mode
+      const baseEndpoint = isAdmin ? "/api/admin/messages" : "/api/messages";
       const response = await fetch(
-        `/api/messages?conversationId=${conversationId}&since=${latestMessageId}`
+        `${baseEndpoint}?conversationId=${conversationId}&since=${latestMessageId}`
       );
 
       if (!response.ok) return;
@@ -136,7 +147,10 @@ export function ConversationView({ conversationId }: ConversationViewProps) {
     if (!session?.user?.id || !conversationId || !content.trim()) return;
 
     try {
-      const response = await fetch("/api/messages", {
+      // Use admin API endpoint if in admin mode
+      const endpoint = isAdmin ? "/api/admin/messages" : "/api/messages";
+
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
