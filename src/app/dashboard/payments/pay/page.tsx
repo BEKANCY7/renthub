@@ -42,6 +42,11 @@ export default function PayRentPage() {
   const [paymentStep, setPaymentStep] = useState(1);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [verificationCode, setVerificationCode] = useState("");
+  const [paymentInfo, setPaymentInfo] = useState({
+    paymentId: "",
+    transactionId: "",
+    paymentCode: "",
+  });
 
   // Mock properties the user might have rented
   const properties = [
@@ -95,12 +100,65 @@ export default function PayRentPage() {
 
       setLoading(true);
 
-      // Simulate API call to TeleBirr
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      try {
+        // First create the payment record
+        const createPaymentResponse = await fetch("/api/payments", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            bookingId: properties[0].id, // In a real app, this would be the selected property's booking ID
+            amount: parseFloat(amount),
+            paymentMethod: paymentMethod.toUpperCase(),
+          }),
+        });
 
-      setPaymentStep(2);
-      setLoading(false);
-      toast.success("Verification code sent to your phone");
+        if (!createPaymentResponse.ok) {
+          const errorData = await createPaymentResponse.json();
+          throw new Error(errorData.error || "Failed to initiate payment");
+        }
+
+        const paymentData = await createPaymentResponse.json();
+
+        // Now initiate the TeleBirr payment
+        const telebirrResponse = await fetch("/api/payments/telebirr", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            paymentId: paymentData.payment.id,
+            phoneNumber: phoneNumber,
+          }),
+        });
+
+        if (!telebirrResponse.ok) {
+          const errorData = await telebirrResponse.json();
+          throw new Error(
+            errorData.error || "Failed to initiate TeleBirr payment"
+          );
+        }
+
+        const telebirrData = await telebirrResponse.json();
+
+        // Store the payment ID in local state for the next step
+        setPaymentInfo({
+          paymentId: paymentData.payment.id,
+          transactionId: telebirrData.telebirr.transactionId,
+          paymentCode: telebirrData.telebirr.paymentCode,
+        });
+
+        setPaymentStep(2);
+        toast.success("Verification code sent to your TeleBirr app");
+      } catch (error) {
+        console.error("Payment error:", error);
+        toast.error(
+          error instanceof Error ? error.message : "Failed to process payment"
+        );
+      } finally {
+        setLoading(false);
+      }
       return;
     }
 
@@ -112,19 +170,78 @@ export default function PayRentPage() {
 
       setLoading(true);
 
-      // Simulate API call to verify code
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      try {
+        // Verify the payment with the reference code
+        const verifyResponse = await fetch("/api/payments/verify", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            paymentId: paymentInfo.paymentId,
+            referenceCode: verificationCode,
+          }),
+        });
 
-      completePayment();
+        if (!verifyResponse.ok) {
+          const errorData = await verifyResponse.json();
+          throw new Error(errorData.error || "Failed to verify payment");
+        }
+
+        await verifyResponse.json();
+        completePayment();
+      } catch (error) {
+        console.error("Verification error:", error);
+        toast.error(
+          error instanceof Error ? error.message : "Failed to verify payment"
+        );
+        setLoading(false);
+      }
       return;
     }
 
+    // Handle other payment methods
     setLoading(true);
 
-    // Simulate API call for other payment methods
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+      // Create the payment record
+      const createPaymentResponse = await fetch("/api/payments", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          bookingId: properties[0].id, // In a real app, this would be the selected property's booking ID
+          amount: parseFloat(amount),
+          paymentMethod: paymentMethod.toUpperCase(),
+          referenceCode:
+            paymentMethod === "cbe"
+              ? "TXN" + Math.floor(10000000 + Math.random() * 90000000)
+              : undefined,
+        }),
+      });
 
-    completePayment();
+      if (!createPaymentResponse.ok) {
+        const errorData = await createPaymentResponse.json();
+        throw new Error(errorData.error || "Failed to initiate payment");
+      }
+
+      const paymentData = await createPaymentResponse.json();
+
+      toast.success(paymentData.message || "Payment initiated successfully");
+
+      // For payment methods that need manual verification, redirect to success page
+      // In a real app, this would wait for payment confirmation
+      setTimeout(() => {
+        completePayment();
+      }, 1500);
+    } catch (error) {
+      console.error("Payment error:", error);
+      toast.error(
+        error instanceof Error ? error.message : "Failed to process payment"
+      );
+      setLoading(false);
+    }
   };
 
   const completePayment = () => {
