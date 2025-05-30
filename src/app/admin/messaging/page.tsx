@@ -52,26 +52,28 @@ export default function AdminMessagingPage() {
     const fetchConversations = async () => {
       try {
         setLoading(true);
-        
+
         // Build query parameters
         const params = new URLSearchParams();
         params.append("page", "1");
         params.append("limit", "20");
-        
+
         if (searchQuery) {
           params.append("search", searchQuery);
         }
-        
+
         if (activeTab === "unread") {
           params.append("hasUnread", "true");
         }
-        
-        const response = await fetch(`/api/admin/conversations?${params.toString()}`);
-        
+
+        const response = await fetch(
+          `/api/admin/conversations?${params.toString()}`
+        );
+
         if (!response.ok) {
           throw new Error("Failed to fetch conversations");
         }
-        
+
         const data = await response.json();
         setConversations(data.conversations || []);
         setLoading(false);

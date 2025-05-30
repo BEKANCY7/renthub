@@ -16,19 +16,19 @@ export async function GET(request: Request) {
     }
 
     const { searchParams } = new URL(request.url);
-    
+
     // Parse pagination parameters
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
     const skip = (page - 1) * limit;
-    
+
     // Parse filter parameters
     const search = searchParams.get("search");
     const hasUnread = searchParams.get("hasUnread") === "true";
-    
+
     // Build where clause
     let where: any = {};
-    
+
     if (search) {
       where.OR = [
         {
@@ -56,7 +56,7 @@ export async function GET(request: Request) {
         },
       ];
     }
-    
+
     if (hasUnread) {
       where.messages = {
         some: {
@@ -64,10 +64,10 @@ export async function GET(request: Request) {
         },
       };
     }
-    
+
     // Count total conversations for pagination
     const totalConversations = await prisma.conversation.count({ where });
-    
+
     // Fetch conversations with latest message
     const conversations = await prisma.conversation.findMany({
       where,
@@ -109,7 +109,7 @@ export async function GET(request: Request) {
         },
       },
     });
-    
+
     // For each conversation, count unread messages
     const conversationsWithUnreadCount = await Promise.all(
       conversations.map(async (conversation) => {
@@ -119,7 +119,7 @@ export async function GET(request: Request) {
             isRead: false,
           },
         });
-        
+
         // Format the conversation data
         return {
           id: conversation.id,
@@ -135,7 +135,7 @@ export async function GET(request: Request) {
         };
       })
     );
-    
+
     return NextResponse.json({
       conversations: conversationsWithUnreadCount,
       totalConversations,
@@ -149,4 +149,4 @@ export async function GET(request: Request) {
       { status: 500 }
     );
   }
-} 
+}
