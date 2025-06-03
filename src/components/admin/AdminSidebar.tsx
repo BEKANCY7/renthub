@@ -17,6 +17,7 @@ import {
   LogOut,
   Menu,
   X,
+  ShieldCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -29,6 +30,7 @@ const navigationItems = [
   { name: "Transactions", href: "/admin/transactions", icon: CreditCard },
   { name: "Messages", href: "/admin/messaging", icon: MessageSquare },
   { name: "Notifications", href: "/admin/notifications", icon: Bell },
+  { name: "Verifications", href: "/admin/verifications", icon: ShieldCheck },
   { name: "Reports", href: "/admin/reports", icon: FileText },
   { name: "Settings", href: "/admin/settings", icon: Settings },
 ];
