@@ -22,6 +22,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import ClientOnly from "@/components/ClientOnly";
+import { loginToExternalAPI, storeAuthTokens, ApiError } from "@/lib/api";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -71,7 +72,25 @@ export function LoginForm() {
     setError(null);
 
     try {
-      // First, check if this is the admin user by email
+      // First, try to login with the external API
+      try {
+        const externalResponse = await loginToExternalAPI({
+          email: values.email,
+          password: values.password,
+        });
+
+        // Store tokens if provided
+        if (externalResponse.access || externalResponse.token) {
+          storeAuthTokens(externalResponse);
+          console.log("External API login successful");
+        }
+      } catch (apiError) {
+        const error = apiError as ApiError;
+        console.warn("External API login failed:", error.message);
+        // Continue with local authentication if external API fails
+      }
+
+      // Then authenticate with NextAuth (local)
       const isAdminEmail = values.email.toLowerCase() === "admin@renthub.com";
 
       const response = await signIn("credentials", {
