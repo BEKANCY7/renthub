@@ -72,87 +72,57 @@ export function LoginForm() {
     setError(null);
 
     try {
-      // First, try to login with the external API
-      try {
-        const externalResponse = await loginToExternalAPI({
-          email: values.email,
-          password: values.password,
-        });
-
-        // Store tokens if provided
-        if (externalResponse.access || externalResponse.token) {
-          storeAuthTokens(externalResponse);
-          console.log("External API login successful");
-        }
-      } catch (apiError) {
-        const error = apiError as ApiError;
-        console.warn("External API login failed:", error.message);
-        // Continue with local authentication if external API fails
-      }
-
-      // Then authenticate with NextAuth (local)
-      const isAdminEmail = values.email.toLowerCase() === "admin@renthub.com";
-
-      const response = await signIn("credentials", {
+      // Login with external API
+      const response = await loginToExternalAPI({
         email: values.email,
         password: values.password,
-        redirect: false,
       });
 
-      if (response?.error) {
-        setError("Invalid email or password");
-        setIsLoading(false);
-        return;
-      }
+      console.log("API Response:", response);
 
-      if (response?.ok) {
-        // If we already know this is the admin email and login was successful,
-        // redirect directly to admin dashboard
-        if (isAdminEmail) {
-          console.log("Admin login detected, redirecting to admin dashboard");
+      // Store tokens and user data
+      if (response.access || response.token) {
+        storeAuthTokens(response);
+
+        // Set cookie for middleware
+        const token = response.access || response.token;
+        if (token) {
+          document.cookie = `auth_token=${token}; path=/; max-age=${
+            60 * 60 * 24 * 7
+          }`; // 7 days
+        }
+
+        if (response.user) {
+          storeUser(response.user);
+        }
+
+        console.log("Login successful, redirecting...");
+
+        // Redirect based on user role
+        const userRole = response.user?.role?.toUpperCase();
+
+        if (userRole === "ADMIN") {
+          console.log("Admin user detected, redirecting to admin dashboard");
           window.location.href = "/admin/dashboard";
-          return;
+        } else if (userRole === "RENTER") {
+          console.log("Redirecting to find-home");
+          window.location.href = "/find-home";
+        } else if (userRole === "OWNER") {
+          console.log("Redirecting to owner dashboard");
+          window.location.href = "/dashboard";
+        } else {
+          // Default fallback
+          console.log("Redirecting to default dashboard");
+          window.location.href = "/dashboard";
         }
-
-        // For other users, check their role via API
-        try {
-          const userResponse = await fetch("/api/users/me");
-
-          if (!userResponse.ok) {
-            throw new Error("Failed to fetch user data");
-          }
-
-          const userData = await userResponse.json();
-          console.log("User data from API:", userData);
-
-          if (userData?.role === "ADMIN") {
-            console.log(
-              "Admin user detected via API, redirecting to admin dashboard"
-            );
-            window.location.href = "/admin/dashboard";
-            return;
-          } else if (userData?.role === "RENTER") {
-            console.log("Redirecting to find-home");
-            router.push("/find-home");
-          } else if (userData?.role === "OWNER") {
-            console.log("Redirecting to owner dashboard");
-            router.push("/dashboard");
-          } else {
-            // Default fallback
-            console.log("Redirecting to default dashboard");
-            router.push("/dashboard");
-          }
-
-          router.refresh();
-        } catch (error) {
-          console.error("Error fetching user data:", error);
-          // Default redirect if user data fetch fails
-          router.push("/dashboard");
-          router.refresh();
-        }
+      } else {
+        setError("Login failed. Please try again.");
+        setIsLoading(false);
       }
-    } catch (error) {
-      setError("Something went wrong. Please try again.");
+    } catch (apiError) {
+      const error = apiError as ApiError;
+      console.error("Login error:", error);
+      setError(error.message || "Invalid email or password");
       setIsLoading(false);
     }
   }
