@@ -1,8 +1,5 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
 import { LoginForm } from "@/components/auth/LoginForm";
 import Image from "next/image";
 
@@ -11,13 +8,7 @@ export const metadata: Metadata = {
   description: "Login to your account",
 };
 
-export default async function LoginPage() {
-  const session = await getServerSession(authOptions);
-
-  if (session?.user) {
-    redirect("/dashboard");
-  }
-
+export default function LoginPage() {
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-gradient-to-br from-blue-50 to-white">
       {/* Left side - Login form */}

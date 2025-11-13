@@ -1,6 +1,6 @@
 "use client";
 
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/contexts/AuthContext";
 import { VerificationCard } from "@/components/dashboard/VerificationCard";
 import { Button } from "@/components/ui/button";
 import {

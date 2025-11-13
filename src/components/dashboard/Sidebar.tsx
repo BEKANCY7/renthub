@@ -17,7 +17,7 @@ import {
   Search,
   X,
 } from "lucide-react";
-import { signOut } from "next-auth/react";
+import { logout } from "@/lib/logout";
 import { useState, useEffect } from "react";
 
 import { cn } from "@/lib/utils";

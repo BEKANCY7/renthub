@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/contexts/AuthContext";
 import { MessageItem } from "@/components/messages/MessageItem";
 import { MessageInput } from "@/components/messages/MessageInput";
 import { Skeleton } from "@/components/ui/skeleton";

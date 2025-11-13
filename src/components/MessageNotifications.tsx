@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/contexts/AuthContext";
 import { useRouter, usePathname } from "next/navigation";
 import { MessageCircle } from "lucide-react";
 import {
@@ -32,7 +32,13 @@ interface MessageNotificationsProps {
 export default function MessageNotifications({
   context = "navbar",
 }: MessageNotificationsProps) {
-  const { data: session, status } = useSession();
+  const { user, isAuthenticated, isLoading } = useAuth();
+  const session = isAuthenticated ? { user } : null;
+  const status = isLoading
+    ? "loading"
+    : isAuthenticated
+    ? "authenticated"
+    : "unauthenticated";
   const router = useRouter();
   const pathname = usePathname();
   const [notifications, setNotifications] = useState<Notification[]>([]);

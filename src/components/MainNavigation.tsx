@@ -3,13 +3,14 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/contexts/AuthContext";
 import { Menu, X, Home, Search, User, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import MessageNotifications from "@/components/MessageNotifications";
 
 export default function MainNavigation() {
-  const { data: session } = useSession();
+  const { user, isAuthenticated } = useAuth();
+  const session = isAuthenticated ? { user } : null;
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 

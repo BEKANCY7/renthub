@@ -1,32 +1,33 @@
 import { NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
 import type { NextRequest } from "next/server";
 
-// Export the middleware function as both named and default export
+// Middleware function to protect routes
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Check if the path is an admin route or admin API route
-  if (pathname.startsWith("/admin") || pathname.startsWith("/api/admin")) {
-    const token = await getToken({
-      req: request,
-      secret:
-        process.env.NEXTAUTH_SECRET || "thisissecretkeyfornextauthlocaldev",
-    });
+  // Check if the path is an admin route
+  if (pathname.startsWith("/admin")) {
+    // Check for authentication token in cookies
+    const token = request.cookies.get("auth_token")?.value;
 
-    // Special case for admin@renthub.com - always allow access
-    if (token?.email === "admin@renthub.com") {
-      return NextResponse.next();
+    if (!token) {
+      // Redirect to login if no token
+      const url = new URL("/login", request.url);
+      url.searchParams.set("callbackUrl", encodeURI(pathname));
+      return NextResponse.redirect(url);
     }
+  }
 
-    // If user is not logged in or not an admin, redirect to login or return unauthorized
-    if (!token || token.role !== "ADMIN") {
-      // For API routes, return unauthorized
-      if (pathname.startsWith("/api/admin")) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-      }
+  // Check if user is trying to access protected routes
+  const protectedRoutes = ["/dashboard", "/find-home", "/profile", "/messages"];
+  const isProtectedRoute = protectedRoutes.some((route) =>
+    pathname.startsWith(route)
+  );
 
-      // For admin pages, redirect to login
+  if (isProtectedRoute) {
+    const token = request.cookies.get("auth_token")?.value;
+
+    if (!token) {
       const url = new URL("/login", request.url);
       url.searchParams.set("callbackUrl", encodeURI(pathname));
       return NextResponse.redirect(url);
@@ -36,10 +37,15 @@ export async function middleware(request: NextRequest) {
   return NextResponse.next();
 }
 
-// Also export as default
 export default middleware;
 
 // Configure which paths the middleware should run on
 export const config = {
-  matcher: ["/admin/:path*", "/api/admin/:path*"],
+  matcher: [
+    "/admin/:path*",
+    "/dashboard/:path*",
+    "/find-home/:path*",
+    "/profile/:path*",
+    "/messages/:path*",
+  ],
 };

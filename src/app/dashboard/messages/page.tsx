@@ -1,6 +1,5 @@
-import { redirect } from "next/navigation";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
+"use client";
+// Auth handled by middleware
 
 export default async function DashboardMessagesPage() {
   const session = await getServerSession(authOptions);

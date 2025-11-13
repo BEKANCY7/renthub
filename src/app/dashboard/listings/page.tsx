@@ -1,6 +1,5 @@
-import { getServerSession } from "next-auth/next";
-import { redirect } from "next/navigation";
-import { authOptions } from "@/lib/auth";
+"use client";
+// Auth handled by middleware
 import { db } from "@/lib/db";
 import Link from "next/link";
 import {

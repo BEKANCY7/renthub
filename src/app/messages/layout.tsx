@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
-import { getServerSession } from "next-auth/next";
-import { redirect } from "next/navigation";
-import { authOptions } from "@/lib/auth";
+// Auth handled by middleware
 import Sidebar from "@/components/dashboard/Sidebar";
 
 const geistSans = Geist({

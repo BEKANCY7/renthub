@@ -1,19 +1,11 @@
-import { redirect } from "next/navigation";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
 }
 
-export default async function AdminLayout({ children }: AdminLayoutProps) {
-  // Check if user is authenticated and is an admin
-  const session = await getServerSession(authOptions);
-
-  if (!session?.user || session.user.role !== "ADMIN") {
-    redirect("/");
-  }
+export default function AdminLayout({ children }: AdminLayoutProps) {
+  // Auth is handled by middleware
 
   return (
     <div className="flex h-screen bg-background">
