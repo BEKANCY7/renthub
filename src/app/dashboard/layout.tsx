@@ -12,5 +12,5 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   // Auth is handled by middleware
-  return <ClientDashboardLayout user={null}>{children}</ClientDashboardLayout>;
+  return <ClientDashboardLayout>{children}</ClientDashboardLayout>;
 }

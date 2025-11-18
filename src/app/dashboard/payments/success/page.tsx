@@ -23,7 +23,12 @@ export default function PaymentSuccessPage() {
 
   const [payment, setPayment] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [receiptNumber] = useState(`RH-${Date.now().toString().slice(-8)}`);
+  const [receiptNumber, setReceiptNumber] = useState("");
+
+  useEffect(() => {
+    // Generate receipt number on client side only
+    setReceiptNumber(`RH-${Date.now().toString().slice(-8)}`);
+  }, []);
 
   useEffect(() => {
     // If there's a payment ID, fetch the payment details

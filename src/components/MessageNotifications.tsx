@@ -32,9 +32,9 @@ interface MessageNotificationsProps {
 export default function MessageNotifications({
   context = "navbar",
 }: MessageNotificationsProps) {
-  const { user, isAuthenticated, isLoading } = useAuth();
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const session = isAuthenticated ? { user } : null;
-  const status = isLoading
+  const status = authLoading
     ? "loading"
     : isAuthenticated
     ? "authenticated"
@@ -44,45 +44,11 @@ export default function MessageNotifications({
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Fetch unread messages
+  // TODO: Fetch unread messages from external API
+  // Disabled until external API endpoint is available
   useEffect(() => {
-    const fetchUnreadMessages = async () => {
-      if (status !== "authenticated") return;
-
-      try {
-        setIsLoading(true);
-        const response = await fetch("/api/messages/unread");
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch notifications");
-        }
-
-        const data = await response.json();
-
-        // Transform the data into notifications format
-        const notificationData = data.unreadMessages.map((msg: any) => ({
-          id: msg.id,
-          conversationId: msg.conversationId,
-          senderName: msg.sender.name,
-          senderImage: msg.sender.image || "",
-          message: msg.content,
-          timestamp: msg.createdAt,
-        }));
-
-        setNotifications(notificationData);
-      } catch (error) {
-        console.error("Error fetching notifications:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchUnreadMessages();
-
-    // Poll for new messages every 30 seconds
-    const intervalId = setInterval(fetchUnreadMessages, 30000);
-
-    return () => clearInterval(intervalId);
+    // Placeholder - no API calls to internal endpoints
+    setNotifications([]);
   }, [status]);
 
   // Handle notification click

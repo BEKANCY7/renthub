@@ -55,7 +55,6 @@ const itemVariants = {
 };
 
 export function LoginForm() {
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -130,13 +129,8 @@ export function LoginForm() {
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     setError(null);
-
-    try {
-      await signIn("google", { callbackUrl: "/dashboard" });
-    } catch (error) {
-      setError("Something went wrong with Google sign in.");
-      setIsLoading(false);
-    }
+    setError("Google sign-in is not currently configured.");
+    setIsLoading(false);
   };
 
   return (

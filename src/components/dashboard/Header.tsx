@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Session } from "next-auth";
+import { User as UserType } from "@/lib/api";
 import { logout } from "@/lib/logout";
 import { Search, Menu } from "lucide-react";
 
@@ -21,7 +21,7 @@ import {
 import MessageNotifications from "@/components/MessageNotifications";
 
 interface HeaderProps {
-  user: Session["user"];
+  user: UserType;
   setMobileNavOpen?: (open: boolean) => void;
 }
 

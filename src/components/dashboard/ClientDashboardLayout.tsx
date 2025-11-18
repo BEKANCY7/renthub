@@ -1,20 +1,30 @@
 "use client";
 
 import { useState } from "react";
-import { Session } from "next-auth";
-
+import { useAuth } from "@/contexts/AuthContext";
 import Sidebar from "@/components/dashboard/Sidebar";
 import Header from "@/components/dashboard/Header";
 
 // Client component to handle state
 export default function ClientDashboardLayout({
   children,
-  user,
 }: {
   children: React.ReactNode;
-  user: Session["user"];
 }) {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div>Loading...</div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className="flex min-h-screen bg-gray-50">
