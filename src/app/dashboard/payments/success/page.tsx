@@ -24,10 +24,12 @@ export default function PaymentSuccessPage() {
   const [payment, setPayment] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [receiptNumber, setReceiptNumber] = useState("");
+  const [currentDate, setCurrentDate] = useState("");
 
   useEffect(() => {
-    // Generate receipt number on client side only
+    // Generate receipt number and date on client side only
     setReceiptNumber(`RH-${Date.now().toString().slice(-8)}`);
+    setCurrentDate(new Date().toLocaleDateString());
   }, []);
 
   useEffect(() => {
@@ -63,7 +65,7 @@ export default function PaymentSuccessPage() {
       RentHub Payment Receipt
       ----------------------
       Receipt No: ${receiptNumber}
-      Date: ${new Date().toLocaleDateString()}
+      Date: ${currentDate}
       Amount: ETB ${payment ? payment.amount : amount}
       Status: Completed
       Payment Method: ${payment ? payment.paymentMethod : "Online Payment"}
@@ -133,7 +135,7 @@ export default function PaymentSuccessPage() {
             <div className="flex justify-between items-center">
               <span className="text-sm text-muted-foreground">Date</span>
               <span className="font-medium">
-                {new Date().toLocaleDateString()}
+                {currentDate || "Loading..."}
               </span>
             </div>
 

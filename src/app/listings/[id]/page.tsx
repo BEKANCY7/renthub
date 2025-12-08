@@ -1,4 +1,5 @@
-import { db } from "@/lib/db";
+// TODO: Connect to your external backend API
+// import { authenticatedFetch } from "@/lib/api";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
@@ -21,19 +22,32 @@ export default async function ListingDetailPage({
 }: {
   params: { id: string };
 }) {
-  // Fetch the listing data
-  const listing = await db.listing.findUnique({
-    where: { id: params.id },
-    include: {
-      owner: {
-        select: {
-          name: true,
-          image: true,
-          id: true,
-        },
-      },
+  // TODO: Fetch from your backend API
+  // const response = await authenticatedFetch(`/listings/${params.id}`);
+  // const listing = await response.json();
+
+  // Mock data for UI demonstration
+  const listing = {
+    id: params.id,
+    title: "Modern Downtown Apartment",
+    description:
+      "Beautiful 2-bedroom apartment in the heart of the city with stunning views",
+    category: "APARTMENT",
+    price: 1500,
+    imageUrls: "/images/property-placeholder.jpg",
+    address: "123 Main St",
+    city: "Addis Ababa",
+    state: "",
+    country: "Ethiopia",
+    features: "wifi,ac,parking,kitchen,tv",
+    status: "ACTIVE",
+    createdAt: new Date(),
+    owner: {
+      name: "Property Owner",
+      image: null,
+      id: "1",
     },
-  });
+  };
 
   if (!listing) {
     notFound();

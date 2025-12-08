@@ -1,6 +1,7 @@
 "use client";
-// Auth handled by middleware
-import { db } from "@/lib/db";
+// TODO: Connect to your external backend API
+// import { authenticatedFetch, getUser } from "@/lib/api";
+
 import {
   Card,
   CardContent,
@@ -24,380 +25,65 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import BookingActions from "@/components/bookings/BookingActions";
-import BookingPaymentStatus from "@/components/bookings/BookingPaymentStatus";
-import BookingTimeline from "@/components/bookings/BookingTimeline";
 
-export default async function BookingsPage() {
-  const session = await getServerSession(authOptions);
+export default function BookingsPage() {
+  // TODO: Fetch from your backend API
+  // const user = getUser();
+  // const response = await authenticatedFetch(`/bookings?userId=${user?.id}`);
+  // const bookings = await response.json();
 
-  if (!session?.user) {
-    redirect("/login");
-  }
-
-  const isOwner =
-    session.user.role === "OWNER" || session.user.role === "ADMIN";
-
-  // Fetch bookings where user is the renter
-  const renterBookings = await db.booking.findMany({
-    where: { renterId: session.user.id },
-    include: {
-      listing: true,
-      owner: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          image: true,
-        },
-      },
-      payments: {
-        orderBy: {
-          createdAt: "desc",
-        },
-      },
-      messages: {
-        orderBy: {
-          createdAt: "desc",
-        },
-        take: 1,
-      },
-    },
-    orderBy: { createdAt: "desc" },
-  });
-
-  // For owners, fetch bookings for their listings
-  const ownerBookings = isOwner
-    ? await db.booking.findMany({
-        where: { ownerId: session.user.id },
-        include: {
-          listing: true,
-          renter: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-              image: true,
-            },
-          },
-          payments: {
-            orderBy: {
-              createdAt: "desc",
-            },
-          },
-          messages: {
-            orderBy: {
-              createdAt: "desc",
-            },
-            take: 1,
-          },
-        },
-        orderBy: { createdAt: "desc" },
-      })
-    : [];
-
-  // Helper function to get status badge color
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "PENDING":
-        return (
-          <Badge
-            variant="outline"
-            className="bg-yellow-50 text-yellow-700 border-yellow-200"
-          >
-            Pending
-          </Badge>
-        );
-      case "CONFIRMED":
-        return (
-          <Badge
-            variant="outline"
-            className="bg-green-50 text-green-700 border-green-200"
-          >
-            Confirmed
-          </Badge>
-        );
-      case "CANCELLED":
-        return (
-          <Badge
-            variant="outline"
-            className="bg-red-50 text-red-700 border-red-200"
-          >
-            Cancelled
-          </Badge>
-        );
-      case "COMPLETED":
-        return (
-          <Badge
-            variant="outline"
-            className="bg-blue-50 text-blue-700 border-blue-200"
-          >
-            Completed
-          </Badge>
-        );
-      default:
-        return <Badge variant="outline">{status}</Badge>;
-    }
-  };
+  // Mock data for UI demonstration
+  const renterBookings: any[] = [];
+  const ownerBookings: any[] = [];
 
   return (
     <div className="flex flex-col gap-5">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">Bookings</h1>
+        <h1 className="text-3xl font-bold tracking-tight">My Bookings</h1>
       </div>
 
-      <Tabs
-        defaultValue={isOwner ? "receivedBookings" : "myBookings"}
-        className="space-y-4"
-      >
-        <TabsList>
-          <TabsTrigger value="myBookings">My Bookings</TabsTrigger>
-          {isOwner && (
-            <TabsTrigger value="receivedBookings">
-              Received Bookings
-            </TabsTrigger>
-          )}
+      <Tabs defaultValue="renter" className="w-full">
+        <TabsList className="grid w-full max-w-md grid-cols-2">
+          <TabsTrigger value="renter">My Bookings</TabsTrigger>
+          <TabsTrigger value="owner">Booking Requests</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="myBookings" className="space-y-4">
+        <TabsContent value="renter" className="mt-6">
           {renterBookings.length === 0 ? (
             <Card>
-              <CardHeader>
-                <CardTitle>No Bookings Found</CardTitle>
-                <CardDescription>
-                  You haven't made any bookings yet.
-                </CardDescription>
-              </CardHeader>
+              <CardContent className="flex flex-col items-center justify-center py-10">
+                <Calendar className="h-12 w-12 text-muted-foreground mb-4" />
+                <p className="text-lg font-medium">No bookings yet</p>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Start exploring properties to make your first booking
+                </p>
+                <Button>Browse Listings</Button>
+              </CardContent>
             </Card>
           ) : (
-            renterBookings.map((booking) => (
-              <Card key={booking.id} className="overflow-hidden">
-                <CardHeader className="pb-3">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <CardTitle className="text-xl">
-                        {booking.listing.title}
-                      </CardTitle>
-                      <CardDescription className="flex items-center gap-2 mt-1">
-                        <MapPin className="h-4 w-4" />
-                        {booking.listing.address ||
-                          booking.listing.city ||
-                          booking.listing.state ||
-                          booking.listing.country ||
-                          "Unknown location"}
-                      </CardDescription>
-                    </div>
-                    {getStatusBadge(booking.status)}
-                  </div>
-                </CardHeader>
-                <CardContent className="pb-3">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm">
-                          {new Date(booking.startDate).toLocaleDateString()} -{" "}
-                          {new Date(booking.endDate).toLocaleDateString()}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Clock className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm">
-                          {formatDistanceToNow(new Date(booking.createdAt), {
-                            addSuffix: true,
-                          })}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <DollarSign className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm font-medium">
-                          ${booking.totalPrice}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-2">
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage
-                            src={booking.owner.image || undefined}
-                            alt={booking.owner.name || "Host"}
-                          />
-                          <AvatarFallback>
-                            {booking.owner.name?.charAt(0) || "H"}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="text-sm font-medium">
-                            {booking.owner.name}
-                          </p>
-                          <p className="text-xs text-muted-foreground">Host</p>
-                        </div>
-                      </div>
-                      <BookingPaymentStatus
-                        payments={booking.payments.map((p) => ({
-                          ...p,
-                          createdAt:
-                            p.createdAt instanceof Date
-                              ? p.createdAt.toISOString()
-                              : p.createdAt,
-                        }))}
-                        totalAmount={booking.totalPrice}
-                      />
-                    </div>
-                  </div>
-                </CardContent>
-                <CardFooter className="flex justify-between border-t pt-3">
-                  <BookingTimeline
-                    booking={{
-                      status: booking.status,
-                      createdAt:
-                        booking.createdAt instanceof Date
-                          ? booking.createdAt.toISOString()
-                          : booking.createdAt,
-                      startDate:
-                        booking.startDate instanceof Date
-                          ? booking.startDate.toISOString()
-                          : booking.startDate,
-                      endDate:
-                        booking.endDate instanceof Date
-                          ? booking.endDate.toISOString()
-                          : booking.endDate,
-                    }}
-                  />
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm" className="gap-1">
-                      <MessageSquare className="h-4 w-4" />
-                      Message
-                    </Button>
-                    <BookingActions booking={booking} isOwner={false} />
-                  </div>
-                </CardFooter>
-              </Card>
-            ))
+            <div className="grid gap-4">
+              {/* Booking cards would go here */}
+            </div>
           )}
         </TabsContent>
 
-        {isOwner && (
-          <TabsContent value="receivedBookings" className="space-y-4">
-            {ownerBookings.length === 0 ? (
-              <Card>
-                <CardHeader>
-                  <CardTitle>No Bookings Received</CardTitle>
-                  <CardDescription>
-                    You haven't received any booking requests yet.
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-            ) : (
-              ownerBookings.map((booking) => (
-                <Card key={booking.id} className="overflow-hidden">
-                  <CardHeader className="pb-3">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <CardTitle className="text-xl">
-                          {booking.listing.title}
-                        </CardTitle>
-                        <CardDescription className="flex items-center gap-2 mt-1">
-                          <MapPin className="h-4 w-4" />
-                          {booking.listing.address ||
-                            booking.listing.city ||
-                            booking.listing.state ||
-                            booking.listing.country ||
-                            "Unknown location"}
-                        </CardDescription>
-                      </div>
-                      {getStatusBadge(booking.status)}
-                    </div>
-                  </CardHeader>
-                  <CardContent className="pb-3">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-2">
-                          <Calendar className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-sm">
-                            {new Date(booking.startDate).toLocaleDateString()} -{" "}
-                            {new Date(booking.endDate).toLocaleDateString()}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Clock className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-sm">
-                            {formatDistanceToNow(new Date(booking.createdAt), {
-                              addSuffix: true,
-                            })}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <DollarSign className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-sm font-medium">
-                            ${booking.totalPrice}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-2">
-                          <Avatar className="h-8 w-8">
-                            <AvatarImage
-                              src={booking.renter.image || undefined}
-                              alt={booking.renter.name || "Renter"}
-                            />
-                            <AvatarFallback>
-                              {booking.renter.name?.charAt(0) || "R"}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <p className="text-sm font-medium">
-                              {booking.renter.name}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              Renter
-                            </p>
-                          </div>
-                        </div>
-                        <BookingPaymentStatus
-                          payments={booking.payments.map((p) => ({
-                            ...p,
-                            createdAt:
-                              p.createdAt instanceof Date
-                                ? p.createdAt.toISOString()
-                                : p.createdAt,
-                          }))}
-                          totalAmount={booking.totalPrice}
-                        />
-                      </div>
-                    </div>
-                  </CardContent>
-                  <CardFooter className="flex justify-between border-t pt-3">
-                    <BookingTimeline
-                      booking={{
-                        status: booking.status,
-                        createdAt:
-                          booking.createdAt instanceof Date
-                            ? booking.createdAt.toISOString()
-                            : booking.createdAt,
-                        startDate:
-                          booking.startDate instanceof Date
-                            ? booking.startDate.toISOString()
-                            : booking.startDate,
-                        endDate:
-                          booking.endDate instanceof Date
-                            ? booking.endDate.toISOString()
-                            : booking.endDate,
-                      }}
-                    />
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="sm" className="gap-1">
-                        <MessageSquare className="h-4 w-4" />
-                        Message
-                      </Button>
-                      <BookingActions booking={booking} isOwner={true} />
-                    </div>
-                  </CardFooter>
-                </Card>
-              ))
-            )}
-          </TabsContent>
-        )}
+        <TabsContent value="owner" className="mt-6">
+          {ownerBookings.length === 0 ? (
+            <Card>
+              <CardContent className="flex flex-col items-center justify-center py-10">
+                <AlertCircle className="h-12 w-12 text-muted-foreground mb-4" />
+                <p className="text-lg font-medium">No booking requests</p>
+                <p className="text-sm text-muted-foreground">
+                  You haven't received any booking requests yet
+                </p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid gap-4">
+              {/* Booking request cards would go here */}
+            </div>
+          )}
+        </TabsContent>
       </Tabs>
     </div>
   );

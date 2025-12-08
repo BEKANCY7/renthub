@@ -1,7 +1,15 @@
-import { db } from "@/lib/db";
+// TODO: Connect to your external backend API
+// import { authenticatedFetch } from "@/lib/api";
 import Link from "next/link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Eye, MapPin } from "lucide-react";
@@ -9,126 +17,175 @@ import ListingsMap from "@/components/map/ListingsMap";
 // Ethiopia's center coordinates and major cities
 const ETHIOPIA_CENTER = { lat: 9.145, lng: 40.4897 };
 const ETHIOPIAN_CITIES = [
-    { name: "Addis Ababa", lat: 9.0222, lng: 38.7468 },
-    { name: "Dire Dawa", lat: 9.5907, lng: 41.8699 },
-    { name: "Mekelle", lat: 13.4967, lng: 39.4697 },
-    { name: "Gondar", lat: 12.6030, lng: 37.4521 },
-    { name: "Adama", lat: 8.5363, lng: 39.2705 },
-    { name: "Hawassa", lat: 7.0504, lng: 38.4955 },
-    { name: "Bahir Dar", lat: 11.5742, lng: 37.3614 }
+  { name: "Addis Ababa", lat: 9.0222, lng: 38.7468 },
+  { name: "Dire Dawa", lat: 9.5907, lng: 41.8699 },
+  { name: "Mekelle", lat: 13.4967, lng: 39.4697 },
+  { name: "Gondar", lat: 12.603, lng: 37.4521 },
+  { name: "Adama", lat: 8.5363, lng: 39.2705 },
+  { name: "Hawassa", lat: 7.0504, lng: 38.4955 },
+  { name: "Bahir Dar", lat: 11.5742, lng: 37.3614 },
 ];
 
 export default async function ListingsPage() {
-    // Fetch all active listings
-    const listings = await db.listing.findMany({
-        where: { status: "ACTIVE" },
-        orderBy: { createdAt: "desc" },
-    });
+  // TODO: Fetch from your backend API
+  // const response = await authenticatedFetch('/listings?status=ACTIVE');
+  // const listings = await response.json();
 
-    // Format listings for map display
-    const mapLocations = listings.map((listing, index) => {
-        // Assign each listing to a major Ethiopian city or generate a position near one
-        const cityIndex = index % ETHIOPIAN_CITIES.length;
-        const baseCity = ETHIOPIAN_CITIES[cityIndex];
+  // Mock data for UI demonstration
+  const listings = [
+    {
+      id: "1",
+      title: "Modern Downtown Apartment",
+      description: "Beautiful 2-bedroom apartment in the heart of the city",
+      category: "APARTMENT",
+      price: 1500,
+      imageUrls: "/images/property-placeholder.jpg",
+      city: "Addis Ababa",
+      state: "",
+      country: "Ethiopia",
+      status: "ACTIVE",
+    },
+    {
+      id: "2",
+      title: "Cozy Studio Near University",
+      description: "Perfect for students, close to campus",
+      category: "APARTMENT",
+      price: 800,
+      imageUrls: "/images/property-placeholder.jpg",
+      city: "Addis Ababa",
+      state: "",
+      country: "Ethiopia",
+      status: "ACTIVE",
+    },
+  ];
 
-        // Add small randomness to avoid perfect overlap
-        const latVariance = (Math.random() - 0.5) * 0.05;
-        const lngVariance = (Math.random() - 0.5) * 0.05;
+  // Format listings for map display
+  const mapLocations = listings.map((listing, index) => {
+    // Assign each listing to a major Ethiopian city or generate a position near one
+    const cityIndex = index % ETHIOPIAN_CITIES.length;
+    const baseCity = ETHIOPIAN_CITIES[cityIndex];
 
-        return {
-            id: listing.id,
-            title: listing.title,
-            price: listing.price,
-            lat: baseCity.lat + latVariance,
-            lng: baseCity.lng + lngVariance,
-            imageUrl: listing.imageUrls?.split(',')?.[0] || "https://source.unsplash.com/random/?property,ethiopia",
-        };
-    });
+    // Add small randomness to avoid perfect overlap
+    const latVariance = (Math.random() - 0.5) * 0.05;
+    const lngVariance = (Math.random() - 0.5) * 0.05;
 
-    return (
-        <div className="container mx-auto py-10 space-y-6">
-            <h1 className="text-3xl font-bold tracking-tight">Find Your Next Home in Ethiopia</h1>
+    return {
+      id: listing.id,
+      title: listing.title,
+      price: listing.price,
+      lat: baseCity.lat + latVariance,
+      lng: baseCity.lng + lngVariance,
+      imageUrl:
+        listing.imageUrls?.split(",")?.[0] ||
+        "https://source.unsplash.com/random/?property,ethiopia",
+    };
+  });
 
-            <Tabs defaultValue="grid" className="w-full">
-                <TabsList className="grid w-full max-w-md grid-cols-2">
-                    <TabsTrigger value="grid">Grid View</TabsTrigger>
-                    <TabsTrigger value="map">Map View</TabsTrigger>
-                </TabsList>
+  return (
+    <div className="container mx-auto py-10 space-y-6">
+      <h1 className="text-3xl font-bold tracking-tight">
+        Find Your Next Home in Ethiopia
+      </h1>
 
-                <TabsContent value="grid" className="mt-6">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {listings.map((listing) => (
-                            <Card key={listing.id} className="overflow-hidden">
-                                <div className="relative h-48 bg-gray-100">
-                                    <img
-                                        src={listing.imageUrls?.split(',')[0] || "https://source.unsplash.com/random/?property,ethiopia"}
-                                        alt={listing.title}
-                                        className="w-full h-full object-cover"
-                                    />
-                                </div>
-                                <CardHeader>
-                                    <CardTitle className="line-clamp-1">{listing.title}</CardTitle>
-                                    <CardDescription className="line-clamp-2">
-                                        {listing.description}
-                                    </CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="space-y-2">
-                                        <div className="flex justify-between items-center">
-                                            <p className="text-xl font-bold">ETB {listing.price.toLocaleString()}/day</p>
-                                        </div>
-                                        <div className="flex items-center text-sm text-muted-foreground">
-                                            <MapPin className="h-4 w-4 mr-1" />
-                                            <span>{listing.city || "Addis Ababa"}, {listing.state || listing.country || "Ethiopia"}</span>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                                <CardFooter>
-                                    <Button asChild className="w-full">
-                                        <Link href={`/listings/${listing.id}`}>
-                                            <Eye className="mr-2 h-4 w-4" /> View Details
-                                        </Link>
-                                    </Button>
-                                </CardFooter>
-                            </Card>
-                        ))}
+      <Tabs defaultValue="grid" className="w-full">
+        <TabsList className="grid w-full max-w-md grid-cols-2">
+          <TabsTrigger value="grid">Grid View</TabsTrigger>
+          <TabsTrigger value="map">Map View</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="grid" className="mt-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {listings.map((listing) => (
+              <Card key={listing.id} className="overflow-hidden">
+                <div className="relative h-48 bg-gray-100">
+                  <img
+                    src={
+                      listing.imageUrls?.split(",")[0] ||
+                      "https://source.unsplash.com/random/?property,ethiopia"
+                    }
+                    alt={listing.title}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <CardHeader>
+                  <CardTitle className="line-clamp-1">
+                    {listing.title}
+                  </CardTitle>
+                  <CardDescription className="line-clamp-2">
+                    {listing.description}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <p className="text-xl font-bold">
+                        ETB {listing.price.toLocaleString()}/day
+                      </p>
                     </div>
-                </TabsContent>
-
-                <TabsContent value="map" className="mt-6">
-                    <div className="space-y-4">
-                        <div className="h-[600px] bg-gray-100 rounded-md overflow-hidden">
-                            <ListingsMap locations={mapLocations} height="600px" />
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                            {listings.slice(0, 4).map((listing) => (
-                                <Card key={listing.id} className="overflow-hidden">
-                                    <div className="relative h-32 bg-gray-100">
-                                        <img
-                                            src={listing.imageUrls?.split(',')[0] || "https://source.unsplash.com/random/?property,ethiopia"}
-                                            alt={listing.title}
-                                            className="w-full h-full object-cover"
-                                        />
-                                    </div>
-                                    <CardContent className="p-3">
-                                        <h3 className="font-bold line-clamp-1">{listing.title}</h3>
-                                        <p className="text-sm text-muted-foreground line-clamp-1">
-                                            {listing.city || "Addis Ababa"}, {listing.country || "Ethiopia"}
-                                        </p>
-                                        <p className="font-semibold mt-1">ETB {listing.price.toLocaleString()}/day</p>
-                                        <Button asChild variant="outline" size="sm" className="w-full mt-2">
-                                            <Link href={`/listings/${listing.id}`}>
-                                                View
-                                            </Link>
-                                        </Button>
-                                    </CardContent>
-                                </Card>
-                            ))}
-                        </div>
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <MapPin className="h-4 w-4 mr-1" />
+                      <span>
+                        {listing.city || "Addis Ababa"},{" "}
+                        {listing.state || listing.country || "Ethiopia"}
+                      </span>
                     </div>
-                </TabsContent>
-            </Tabs>
-        </div>
-    );
-} 
+                  </div>
+                </CardContent>
+                <CardFooter>
+                  <Button asChild className="w-full">
+                    <Link href={`/listings/${listing.id}`}>
+                      <Eye className="mr-2 h-4 w-4" /> View Details
+                    </Link>
+                  </Button>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="map" className="mt-6">
+          <div className="space-y-4">
+            <div className="h-[600px] bg-gray-100 rounded-md overflow-hidden">
+              <ListingsMap locations={mapLocations} height="600px" />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              {listings.slice(0, 4).map((listing) => (
+                <Card key={listing.id} className="overflow-hidden">
+                  <div className="relative h-32 bg-gray-100">
+                    <img
+                      src={
+                        listing.imageUrls?.split(",")[0] ||
+                        "https://source.unsplash.com/random/?property,ethiopia"
+                      }
+                      alt={listing.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <CardContent className="p-3">
+                    <h3 className="font-bold line-clamp-1">{listing.title}</h3>
+                    <p className="text-sm text-muted-foreground line-clamp-1">
+                      {listing.city || "Addis Ababa"},{" "}
+                      {listing.country || "Ethiopia"}
+                    </p>
+                    <p className="font-semibold mt-1">
+                      ETB {listing.price.toLocaleString()}/day
+                    </p>
+                    <Button
+                      asChild
+                      variant="outline"
+                      size="sm"
+                      className="w-full mt-2"
+                    >
+                      <Link href={`/listings/${listing.id}`}>View</Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}

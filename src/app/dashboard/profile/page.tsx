@@ -1,6 +1,6 @@
 "use client";
-// Auth handled by middleware
-import { db } from "@/lib/db";
+// TODO: Connect to your external backend API
+// import { authenticatedFetch, getUser } from "@/lib/api";
 import {
   Card,
   CardContent,
@@ -15,43 +15,27 @@ import { Calendar, Shield } from "lucide-react";
 import { ProfileForm } from "@/components/profile/ProfileForm";
 import { PasswordChangeForm } from "@/components/profile/PasswordChangeForm";
 
-export default async function ProfilePage() {
-  const session = await getServerSession(authOptions);
+export default function ProfilePage() {
+  // TODO: Fetch from your backend API
+  // const user = getUser();
+  // const response = await authenticatedFetch(`/users/${user?.id}/stats`);
+  // const stats = await response.json();
 
-  if (!session?.user) {
-    redirect("/login");
-  }
+  // Mock data for UI demonstration
+  const user = {
+    id: "1",
+    name: "John Doe",
+    email: "john@example.com",
+    image: null,
+    role: "RENTER",
+    createdAt: new Date(),
+  };
 
-  // Get full user details
-  const user = await db.user.findUnique({
-    where: { id: session.user.id },
-  });
-
-  if (!user) {
-    redirect("/login");
-  }
-
-  // Format role for display
   const formattedRole = user.role.charAt(0) + user.role.slice(1).toLowerCase();
-
-  // Get some stats based on user type
   const isOwner = user.role === "OWNER" || user.role === "ADMIN";
-
-  const bookingsCount = await db.booking.count({
-    where: { renterId: user.id },
-  });
-
-  const listingsCount = isOwner
-    ? await db.listing.count({
-        where: { ownerId: user.id },
-      })
-    : 0;
-
-  const receivedBookingsCount = isOwner
-    ? await db.booking.count({
-        where: { ownerId: user.id },
-      })
-    : 0;
+  const bookingsCount = 0;
+  const listingsCount = 0;
+  const receivedBookingsCount = 0;
 
   return (
     <div className="flex flex-col gap-5">

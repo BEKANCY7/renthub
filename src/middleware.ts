@@ -1,39 +1,10 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-// Middleware function to protect routes
+// Middleware function to protect routes - DISABLED FOR DEMO MODE
 export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-
-  // Check if the path is an admin route
-  if (pathname.startsWith("/admin")) {
-    // Check for authentication token in cookies
-    const token = request.cookies.get("auth_token")?.value;
-
-    if (!token) {
-      // Redirect to login if no token
-      const url = new URL("/login", request.url);
-      url.searchParams.set("callbackUrl", encodeURI(pathname));
-      return NextResponse.redirect(url);
-    }
-  }
-
-  // Check if user is trying to access protected routes
-  const protectedRoutes = ["/dashboard", "/find-home", "/profile", "/messages"];
-  const isProtectedRoute = protectedRoutes.some((route) =>
-    pathname.startsWith(route)
-  );
-
-  if (isProtectedRoute) {
-    const token = request.cookies.get("auth_token")?.value;
-
-    if (!token) {
-      const url = new URL("/login", request.url);
-      url.searchParams.set("callbackUrl", encodeURI(pathname));
-      return NextResponse.redirect(url);
-    }
-  }
-
+  // Allow all routes in demo mode
+  console.log("Middleware: Allowing access to", request.nextUrl.pathname);
   return NextResponse.next();
 }
 

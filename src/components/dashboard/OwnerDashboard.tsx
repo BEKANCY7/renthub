@@ -19,6 +19,7 @@ interface OwnerDashboardProps {
 }
 
 export default function OwnerDashboard({ userId }: OwnerDashboardProps) {
+  console.log("OwnerDashboard rendering for userId:", userId);
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       <Card>

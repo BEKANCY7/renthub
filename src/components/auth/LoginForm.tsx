@@ -71,6 +71,8 @@ export function LoginForm() {
     setError(null);
 
     try {
+      console.log("Attempting login with:", { email: values.email });
+
       // Login with external API
       const response = await loginToExternalAPI({
         email: values.email,
@@ -78,6 +80,8 @@ export function LoginForm() {
       });
 
       console.log("API Response:", response);
+      console.log("Response type:", typeof response);
+      console.log("Response keys:", response ? Object.keys(response) : "null");
 
       // Store tokens and user data
       if (response.access || response.token) {
@@ -119,9 +123,20 @@ export function LoginForm() {
         setIsLoading(false);
       }
     } catch (apiError) {
-      const error = apiError as ApiError;
-      console.error("Login error:", error);
-      setError(error.message || "Invalid email or password");
+      console.error("Login error:", apiError);
+
+      // Handle different error types
+      if (apiError && typeof apiError === "object" && "message" in apiError) {
+        const error = apiError as ApiError;
+        setError(error.message || "Invalid email or password");
+      } else if (apiError instanceof Error) {
+        setError(apiError.message || "An error occurred during login");
+      } else {
+        setError(
+          "Unable to connect to the server. Please check your internet connection."
+        );
+      }
+
       setIsLoading(false);
     }
   }
