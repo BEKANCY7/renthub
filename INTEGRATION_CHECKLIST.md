@@ -11,12 +11,12 @@ Use this checklist to track your progress connecting the frontend to your backen
 
 ## 🔐 Authentication
 
-- [ ] `/login` - Login endpoint working
+- [x] `/auth/login` - Login endpoint integrated (POST http://localhost:3001/auth/login)
 - [ ] `/register` - Registration endpoint working
 - [ ] `/forgot-password` - Password reset endpoint working
-- [ ] Token storage and retrieval working
+- [x] Token storage and retrieval working
 - [ ] Protected routes redirect to login when not authenticated
-- [ ] Logout functionality working
+- [x] `/auth/logout` - Logout endpoint integrated (POST http://localhost:3001/auth/logout)
 
 ## 🏠 Listings
 
@@ -155,12 +155,10 @@ Add any additional notes or reminders:
 
 -
 -
--
+- ***
 
----
+  **Progress**: \_\_\_/100 items completed
 
-**Progress**: \_\_\_/100 items completed
+  **Last Updated**: **\*\***\_**\*\***
 
-**Last Updated**: ******\_******
-
-**Updated By**: ******\_******
+  **Updated By**: **\*\***\_**\*\***

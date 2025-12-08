@@ -78,7 +78,7 @@ export function AdminSidebar({ className }: AdminSidebarProps) {
     <Button
       variant="ghost"
       className="w-full justify-start px-3 py-2 text-sm"
-      onClick={() => signOut({ callbackUrl: "/" })}
+      onClick={() => logout("/")}
     >
       <LogOut className="mr-3 h-4 w-4" />
       Sign Out

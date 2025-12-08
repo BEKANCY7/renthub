@@ -108,9 +108,7 @@ export default function Header({ user, setMobileNavOpen }: HeaderProps) {
               <Link href="/dashboard/settings">Settings</Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => signOut({ callbackUrl: "/login" })}
-            >
+            <DropdownMenuItem onClick={() => logout("/login")}>
               Log out
             </DropdownMenuItem>
           </DropdownMenuContent>

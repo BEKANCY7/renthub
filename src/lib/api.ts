@@ -147,3 +147,31 @@ export async function loginToExternalAPI(
     } as ApiError;
   }
 }
+
+// Logout from external backend
+export async function logoutFromExternalAPI(): Promise<void> {
+  try {
+    const token = getAuthToken();
+
+    if (!token) {
+      console.warn("No token found for logout");
+      return;
+    }
+
+    const response = await fetch(`${API_BASE_URL}/auth/logout`, {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      console.error("Logout API call failed:", response.status);
+      // Don't throw error - still clear local data even if API fails
+    }
+  } catch (error) {
+    console.error("Logout error:", error);
+    // Don't throw error - still clear local data even if API fails
+  }
+}
