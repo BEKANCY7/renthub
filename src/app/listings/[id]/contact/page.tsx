@@ -34,7 +34,9 @@ const contactFormSchema = z.object({
 type ContactFormValues = z.infer<typeof contactFormSchema>;
 
 export default function ContactPage({ params }: { params: { id: string } }) {
-  const { data: session, status } = useSession();
+  // TODO: Get user from your backend API
+  const session = null;
+  const status = "unauthenticated";
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

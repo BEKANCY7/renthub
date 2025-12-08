@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+
+export const dynamic = "force-dynamic";
 import Link from "next/link";
 import { z } from "zod";
 import { useForm } from "react-hook-form";

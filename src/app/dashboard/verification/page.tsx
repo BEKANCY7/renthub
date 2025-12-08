@@ -13,7 +13,8 @@ import {
 import { CheckCircle, AlertCircle, Info } from "lucide-react";
 
 export default function VerificationPage() {
-  const { data: session } = useSession();
+  // TODO: Get user from your backend API
+  const session = { user: { emailVerified: false } };
 
   const isEmailVerified = session?.user?.emailVerified;
   const isPhoneVerified = session?.user?.phoneVerified;

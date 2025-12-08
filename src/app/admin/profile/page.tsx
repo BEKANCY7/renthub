@@ -17,7 +17,11 @@ import {
 import { Loader2, User } from "lucide-react";
 
 export default function AdminProfilePage() {
-  const { data: session, status } = useSession();
+  // TODO: Get user from your backend API
+  const session = {
+    user: { name: "Admin User", email: "admin@example.com", image: null },
+  };
+  const status = "authenticated";
   const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
 

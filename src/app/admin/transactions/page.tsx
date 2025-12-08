@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { Suspense, useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { format } from "date-fns";
 import { Loader2, Plus, Search, SlidersHorizontal } from "lucide-react";
@@ -45,7 +45,7 @@ interface Transaction {
   };
 }
 
-export default function TransactionsPage() {
+function TransactionsPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -399,5 +399,13 @@ export default function TransactionsPage() {
         />
       )}
     </div>
+  );
+}
+
+export default function TransactionsPage() {
+  return (
+    <Suspense fallback={<div className="p-6">Loading...</div>}>
+      <TransactionsPageContent />
+    </Suspense>
   );
 }

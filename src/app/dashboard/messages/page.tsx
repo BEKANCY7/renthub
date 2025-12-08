@@ -2,7 +2,8 @@
 // Auth handled by middleware
 
 export default async function DashboardMessagesPage() {
-  const session = await getServerSession(authOptions);
+  // TODO: Get user from your backend API
+  const session = null;
 
   if (!session?.user) {
     redirect("/login?callbackUrl=/messages");

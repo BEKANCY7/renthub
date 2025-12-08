@@ -18,7 +18,8 @@ export default async function MessagesLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getServerSession(authOptions);
+  // TODO: Get user from your backend API
+  const session = null;
 
   if (!session?.user) {
     redirect("/login?callbackUrl=/messages");

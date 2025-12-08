@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 
-import ConversationView from "@/components/messages/ConversationView";
+import { ConversationView } from "@/components/messages/ConversationView";
 
 interface Conversation {
   id: string;

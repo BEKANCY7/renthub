@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+
+export const dynamic = "force-dynamic";
 import { CheckCircle, Download, Copy, Share2, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -134,9 +136,7 @@ export default function PaymentSuccessPage() {
 
             <div className="flex justify-between items-center">
               <span className="text-sm text-muted-foreground">Date</span>
-              <span className="font-medium">
-                {currentDate || "Loading..."}
-              </span>
+              <span className="font-medium">{currentDate || "Loading..."}</span>
             </div>
 
             <div className="flex justify-between items-center">

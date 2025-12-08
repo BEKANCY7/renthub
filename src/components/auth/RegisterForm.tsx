@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 // Registration will be handled by external API
 import { z } from "zod";
 import { useForm } from "react-hook-form";

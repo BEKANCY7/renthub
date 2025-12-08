@@ -17,11 +17,8 @@ export default async function FindHomePage({
 }: {
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
-  // Get the user session to pass to the sidebar
-  const session = await getServerSession(authOptions);
-
-  // If no user is logged in, we can still show the page but without the sidebar
-  const user = session?.user;
+  // TODO: Get user from your backend API
+  const user = null;
 
   return (
     <div className="flex h-screen overflow-hidden">
