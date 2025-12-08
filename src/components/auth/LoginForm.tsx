@@ -83,44 +83,46 @@ export function LoginForm() {
       console.log("Response type:", typeof response);
       console.log("Response keys:", response ? Object.keys(response) : "null");
 
-      // Store tokens and user data
-      if (response.access || response.token) {
-        storeAuthTokens(response);
+      // Extract token from response (handle different field names)
+      const token = response.access_token || response.access || response.token;
 
-        // Set cookie for middleware
-        const token = response.access || response.token;
-        if (token) {
-          document.cookie = `auth_token=${token}; path=/; max-age=${
-            60 * 60 * 24 * 7
-          }`; // 7 days
-        }
-
-        if (response.user) {
-          storeUser(response.user);
-        }
-
-        console.log("Login successful, redirecting...");
-
-        // Redirect based on user role
-        const userRole = response.user?.role?.toUpperCase();
-
-        if (userRole === "ADMIN") {
-          console.log("Admin user detected, redirecting to admin dashboard");
-          window.location.href = "/admin/dashboard";
-        } else if (userRole === "RENTER") {
-          console.log("Redirecting to find-home");
-          window.location.href = "/find-home";
-        } else if (userRole === "OWNER") {
-          console.log("Redirecting to owner dashboard");
-          window.location.href = "/dashboard";
-        } else {
-          // Default fallback
-          console.log("Redirecting to default dashboard");
-          window.location.href = "/dashboard";
-        }
-      } else {
-        setError("Login failed. Please try again.");
+      if (!token) {
+        console.error("No token in response:", response);
+        setError("Login failed. No authentication token received.");
         setIsLoading(false);
+        return;
+      }
+
+      // Store tokens and user data
+      storeAuthTokens(response);
+
+      // Set cookie for middleware
+      document.cookie = `auth_token=${token}; path=/; max-age=${
+        60 * 60 * 24 * 7
+      }`; // 7 days
+
+      if (response.user) {
+        storeUser(response.user);
+      }
+
+      console.log("Login successful, redirecting...");
+
+      // Redirect based on user role
+      const userRole = response.user?.role?.toUpperCase();
+
+      if (userRole === "ADMIN") {
+        console.log("Admin user detected, redirecting to admin dashboard");
+        window.location.href = "/admin/dashboard";
+      } else if (userRole === "RENTER") {
+        console.log("Redirecting to find-home");
+        window.location.href = "/find-home";
+      } else if (userRole === "OWNER") {
+        console.log("Redirecting to owner dashboard");
+        window.location.href = "/dashboard";
+      } else {
+        // Default fallback
+        console.log("Redirecting to default dashboard");
+        window.location.href = "/dashboard";
       }
     } catch (apiError) {
       console.error("Login error:", apiError);

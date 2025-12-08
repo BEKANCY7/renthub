@@ -1,6 +1,6 @@
 // API configuration - Connect to your external backend
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000/api";
+  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3001";
 
 export interface LoginCredentials {
   email: string;
@@ -20,8 +20,11 @@ export interface LoginResponse {
   access?: string;
   refresh?: string;
   token?: string;
+  access_token?: string;
+  refresh_token?: string;
   user?: User;
   message?: string;
+  [key: string]: any;
 }
 
 export interface ApiError {
@@ -35,11 +38,22 @@ export function storeAuthTokens(tokens: {
   access?: string;
   refresh?: string;
   token?: string;
+  access_token?: string;
+  refresh_token?: string;
+  [key: string]: any;
 }) {
   if (typeof window === "undefined") return;
-  if (tokens.access) localStorage.setItem("access_token", tokens.access);
-  if (tokens.refresh) localStorage.setItem("refresh_token", tokens.refresh);
-  if (tokens.token) localStorage.setItem("auth_token", tokens.token);
+
+  const accessToken = tokens.access_token || tokens.access || tokens.token;
+  const refreshToken = tokens.refresh_token || tokens.refresh;
+
+  if (accessToken) {
+    localStorage.setItem("access_token", accessToken);
+    localStorage.setItem("auth_token", accessToken);
+  }
+  if (refreshToken) {
+    localStorage.setItem("refresh_token", refreshToken);
+  }
 }
 
 export function getAuthToken(): string | null {
@@ -99,10 +113,10 @@ export async function loginToExternalAPI(
   credentials: LoginCredentials
 ): Promise<LoginResponse> {
   try {
-    const response = await fetch(`${API_BASE_URL}/users/login/`, {
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
       method: "POST",
       headers: {
-        accept: "application/json",
+        accept: "*/*",
         "Content-Type": "application/json",
       },
       body: JSON.stringify(credentials),
