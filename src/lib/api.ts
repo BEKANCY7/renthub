@@ -175,3 +175,38 @@ export async function logoutFromExternalAPI(): Promise<void> {
     // Don't throw error - still clear local data even if API fails
   }
 }
+
+// Create a new listing
+export async function createListing(listingData: any): Promise<any> {
+  try {
+    const response = await authenticatedFetch("/listings", {
+      method: "POST",
+      body: JSON.stringify(listingData),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw {
+        message:
+          errorData.message ||
+          `Failed to create listing with status ${response.status}`,
+        status: response.status,
+        details: errorData,
+      } as ApiError;
+    }
+
+    return await response.json();
+  } catch (error) {
+    if ((error as ApiError).status) {
+      throw error;
+    }
+    throw {
+      message:
+        error instanceof Error
+          ? error.message
+          : "Network error. Please check your connection.",
+      status: 0,
+      details: error,
+    } as ApiError;
+  }
+}

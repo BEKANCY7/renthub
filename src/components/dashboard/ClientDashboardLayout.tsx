@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import Sidebar from "@/components/dashboard/Sidebar";
 import Header from "@/components/dashboard/Header";
+import { Toaster } from "@/components/ui/toaster";
 
 // Client component to handle state
 export default function ClientDashboardLayout({
@@ -43,6 +44,7 @@ export default function ClientDashboardLayout({
           {children}
         </main>
       </div>
+      <Toaster />
     </div>
   );
 }
