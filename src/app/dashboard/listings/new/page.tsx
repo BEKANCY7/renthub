@@ -243,7 +243,9 @@ export default function NewListingPage() {
         },
       };
 
+      console.log("Sending listing data:", listingData);
       const result = await createListing(listingData);
+      console.log("Listing created successfully:", result);
 
       toast({
         title: "Success!",
@@ -254,10 +256,17 @@ export default function NewListingPage() {
       router.refresh();
     } catch (error: any) {
       console.error("Error creating listing:", error);
+      console.error("Error details:", {
+        message: error?.message,
+        status: error?.status,
+        details: error?.details,
+      });
       toast({
         title: "Error",
         description:
-          error.message || "Failed to create listing. Please try again.",
+          error?.message ||
+          error?.details?.message ||
+          "Failed to create listing. Please try again.",
         variant: "destructive",
       });
     } finally {

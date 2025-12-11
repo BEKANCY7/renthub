@@ -102,7 +102,15 @@ export async function authenticatedFetch(
     ...options.headers,
   };
 
-  return fetch(`${API_BASE_URL}${endpoint}`, {
+  const url = `${API_BASE_URL}${endpoint}`;
+  console.log("authenticatedFetch:", {
+    url,
+    method: options.method || "GET",
+    hasToken: !!token,
+    headers,
+  });
+
+  return fetch(url, {
     ...options,
     headers,
   });
@@ -179,13 +187,17 @@ export async function logoutFromExternalAPI(): Promise<void> {
 // Create a new listing
 export async function createListing(listingData: any): Promise<any> {
   try {
+    console.log("API: Sending request to /listings with data:", listingData);
     const response = await authenticatedFetch("/listings", {
       method: "POST",
       body: JSON.stringify(listingData),
     });
 
+    console.log("API: Response status:", response.status);
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
+      console.error("API: Error response:", errorData);
       throw {
         message:
           errorData.message ||
@@ -195,8 +207,11 @@ export async function createListing(listingData: any): Promise<any> {
       } as ApiError;
     }
 
-    return await response.json();
+    const result = await response.json();
+    console.log("API: Success response:", result);
+    return result;
   } catch (error) {
+    console.error("API: Exception caught:", error);
     if ((error as ApiError).status) {
       throw error;
     }
