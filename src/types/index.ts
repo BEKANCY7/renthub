@@ -15,6 +15,7 @@ export interface ImageFile {
   size: number;
   url: string;
   file: File;
+  uploaded?: boolean;
 }
 
 export interface CalendarProps {

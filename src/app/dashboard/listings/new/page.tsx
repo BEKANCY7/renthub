@@ -45,8 +45,9 @@ import {
 import { LocationSearch } from "@/components/property/LocationSearch";
 import type { LocationDetails, ImageFile, CalendarProps } from "@/types";
 import Image from "next/image";
-import { createListing } from "@/lib/api";
+import { createListing, uploadImages } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
+import { validateImageFiles, filterValidUrls } from "@/lib/imageUtils";
 
 const amenities = [
   { id: "wifi", label: "WiFi" },
@@ -150,6 +151,7 @@ export default function NewListingPage() {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [images, setImages] = useState<ImageFile[]>([]);
+  const [uploadingImages, setUploadingImages] = useState(false);
   const [locationDetails, setLocationDetails] =
     useState<LocationDetails | null>(null);
 
@@ -183,16 +185,73 @@ export default function NewListingPage() {
     },
   });
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files ? Array.from(e.target.files) : [];
-    if (files.length > 0) {
+    if (files.length === 0) return;
+
+    // Validate files before upload
+    const validation = validateImageFiles(files);
+    if (!validation.valid) {
+      toast({
+        title: "Invalid Files",
+        description: validation.error,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Check if adding these files would exceed the limit
+    if (images.length + files.length > 10) {
+      toast({
+        title: "Too Many Images",
+        description: `You can only upload ${10 - images.length} more image(s).`,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setUploadingImages(true);
+
+    try {
+      // Upload files and get real URLs
+      const uploadedUrls = await uploadImages(files);
+
+      // Create image objects with real URLs
+      const newImages = files.map((file, index) => ({
+        name: file.name,
+        size: file.size,
+        url: uploadedUrls[index] || URL.createObjectURL(file), // Fallback to blob URL if upload failed
+        file,
+        uploaded: !!uploadedUrls[index], // Track if successfully uploaded
+      }));
+
+      setImages((prev) => [...prev, ...newImages].slice(0, 10));
+
+      toast({
+        title: "Success!",
+        description: `${uploadedUrls.length} image(s) uploaded successfully.`,
+      });
+    } catch (error: any) {
+      console.error("Error uploading images:", error);
+
+      // Still add images with blob URLs as fallback
       const newImages = files.map((file) => ({
         name: file.name,
         size: file.size,
         url: URL.createObjectURL(file),
         file,
+        uploaded: false,
       }));
       setImages((prev) => [...prev, ...newImages].slice(0, 10));
+
+      toast({
+        title: "Upload Warning",
+        description:
+          error?.message || "Failed to upload images. Using temporary URLs.",
+        variant: "destructive",
+      });
+    } finally {
+      setUploadingImages(false);
     }
   };
 
@@ -209,6 +268,80 @@ export default function NewListingPage() {
     setLoading(true);
 
     try {
+      // Check if there are any images that haven't been uploaded yet
+      const unuploadedImages = images.filter(
+        (img) => !img.uploaded && !img.url.startsWith("http")
+      );
+
+      let finalImageUrls: string[] = [];
+
+      if (unuploadedImages.length > 0) {
+        // Upload remaining images
+        try {
+          const uploadedUrls = await uploadImages(
+            unuploadedImages.map((img) => img.file)
+          );
+
+          // Combine uploaded URLs with already uploaded ones
+          finalImageUrls = images.map((img, index) => {
+            if (img.uploaded || img.url.startsWith("http")) {
+              return img.url;
+            } else {
+              const unuploadedIndex = unuploadedImages.findIndex(
+                (unImg) => unImg === img
+              );
+              return uploadedUrls[unuploadedIndex] || img.url;
+            }
+          });
+        } catch (uploadError) {
+          console.error("Error uploading remaining images:", uploadError);
+          toast({
+            title: "Warning",
+            description:
+              "Some images couldn't be uploaded. Proceeding with available images.",
+            variant: "destructive",
+          });
+          // Use only successfully uploaded images
+          finalImageUrls = images
+            .filter((img) => img.uploaded || img.url.startsWith("http"))
+            .map((img) => img.url);
+        }
+      } else {
+        // All images are already uploaded - filter to only include real URLs
+        finalImageUrls = images
+          .filter((img) => img.uploaded && img.url.startsWith("http"))
+          .map((img) => img.url);
+      }
+
+      // Filter out any blob URLs that might have slipped through
+      const originalCount = finalImageUrls.length;
+      finalImageUrls = filterValidUrls(finalImageUrls);
+
+      if (finalImageUrls.length < originalCount) {
+        console.warn(
+          `Filtered out ${
+            originalCount - finalImageUrls.length
+          } invalid URLs (likely blob URLs)`
+        );
+        toast({
+          title: "Warning",
+          description:
+            "Some images were not uploaded properly and were excluded.",
+          variant: "destructive",
+        });
+      }
+
+      console.log("Final image URLs being sent:", finalImageUrls);
+
+      // Fallback to placeholder if no valid images
+      if (finalImageUrls.length === 0) {
+        finalImageUrls = ["https://source.unsplash.com/random/?apartment"];
+        console.log(
+          "No valid images found, using placeholder:",
+          finalImageUrls
+        );
+      }
+
       const listingData = {
         title: data.title,
         description: data.description,
@@ -217,10 +350,7 @@ export default function NewListingPage() {
         bedrooms: data.bedrooms,
         bathrooms: data.bathrooms,
         squareFeet: data.squareFeet,
-        imageUrls:
-          images.length > 0
-            ? images.map((img) => img.url)
-            : ["https://source.unsplash.com/random/?apartment"],
+        imageUrls: finalImageUrls,
         address: data.location,
         city: locationDetails?.city ?? "Addis Ababa",
         state: locationDetails?.state ?? "Addis Ababa",
@@ -498,14 +628,21 @@ export default function NewListingPage() {
                       multiple
                       className="hidden"
                       onChange={handleImageUpload}
+                      disabled={uploadingImages}
                     />
                     <label
                       htmlFor="images"
-                      className="cursor-pointer flex flex-col items-center"
+                      className={`flex flex-col items-center ${
+                        uploadingImages
+                          ? "cursor-not-allowed opacity-50"
+                          : "cursor-pointer"
+                      }`}
                     >
                       <UploadCloud className="h-10 w-10 text-gray-400" />
                       <span className="mt-2 text-sm font-medium text-gray-700">
-                        Drag and drop or click to upload
+                        {uploadingImages
+                          ? "Uploading..."
+                          : "Drag and drop or click to upload"}
                       </span>
                       <span className="mt-1 text-xs text-gray-500">
                         Upload up to 10 images (max 5MB each)
@@ -527,6 +664,29 @@ export default function NewListingPage() {
                             width={200}
                             height={96}
                           />
+                          {/* Upload status indicator */}
+                          {image.uploaded === false && (
+                            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                              <span className="text-white text-xs">
+                                Not uploaded
+                              </span>
+                            </div>
+                          )}
+                          {image.uploaded === true && (
+                            <div className="absolute top-1 left-1 bg-green-500 rounded-full p-1">
+                              <svg
+                                className="h-3 w-3 text-white"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                            </div>
+                          )}
                           <button
                             type="button"
                             onClick={() => handleRemoveImage(index)}
@@ -834,8 +994,12 @@ export default function NewListingPage() {
               <Button variant="outline" type="button" asChild>
                 <Link href="/dashboard/listings">Cancel</Link>
               </Button>
-              <Button type="submit" disabled={loading}>
-                {loading ? "Creating..." : "Create Listing"}
+              <Button type="submit" disabled={loading || uploadingImages}>
+                {loading
+                  ? "Creating..."
+                  : uploadingImages
+                  ? "Uploading Images..."
+                  : "Create Listing"}
               </Button>
             </CardFooter>
           </Card>

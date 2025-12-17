@@ -95,9 +95,12 @@ export async function authenticatedFetch(
   options: RequestInit = {}
 ): Promise<Response> {
   const token = getAuthToken();
+
+  // Don't set Content-Type for FormData - let browser set it with boundary
+  const isFormData = options.body instanceof FormData;
   const headers = {
     accept: "application/json",
-    "Content-Type": "application/json",
+    ...(!isFormData && { "Content-Type": "application/json" }),
     ...(token && { Authorization: `Bearer ${token}` }),
     ...options.headers,
   };
@@ -107,6 +110,7 @@ export async function authenticatedFetch(
     url,
     method: options.method || "GET",
     hasToken: !!token,
+    isFormData,
     headers,
   });
 
@@ -184,6 +188,66 @@ export async function logoutFromExternalAPI(): Promise<void> {
   }
 }
 
+// Upload images and get hosted URLs
+export async function uploadImages(files: File[]): Promise<string[]> {
+  try {
+    const formData = new FormData();
+    files.forEach((file) => {
+      formData.append(`images`, file);
+    });
+
+    console.log("API: Uploading images to /upload/images/multiple");
+    const response = await authenticatedFetch("/upload/images/multiple", {
+      method: "POST",
+      body: formData,
+    });
+
+    console.log("API: Image upload response status:", response.status);
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error("API: Image upload error response:", errorData);
+      throw {
+        message:
+          errorData.message ||
+          `Failed to upload images with status ${response.status}`,
+        status: response.status,
+        details: errorData,
+      } as ApiError;
+    }
+
+    const result = await response.json();
+    console.log("API: Image upload success response:", result);
+
+    // Handle different response structures
+    if (Array.isArray(result)) {
+      return result;
+    } else if (result && Array.isArray(result.urls)) {
+      return result.urls;
+    } else if (result && Array.isArray(result.imageUrls)) {
+      return result.imageUrls;
+    } else if (result && result.url) {
+      return [result.url];
+    } else {
+      console.warn("API: Unexpected image upload response structure:", result);
+      return [];
+    }
+  } catch (error) {
+    console.error("API: Image upload exception caught:", error);
+    if ((error as ApiError).status) {
+      throw error;
+    }
+    throw {
+      message:
+        error instanceof Error
+          ? error.message
+          : "Network error during image upload. Please check your connection.",
+      status: 0,
+      details: error,
+    } as ApiError;
+  }
+}
+
 // Create a new listing
 export async function createListing(listingData: any): Promise<any> {
   try {
@@ -210,6 +274,59 @@ export async function createListing(listingData: any): Promise<any> {
     const result = await response.json();
     console.log("API: Success response:", result);
     return result;
+  } catch (error) {
+    console.error("API: Exception caught:", error);
+    if ((error as ApiError).status) {
+      throw error;
+    }
+    throw {
+      message:
+        error instanceof Error
+          ? error.message
+          : "Network error. Please check your connection.",
+      status: 0,
+      details: error,
+    } as ApiError;
+  }
+}
+
+// Fetch user's listings
+export async function getMyListings(): Promise<any[]> {
+  try {
+    console.log("API: Fetching my listings from /listings/my-listings");
+    const response = await authenticatedFetch("/listings/my-listings");
+
+    console.log("API: Response status:", response.status);
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error("API: Error response:", errorData);
+      throw {
+        message:
+          errorData.message ||
+          `Failed to fetch listings with status ${response.status}`,
+        status: response.status,
+        details: errorData,
+      } as ApiError;
+    }
+
+    const result = await response.json();
+    console.log("API: Success response:", result);
+
+    // Handle different response structures
+    if (Array.isArray(result)) {
+      return result;
+    } else if (result && Array.isArray(result.data)) {
+      return result.data;
+    } else if (result && Array.isArray(result.listings)) {
+      return result.listings;
+    } else {
+      console.warn(
+        "API: Unexpected response structure, returning empty array:",
+        result
+      );
+      return [];
+    }
   } catch (error) {
     console.error("API: Exception caught:", error);
     if ((error as ApiError).status) {

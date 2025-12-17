@@ -42,19 +42,7 @@ export default function DashboardPage() {
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-muted-foreground">
-          Welcome back, {displayUser.name || displayUser.email}!
-        </p>
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-2">
-          <p className="text-sm text-blue-800">
-            🎨 <strong>Demo Mode:</strong> All data shown is mock data for
-            demonstration purposes. You can access the dashboard directly
-            without login.
-          </p>
-        </div>
-      </div>
+      
       <Tabs defaultValue="renter" className="space-y-4">
         <TabsList>
           <TabsTrigger value="renter">Renter View</TabsTrigger>
