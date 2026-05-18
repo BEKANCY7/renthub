@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 export const dynamic = "force-dynamic";
@@ -15,10 +15,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-export default function VerifyPage() {
+function VerifyContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { data: session, update } = useSession();
+  const { user, refreshAuth } = useAuth();
   const [verificationStatus, setVerificationStatus] = useState<
     "loading" | "success" | "error"
   >("loading");
@@ -39,9 +39,8 @@ export default function VerifyPage() {
 
         if (response.ok && data.success) {
           setVerificationStatus("success");
-          // Update the session to reflect the verified status
-          if (session) {
-            await update();
+          if (user) {
+            refreshAuth();
           }
         } else {
           setVerificationStatus("error");
@@ -55,7 +54,7 @@ export default function VerifyPage() {
     };
 
     verifyToken();
-  }, [token, session, update]);
+  }, [token, user, refreshAuth]);
 
   const handleGoToLogin = () => {
     router.push("/login");
@@ -122,5 +121,19 @@ export default function VerifyPage() {
         </CardFooter>
       </Card>
     </div>
+  );
+}
+
+export default function VerifyPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="container max-w-md py-12 flex justify-center">
+          <Loader2 className="h-12 w-12 text-primary animate-spin" />
+        </div>
+      }
+    >
+      <VerifyContent />
+    </Suspense>
   );
 }

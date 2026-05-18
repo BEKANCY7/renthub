@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 export const dynamic = "force-dynamic";
@@ -48,6 +48,8 @@ import {
   Briefcase,
   Check,
   Clock,
+  Home,
+  Loader2,
 } from "lucide-react";
 
 const applicationSchema = z.object({
@@ -112,7 +114,7 @@ const applicationSchema = z.object({
   }),
 });
 
-export default function RentalApplicationPage() {
+function RentalApplicationContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const listingId = searchParams.get("listingId");
@@ -1119,5 +1121,19 @@ export default function RentalApplicationPage() {
         </Form>
       </div>
     </div>
+  );
+}
+
+export default function RentalApplicationPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="container mx-auto py-8 flex justify-center">
+          <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        </div>
+      }
+    >
+      <RentalApplicationContent />
+    </Suspense>
   );
 }

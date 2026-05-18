@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 export const dynamic = "force-dynamic";
@@ -56,7 +56,7 @@ const mockConversations = [
   },
 ];
 
-export default function MessagesPage() {
+function MessagesContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const selectedConversationId = searchParams.get("conversation");
@@ -216,5 +216,19 @@ export default function MessagesPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function MessagesPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center h-[60vh]">
+          <MessageCircle className="h-12 w-12 text-gray-300 animate-pulse" />
+        </div>
+      }
+    >
+      <MessagesContent />
+    </Suspense>
   );
 }
